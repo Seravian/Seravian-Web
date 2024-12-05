@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<div class="parent">
+  <div class="container" [ngClass]="isSignDivVisiable ? 'active' :'' " id="container">
+      <div class="form-container sign-up" >
+          <form [formGroup]="userForm">
+              <h1>Create Account</h1>
+              <div class="social-icons">
+                <!-- <button type="button" (click)="handleGoogleSignIn()" class="custom-google-signin">hi</button> -->
+                <a class="icon" type="button" title="Visit Google" (click)="onSignInWithGoogle()">
+                  <i class="fa-brands fa-google-plus-g"></i>
+                </a>
+                 <!-- <a class="icon"><asl-google-signin-button></asl-google-signin-button></a> -->
+                <a type="button" class="icon" title= "Facebook" (click)="onSignInWithFacebook()" ><i class="fa-brands fa-facebook"></i></a>
+                  <a type="button" class="icon" title="Github" (click)="onSignInWithGithub()" > <i class="fa-brands fa-github"></i></a>
+                  <a href="#" class="icon" title="Linkedin">  <i class="fa-brands fa-linkedin-in"></i></a>
+              </div>
+              <span>or use your email for registeration</span>
+              <input type="text" name="name" [(ngModel)]="signUpObj.name" placeholder="Name" formControlName="name">
+              <div class="text-danger" *ngIf="userForm.controls['name'].invalid && (isFormSubmitted || userForm.controls['name'].touched || userForm.controls['name'].dirty)">
+                  <span *ngIf="userForm.controls['name'].errors?.['required']">This is required</span>
+                  <span *ngIf="userForm.controls['name'].errors?.['minlength']"> MIn 3 Charactors Required </span>
+              </div>
+
+              <input type="email" name="email" [(ngModel)]="signUpObj.email" placeholder="Email" formControlName="email">
+              <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
+                  <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
+                  <span *ngIf="userForm.controls['email'].errors?.['pattern']">Invalid email format</span>
+              </div>
+
+              <input type="password" name="password" [(ngModel)]="signUpObj.password" placeholder="Password" formControlName="password">
+              <div class="text-danger" *ngIf="userForm.controls['password'].invalid && (isFormSubmitted || userForm.controls['password'].touched || userForm.controls['password'].dirty)">
+                  <span *ngIf="userForm.controls['password'].errors?.['required']">This is required</span>
+                  <span *ngIf="userForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
+              </div>
+
+              <button type="button" id="signup" (click)="onRegister()" [disabled]="isRegisterButtonDisabled">
+                {{ registerButtonText }}</button>
+              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
+          </form>
+      </div>
+      <div class="form-container sign-in" >
+          <form [formGroup]="userForm" >
+              <h1>Sign In</h1>
+              <div class="social-icons">
+                  <a  class="icon" title="Visit Google" (click)="onSignInWithGoogle()" ><i class="fa-brands fa-google-plus-g"></i></a>
+                  <a  class="icon" title= "Facebook" (click)="onSignInWithFacebook()" ><i class="fa-brands fa-facebook"></i></a>
+                  <a  type="button" class="icon" title="Github" (click)="onSignInWithGithub()" ><i class="fa-brands fa-github"></i></a>
+                  <a href="#" class="icon" title="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
+              </div>
+              <span>or use your email password</span>
+              <input type="email" name="email" [(ngModel)]="loginObj.email" placeholder="Email" formControlName="email">
+              <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
+                <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
+                <span *ngIf="userForm.controls['email'].errors?.['pattern']">Invalid email format</span>
+            </div>
+              <input type="password" name="password" [(ngModel)]="loginObj.password"  placeholder="Password" formControlName="password" >
+              <div class="text-danger" *ngIf="userForm.controls['password'].invalid && (isFormSubmitted || userForm.controls['password'].touched || userForm.controls['password'].dirty)">
+                <span *ngIf="userForm.controls['password'].errors?.['required']">This is required</span>
+                <span *ngIf="userForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
+            </div>
+              <a href="#">→ Forget Your Password? ←</a>
+              <button type="button" (click)="onLogin()">Sign In</button>
+              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
+          </form>
+      </div>
+      <div class="toggle-container">
+          <div class="toggle">
+              <div class="toggle-panel toggle-left">
+                  <h1>Welcome Back!</h1>
+                  <p>Enter your personal details to use all of site features</p>
+                  <button type="button" class="hidden" id="login" (click)="isSignDivVisiable = false">Sign In</button>
+              </div>
+              <div class="toggle-panel toggle-right">
+                  <h1>Seravian</h1>
+                  <p>Register with your personal details to use all of site features</p>
+                  <button type="button" class="hidden" id="register" (click)="isSignDivVisiable = true">Sign Up</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
