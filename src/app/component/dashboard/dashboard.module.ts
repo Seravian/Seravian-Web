@@ -6,6 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { HomeBodyComponent } from './home-body/home-body.component';
 import { TeamMemberComponent } from './team-member/team-member.component';
+import { HeaderComponent } from './header/header.component';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { TeamMemberComponent } from './team-member/team-member.component';
     FooterComponent,
     HomeBodyComponent,
     TeamMemberComponent,
+    HeaderComponent,
 
   ],
   imports: [

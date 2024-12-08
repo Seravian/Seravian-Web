@@ -9,49 +9,49 @@ export class HomeBodyComponent {
     {
       name: 'Dr. Michael Evans, MD',
       title: 'Board-Certified Psychiatrist',
-      image: 'Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
+      image: 'images/Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Amanda Collins, PhD',
       title: 'Clinical Psychologist',
-      image: 'Male-Therapist-removebg-preview.png',
+      image: 'images/Male-Therapist-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Amanda Collins, PhD',
       title: 'Clinical Psychologist',
-      image: 'Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
+      image: 'images/Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Michael Evans, MD',
       title: 'Board-Certified Psychiatrist',
-      image: 'Male-Therapist-removebg-preview.png',
+      image: 'images/Male-Therapist-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Michael Evans, MD',
       title: 'Board-Certified Psychiatrist',
-      image: 'Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
+      image: 'images/Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Amanda Collins, PhD',
       title: 'Clinical Psychologist',
-      image: 'Male-Therapist-removebg-preview.png',
+      image: 'images/Male-Therapist-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Michael Evans, MD',
       title: 'Board-Certified Psychiatrist',
-      image: 'Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
+      image: 'images/Mens-Mental-Health-The-Role-of-Male-Therapists-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     },
     {
       name: 'Dr. Amanda Collins, PhD',
       title: 'Clinical Psychologist',
-      image: 'Male-Therapist-removebg-preview.png',
+      image: 'images/Male-Therapist-removebg-preview.png',
       socials: ['facebook-f', 'twitter', 'instagram']
     }
   ];

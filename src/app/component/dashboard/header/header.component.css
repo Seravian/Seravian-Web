@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Styling for Header */
+.header {
+  position: relative;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* padding-top: 1rem; */
+  padding: 0 20px;
+  /* background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); */
+}
+
+/* Logo Section */
+.logo {
+  flex: 1;
+}
+
+.logo img {
+  height: 50px;
+}
+
+/* Navigation Bar */
+.nav-bar {
+  position: relative;
+  display: inline-block;
+  background-color: #4E34CF;
+  backdrop-filter: blur(10px);
+  border-radius: 0.83rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Navigation Links */
+.links-list ul {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0rem;
+  padding: 1.05rem 0;
+}
+
+.links-list ul li {
+  display: inline;
+  margin: 0.15rem;
+}
+
+.links-list ul li a {
+  text-decoration: none;
+  font-size: 18px;
+  color: #EEEEEE;
+  padding: 0.9rem 0.8rem;
+  border-radius: 0.65rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.links-list ul li a:hover {
+  background-color: #ffffffff;
+  color: #4E34CF;
+}
+
+
+/* Buttons Section */
+.buttons {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-left: 1rem;
+}
+
+.contact-btn,
+.wallet-btn {
+  padding: 1.01rem 1.19rem;
+  font-size: 16px;
+  color: #4E34CF;
+  background-color: transparent;
+  border: 2px solid #4E34CF;
+  border-radius: 0.65rem;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.contact-btn:hover,
+.wallet-btn:hover {
+  background-color: #4E34CF;
+  color: #ffffffff;
+}
+/* ******************************************************************************************************************************* */
