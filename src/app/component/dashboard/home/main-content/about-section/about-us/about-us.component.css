@@ -1,0 +1,18 @@
+.team-section{
+  margin-bottom: 75px;
+}
+h2, p {
+  margin: 0; /* Remove default margins */
+  padding: 0 10px; /* Add some spacing between the two elements */
+}
+
+h2 {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+p {
+  font-size: 20px;
+  color: #555;
+  font-weight: 500;
+}
