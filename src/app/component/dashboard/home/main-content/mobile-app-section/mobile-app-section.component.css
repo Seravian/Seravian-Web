@@ -1,0 +1,51 @@
+/* mobile-app */
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  gap: 40px;
+}
+
+.content {
+  max-width: 600px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.tagline {
+  font-size: 18px;
+  color: #5c5c5c;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.store-buttons {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.store-buttons img {
+  width: 150px;
+  cursor: pointer;
+}
+
+.app-preview img {
+  max-width: 300px;
+  border-radius: 20px;
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+}
+
+/* ***************************************************************************************************************************** */

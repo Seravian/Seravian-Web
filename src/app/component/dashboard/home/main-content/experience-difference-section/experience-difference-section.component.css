@@ -1,0 +1,85 @@
+/* Exeperience Difference Section */
+.dental-services {
+  padding: 50px 20px;
+  background-color: #eeeeff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dental-title-wrapper {
+  width: 100%;
+  max-width: calc(300px * 3 + 60px);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.section-description {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  /* max-width: calc(300px * 3 + 60px);  */
+}
+
+.card {
+  background: #f0f0ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 320px;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.card-description {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.card-link {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4e34cf;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.card-link:hover {
+  color: #2e1ea6;
+}
+
+
+
+/* ****************************************************************************************************************************** */

@@ -1,6 +1,11 @@
 .team-section{
   margin-bottom: 75px;
 }
+
+.container{
+  padding: 5rem 0;
+}
+
 h2, p {
   margin: 0; /* Remove default margins */
   padding: 0 10px; /* Add some spacing between the two elements */

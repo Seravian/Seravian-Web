@@ -1,0 +1,75 @@
+/* find-your-path section */
+.find-path-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eeeeff;
+  padding: 40px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.text-content {
+  max-width: 600px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.services {
+  display: flex;
+  gap: 40px;
+}
+
+.service {
+  max-width: 250px;
+}
+
+.service h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.service p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+
+.read-more {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 2px solid #007b55;
+  border-radius: 5px;
+  color: #007b55;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.read-more:hover {
+  background-color: #007b55;
+  color: #ffffff;
+  transform: scale(1.05);
+  text-decoration: none;
+}
+
+.image-content img {
+  max-width: 350px;
+  border-radius: 10px;
+}
+/* *************************************************************************************************** */

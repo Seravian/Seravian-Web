@@ -5,9 +5,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 80vh;
   width: 100%;
-  background: #F9F9FF;
+  background: #eeeeff;
 }
 h1 {
   text-align: center;
@@ -39,7 +39,7 @@ main {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 15px solid #F9F9FF;
+  border-bottom: 15px solid #eeeeff;
   position: absolute;
   top: -15px;
   left: 50%;

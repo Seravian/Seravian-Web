@@ -8,18 +8,22 @@
 /* Styling for Header */
 .header {
   position: relative;
-  height: 80px;
+  height: 6.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   /* padding-top: 1rem; */
   padding: 0 20px;
   /* background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); */
+  background-color: #eeeeff;
+  background: linear-gradient(to bottom, rgb(238, 238, 255), rgba(0, 0, 0, 0.074));
+  gap: 20px;
 }
 
 /* Logo Section */
 .logo {
   flex: 1;
+  padding-right: 1rem;
 }
 
 .logo img {
@@ -70,7 +74,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  padding-left: 1rem;
+  /* padding-left: 1rem; */
 }
 
 .contact-btn,
