@@ -37,10 +37,13 @@
               }
             ],
             "styles": [
+              "node_modules/swiper/swiper-bundle.min.css",
               "src/styles.css"
-
-            ],
-            "scripts": []
+                        ],
+            "scripts": [
+              "node_modules/swiper/swiper-bundle.min.js",
+              "node_modules/swiper/swiper-bundle.js"
+            ]
           },
           "configurations": {
             "production": {

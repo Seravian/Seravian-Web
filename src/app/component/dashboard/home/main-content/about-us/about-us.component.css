@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+/* @import "node_modules/swiper/swiper-bundle.min.css"; */
+
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background:#f1f1fc;
+    background-position: center;
+    background-size: cover;
+}
+
+.slider-wrapper{
+    overflow: hidden;
+    max-width: 1200px;
+    margin: 0 70px 55px;
+}
+
+
+.swiper-slide {
+    margin-right: 0 !important;
+}
+.card {
+    background-color: transparent;
+    border: transparent;
+}
+
+ .slider-wrapper .swiper-slider-button,.swiper-button-next{
+    color: #000;
+    margin-top: -22px;
+    transition: 0.2s ease;
+ }
+
+
+ .slider-wrapper .swiper-slider-button:hover,.swiper-button-next:hover{
+    color: #4658ff;
+ }
+ .swiper-slide {
+    margin-right: 0 !important;
+}

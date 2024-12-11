@@ -1,3 +1,10 @@
 body{
   margin: 0;
 }
+.slider-wrapper .swiper-pagination-bullet {
+  background-color: #000 !important;
+}
+
+.slider-wrapper .swiper-pagination-bullet-active {
+  background-color: #000 !important;
+}

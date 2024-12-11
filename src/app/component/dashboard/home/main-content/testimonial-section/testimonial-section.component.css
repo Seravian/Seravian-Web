@@ -7,13 +7,14 @@ body {
   align-items: center;
   min-height: 80vh;
   width: 100%;
-  background: #eeeeff;
+  background: #f1f1fc;
 }
 h1 {
   text-align: center;
   font-size: clamp(2rem, 4vw, 2.6rem);
   color: #000;
   margin-bottom: 30px;
+  margin-top: 50px;
   position: relative;
   z-index: 1;
 }
@@ -107,14 +108,16 @@ main {
   margin: 4px;
   border-radius: 15px;
   border-color: #fff;
-  background: #4e34cf;
+  background: #000;
+  opacity: 50%;
   cursor: pointer;
   transition: all 0.5s ease-in-out;
 }
 
 .indicator .btn.active {
   width: 30px;
-  background-color: #4e34cf;
+  background-color: #000;
+  opacity: 100%;
 }
 
 .slider {

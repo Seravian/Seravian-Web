@@ -8,7 +8,6 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { LoginsignupComponent } from './component/auth/login-sign-up/login-sign-up.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
