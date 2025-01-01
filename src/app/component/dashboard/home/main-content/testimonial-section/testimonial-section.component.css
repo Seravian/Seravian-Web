@@ -5,7 +5,8 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  /* min-height: 80vh; */
+  padding: 3rem 0;
   width: 100%;
   background: #f1f1fc;
 }

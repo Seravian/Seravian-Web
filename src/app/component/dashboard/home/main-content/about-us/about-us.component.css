@@ -6,7 +6,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    padding: 3rem 0;
     background:#f1f1fc;
     background-position: center;
     background-size: cover;

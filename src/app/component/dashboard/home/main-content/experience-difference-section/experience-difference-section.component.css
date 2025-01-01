@@ -1,12 +1,12 @@
 /* Exeperience Difference Section */
+
 .dental-services {
-  padding: 50px 20px;
+  padding: 6rem 0;
   background-color: #eeeeff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -36,7 +36,6 @@
   justify-content: center;
   gap: 30px;
   flex-wrap: wrap;
-  /* max-width: calc(300px * 3 + 60px);  */
 }
 
 .card {
@@ -79,7 +78,3 @@
 .card-link:hover {
   color: #2e1ea6;
 }
-
-
-
-/* ****************************************************************************************************************************** */
