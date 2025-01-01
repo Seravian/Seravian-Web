@@ -237,7 +237,9 @@ onSignInWithGoogle() {
         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
       });
   }
-
+  Forget(){
+    this.router.navigate(['/forget-password']);
+  }
   redirectToDashboardPage() {
     this.router.navigate(['/dashboard']);
   }
