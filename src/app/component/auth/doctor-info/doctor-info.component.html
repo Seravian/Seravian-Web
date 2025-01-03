@@ -1,0 +1,94 @@
+<div class="parent">
+  <div class="container">
+    <div class="form-container">
+      <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
+        <h1>Doctor Information</h1>
+
+        <span>Full Name</span>
+        <input
+          type="text"
+          name="fullName"
+          placeholder="Enter Your Full Name"
+          formControlName="fullName"
+        >
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['fullName'].invalid && (doctorForm.controls['fullName'].touched || doctorForm.controls['fullName'].dirty)">
+          <span>Full Name is required</span>
+        </div>
+
+        <span>Phone Number</span>
+        <input
+          type="number"
+          name="phoneNumber"
+          placeholder="Enter Your Phone Number"
+          formControlName="phoneNumber"
+        >
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['phoneNumber'].invalid && (doctorForm.controls['phoneNumber'].touched || doctorForm.controls['phoneNumber'].dirty)">
+          <span>Please enter a valid phone number</span>
+        </div>
+
+        <span>Date of Birth</span>
+        <input
+          type="date"
+          name="dob"
+          placeholder="Select Your DOB"
+          formControlName="dob"
+        >
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['dob'].invalid && (doctorForm.controls['dob'].touched || doctorForm.controls['dob'].dirty)">
+          <span>Date of Birth is required</span>
+        </div>
+
+        <span>Gender</span>
+        <div class="gender">
+          <label class="gender-option">
+            <input
+              type="radio"
+              style="height: 15px;"
+              name="gender"
+              value="male"
+              formControlName="gender"
+            >
+            Male
+          </label>
+          <label class="gender-option">
+            <input
+              type="radio"
+              style="height: 15px;"
+              name="gender"
+              value="female"
+              formControlName="gender"
+            >
+            Female
+          </label>
+        </div>
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['gender'].invalid && (doctorForm.controls['gender'].touched || doctorForm.controls['gender'].dirty)">
+          <span>Gender is required</span>
+        </div>
+
+        <span>Speciallity</span>
+        <input
+          type="text"
+          style="height: 55px;"
+          name="speciallity"
+          placeholder="what's your speciallity ?"
+          formControlName="speciallity"
+        >
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['speciallity'].invalid && (doctorForm.controls['speciallity'].touched || doctorForm.controls['speciallity'].dirty)">
+          <span>Speciallity is required</span>
+        </div>
+
+        <button type="submit">Continue</button>
+        <button type="button" (click)="goBack()">Back</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #c9d6ff, #7059f1);
+}
+
+form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: #2d3436;
+  text-align: center;
+}
+
+.role {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 1rem;
+}
+
+.role-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  flex: 0.492;
+  margin-right: 10px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.role-option:last-child {
+  margin-right: 0;
+  width: 150px;
+  height: 90px;
+}
+
+.role-option:hover {
+  background-color: #dfdfdf;
+}
+
+.role-option i {
+  font-size: 44px;
+  margin-bottom: 5px;
+}
+
+.role-option.selected {
+  background-color: #4e34cf;
+  color: #fff;
+}
+
+.role-option input {
+  display: none;
+}
+
+.btn {
+  background-color: #4e34cf;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 40px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #4e34cf;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #4e34cfc6;
+}
+
+.btn[disabled] {
+  background-color: #b2bec3;
+  cursor: not-allowed;
+}

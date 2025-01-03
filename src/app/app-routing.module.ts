@@ -1,9 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginsignupComponent } from './component/auth/login-sign-up/login-sign-up.component';
-import { InfoComponent } from './component/auth/info/info.component';
 import { ForgetPasswordComponent } from './component/auth/forget-password/forget-password.component';
 import { NewPasswordComponent } from './component/auth/new-password/new-password.component';
+import { VerifyEmailComponent } from './component/auth/verify-email/verify-email.component';
+import { PatientInfoComponent } from './component/auth/patient-info/patient-info.component';
+import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.component';
+import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
+
+
 const routes: Routes = [{
   path : '',
   component:LoginsignupComponent,
@@ -19,13 +24,22 @@ const routes: Routes = [{
       .then(m => m.DashboardModule),
   },
   {
-  path: 'info', component: InfoComponent
-  },
-  {
     path: 'forget-password', component: ForgetPasswordComponent
   },
   {
     path: 'new-password', component: NewPasswordComponent
+  },
+  {
+    path: 'verify-email', component: VerifyEmailComponent
+  },
+  {
+    path: 'patient-info', component: PatientInfoComponent
+  },
+  {
+    path: 'doctor-info', component: DoctorInfoComponent
+  },
+  {
+    path: 'doctor-or-patient', component: DoctorOrPatientComponent
   }
 ]
 

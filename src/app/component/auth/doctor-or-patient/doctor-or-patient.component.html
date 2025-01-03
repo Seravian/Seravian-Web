@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+
+<div class="form-container">
+  <form [formGroup]="selectionForm" (ngSubmit)="onSubmit()">
+    <h1>Select Your Role</h1>
+
+    <div class="role">
+      <label class="role-option" [class.selected]="selectionForm.get('role')?.value === 'Doctor'">
+        <i class="fas fa-user-md"></i>
+        <input
+          type="radio"
+          name="role"
+          value="Doctor"
+          formControlName="role"
+          hidden
+        >
+        Doctor
+      </label>
+      <label class="role-option" [class.selected]="selectionForm.get('role')?.value === 'Patient'">
+        <i class="fas fa-user"></i>
+        <input
+          type="radio"
+          name="role"
+          value="Patient"
+          formControlName="role"
+          hidden
+        >
+        Patient
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="selectionForm.invalid">
+      Next
+    </button>
+  </form>
+</div>
