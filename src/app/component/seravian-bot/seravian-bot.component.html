@@ -3,6 +3,10 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400..700,0..1,-50..200&ico
           n_names=keyboard_arrow_down"
     />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
   <body>
     <div class="pop-window">
       <!-- chatBox Header part -->
@@ -30,7 +34,7 @@
 
         <div class="user-message">
           <div class="user-message-text message-text">
-            Hello bot 👋 <br />
+             hi 👋<br />
           </div>
         </div>
 
@@ -49,8 +53,8 @@
           </svg>
 
           <div class="bot-message-text message-text">
-            Hey There 👋 <br />
-            How Can I Help You ?
+            hi there 👋 <br />
+            how can i help you today
           </div>
         </div>
 
@@ -69,6 +73,7 @@
             >
               sentiment_satisfied
             </button>
+
             <div class="file-upload-cover">
               <input type="file" accept="images/*" id="get-file" hidden />
               <img src="" />
@@ -76,9 +81,11 @@
                 type="button"
                 id="file-upload"
                 class="material-symbols-rounded"
+                (click)="togglePopup()"
               >
                 attach_file
               </button>
+
               <button
                 type="button"
                 id="file-cancel"
@@ -101,6 +108,27 @@
             </button>
           </div>
         </form>
+
+        <!-- Popup Menu -->
+
+        <!-- <div class="popup-menu" *ngIf="isPopupVisible">
+          <ul>
+            <li (click)="selectOption('video')">Video</li>
+            <li (click)="selectOption('image')">Image</li>
+          </ul>
+        </div> -->
+
+        <div class="popup-menu" *ngIf="isPopupVisible">
+          <ul>
+            <li (click)="selectOption('video')">
+              <i class="fas fa-video"></i>
+            </li>
+            <li (click)="selectOption('image')">
+              <i class="fas fa-image"></i>
+            </li>
+          </ul>
+        </div>
+
       </div>
     </div>
 

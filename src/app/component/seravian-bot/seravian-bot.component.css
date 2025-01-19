@@ -1,7 +1,10 @@
-/* import the fonts  */
+/* import the fonts & icons  */
 
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
 
 
 * {
@@ -186,6 +189,46 @@ body {
 }
 
 
+
+.popup-menu ul {
+  position: absolute;
+  bottom: 4.8rem;
+  right: 6.15rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popup-menu li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 46px;
+  height: 46px;
+}
+
+.popup-menu li:hover {
+  background-color: #dfdfdf;
+}
+
+.popup-menu li i {
+  font-size: 20px;
+  color: #4e34cf;
+  transition: color 0.3s ease;
+}
+
+.popup-menu li:hover i {
+  color: #342090;
+}
 
 
 
