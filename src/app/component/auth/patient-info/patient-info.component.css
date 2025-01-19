@@ -17,7 +17,7 @@
 }
 
 h1 {
-  margin-bottom: 35px;
+  margin: 20px 0;
 }
 
 .container {
@@ -37,8 +37,7 @@ h1 {
 
 .container span {
   font-size: 14px;
-  margin-bottom: 0;
-  margin-top: 10px;
+  margin: 22px 0 10px;
   font-weight: bolder;
   align-self: start;
   color: #2d333a;
@@ -48,12 +47,16 @@ h1 {
 .container .gender {
   background-color: #eee;
   border: none;
-  margin: 10px 0 6px;
+  /* margin: 10px 0 6px; */
   padding: 10px 15px;
   font-size: 13px;
   border-radius: 8px;
   width: 100%;
   outline: none;
+}
+
+.container input:focus {
+  border: 2px solid #4e34cf;
 }
 
 .container button {
@@ -93,7 +96,7 @@ h1 {
 }
 
 .text-danger {
-  margin-bottom: 8px;
+  margin-top: 3px;
 }
 
 .text-danger span {
@@ -104,7 +107,6 @@ h1 {
 .gender {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
 }
 
 .gender-option {
@@ -135,3 +137,4 @@ h1 {
 .gender-option input:hover{
   cursor: pointer;
 }
+

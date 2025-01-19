@@ -18,12 +18,14 @@
         </div>
 
         <span>Phone Number</span>
-        <input
-          type="number"
-          name="phoneNumber"
-          placeholder="Enter Your Phone Number"
-          formControlName="phoneNumber"
-        >
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phone"
+            formControlName="phoneNumber"
+            placeholder="Enter Your Phone Number"
+            #phoneInput
+          />
         <div
           class="text-danger"
           *ngIf="doctorForm.controls['phoneNumber'].invalid && (doctorForm.controls['phoneNumber'].touched || doctorForm.controls['phoneNumber'].dirty)">
@@ -75,9 +77,8 @@
         <span>Speciallity</span>
         <input
           type="text"
-          style="height: 55px;"
           name="speciallity"
-          placeholder="what's your speciallity ?"
+          placeholder="What's your speciallity ?"
           formControlName="speciallity"
         >
         <div

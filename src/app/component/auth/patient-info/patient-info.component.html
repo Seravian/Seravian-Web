@@ -18,12 +18,14 @@
         </div>
 
         <span>Phone Number</span>
-        <input
-          type="number"
-          name="phoneNumber"
-          placeholder="Enter Your Phone Number"
-          formControlName="phoneNumber"
-        >
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phone"
+            formControlName="phoneNumber"
+            placeholder="Enter Your Phone Number"
+            #phoneInput
+          />
         <div
           class="text-danger"
           *ngIf="patientForm.controls['phoneNumber'].invalid && (patientForm.controls['phoneNumber'].touched || patientForm.controls['phoneNumber'].dirty)">
