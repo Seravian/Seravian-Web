@@ -31,6 +31,12 @@
   height: 50px;
 }
 
+.logo h2 {
+  font-weight: bolder;
+  color: #4E34CF ;
+  margin-left: 2rem;
+}
+
 /* Navigation Bar */
 .nav-bar {
   position: relative;
