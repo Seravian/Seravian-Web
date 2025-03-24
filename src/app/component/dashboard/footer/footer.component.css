@@ -1,12 +1,20 @@
 footer{
-  padding: 50px 40px 45px 50px;
+  padding: 45px 40px 10px 65px;
   background: linear-gradient(to left, #634FD5, #4e34cf);
 }
+
+footer .col-lg-5{
+  padding: 0;
+}
+
 footer .main-box .logo-link{
+  display: inline-block;
   background-color: #00000000;
-color: #fff;
-font-size: 30px;
-font-weight: bolder;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bolder;
+  padding: 0 13px;
+  margin: 0 0 12px;
 }
 footer .main-box .logo-link:hover{
   background-color: #00000000;
@@ -19,6 +27,7 @@ footer .main-box p{
   font-size: 15px;
   color: #fff;
   padding-bottom: 10px;
+  padding-left: 13px;
   font-weight: lighter;
 }
 footer .main-box a{
@@ -56,6 +65,11 @@ footer .copy-right{
   border-top: 1px solid #fff;
   margin-top: 50px;
 }
+
+footer .col-lg-2{
+  margin: 11.5px 0 0;
+}
+
 @media(max-width: 991px){
   footer .ft-box{
       margin-top: 20px;
