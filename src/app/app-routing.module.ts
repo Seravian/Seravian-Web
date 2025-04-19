@@ -9,7 +9,6 @@ import { PatientInfoComponent } from './component/auth/patient-info/patient-info
 import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
 
-
 const routes: Routes = [{
   path : '',
   component:LoginsignupComponent,
@@ -23,6 +22,11 @@ const routes: Routes = [{
     path: 'dashboard',
     loadChildren: () => import('./component/dashboard/dashboard.module')
       .then(m => m.DashboardModule),
+  },
+  {
+    path: 'doctor-dashboard',
+    loadChildren: () => import('./component/doctor-dashboard/doctor-dashboard.module')
+      .then(m => m.DoctorDashboardModule),
   },
   {
     path: 'seravianbot', component: SeravianBotComponent
@@ -45,6 +49,7 @@ const routes: Routes = [{
   {
     path: 'doctor-or-patient', component: DoctorOrPatientComponent
   }
+  
 ]
 
 @NgModule({

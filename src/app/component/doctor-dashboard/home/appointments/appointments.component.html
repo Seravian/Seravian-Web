@@ -1,0 +1,52 @@
+<div class="appointments-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <h2 class="title">All Appointments</h2>
+
+    <div class="appointments-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Patient</th>
+            <th>Payment</th>
+            <th>Age</th>
+            <th>Date & Time</th>
+            <th>Fees</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appointment of appointments">
+            <td>{{ appointment.id + 1 }}</td>
+            <td>
+              <div class="patient-info">
+                <img [src]="appointment.avatar" [alt]="appointment.patient" class="patient-avatar" />
+                <div class="patient-details">
+                  <span class="patient-name">{{ appointment.patient }}</span>
+                  <span class="patient-age">{{ appointment.age }} yrs</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="payment-badge" [ngClass]="appointment.payment.toLowerCase()">
+                {{ appointment.payment }}
+              </span>
+            </td>
+            <td>{{ appointment.age }}</td>
+            <td>{{ appointment.dateTime }}</td>
+            <td>{{ appointment.fees }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="appointment.status.toLowerCase()">
+                {{ appointment.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
