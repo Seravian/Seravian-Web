@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, inject } from '@angular/core';
+import { Component, inject,ViewEncapsulation  } from '@angular/core';
 import {  OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StrongPasswordRegx, StrongEmailRegx } from '../validation.utils';
@@ -14,13 +14,12 @@ import { signInWithPopup } from '@firebase/auth';
   standalone:true,
   imports: [ReactiveFormsModule,CommonModule,FormsModule],
   templateUrl: './login-sign-up.component.html',
-  styleUrl: './login-sign-up.component.css'
+  styleUrl: './login-sign-up.component.css',
+  encapsulation: ViewEncapsulation.Emulated
 })
 
 
 export class LoginsignupComponent  {
-
-
 
   githubProvider = new GithubAuthProvider();
   googleAuthProvider = new GoogleAuthProvider();
@@ -238,7 +237,9 @@ onSignInWithGoogle() {
         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
       });
   }
-
+  Forget(){
+    this.router.navigate(['/forget-password']);
+  }
   redirectToDashboardPage() {
     this.router.navigate(['/dashboard']);
   }

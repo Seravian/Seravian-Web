@@ -37,9 +37,16 @@
               }
             ],
             "styles": [
-              "src/styles.css"
-            ],
-            "scripts": []
+              "node_modules/swiper/swiper-bundle.min.css",
+              "src/styles.css",
+              "node_modules/intl-tel-input/build/css/intlTelInput.css",
+              "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+                        ],
+            "scripts": [
+              "node_modules/swiper/swiper-bundle.min.js",
+              "node_modules/swiper/swiper-bundle.js",
+              "node_modules/intl-tel-input/build/js/intlTelInput.min.js"
+            ]
           },
           "configurations": {
             "production": {

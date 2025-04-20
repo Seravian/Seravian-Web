@@ -1,0 +1,24 @@
+<div class="parent">
+  <div class="container">
+    <div class="form-container">
+      <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+        <h1>Check your inbox</h1>
+        <p>Enter the verification code we just sent to {{ email }}</p>
+        <span>code</span>
+        <input
+          type="text"
+          name="otp"
+          placeholder="Enter code"
+          formControlName="otp"
+          maxlength="6"
+        />
+        <div class="text-danger" *ngIf="otp?.invalid && (otp?.touched || submitted)">
+          <span *ngIf="otp?.errors?.['required']">Please enter the code</span>
+          <span *ngIf="otp?.errors?.['pattern']">Code must be a 6-digit number</span>
+        </div>
+        <button type="submit">Continue</button>
+      </form>
+      <a (click)="resendOTP()">Resend email</a>
+    </div>
+  </div>
+</div>

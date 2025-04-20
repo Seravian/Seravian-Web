@@ -18,11 +18,8 @@
     height: 100vh;
 }
 
-asl-google-signin-button{
-  color: #333;
-  font-size: 13px;
-  text-decoration: none;
-  margin: 15px 0 10px;
+a{
+  cursor: pointer;
 }
 
 .container{

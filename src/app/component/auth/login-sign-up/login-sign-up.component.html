@@ -58,7 +58,7 @@
                 <span *ngIf="userForm.controls['password'].errors?.['required']">This is required</span>
                 <span *ngIf="userForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
             </div>
-              <a href="#">→ Forget Your Password? ←</a>
+              <a type="button" (click)="Forget()">→ Forget Your Password? ←</a>
               <button type="button" (click)="onLogin()">Sign In</button>
               <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
           </form>
