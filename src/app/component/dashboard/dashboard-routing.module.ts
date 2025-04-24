@@ -4,7 +4,14 @@ import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [{
   path:'',
-  component: HomeComponent
+  component: HomeComponent,
+  children: [
+    {
+      path: 'user-profile',
+      loadChildren: () => import('./home/user-profile/user-profile.module')
+        .then(m => m.UserProfileModule),
+    }
+  ]
 }];
 
 @NgModule({

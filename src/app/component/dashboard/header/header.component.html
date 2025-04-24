@@ -1,16 +1,21 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
 <!-- Header -->
 <header class="header">
   <!-- Logo -->
   <div class="logo">
     <!-- <img src="images/logo.png" alt="logo" class="logo-image"> -->
-    <h2>Seravian</h2>
+    <h1>Seravian</h1>
   </div>
 
   <!-- Navigation Bar -->
   <div class="nav-bar">
     <nav class="links-list">
       <ul>
-        <li><a href="">Home</a></li>
+        <li><a href="/dashboard">Home</a></li>
         <li><a href="">About</a></li>
         <li><a href="">Our Team</a></li>
         <li><a href="">Whitepaper</a></li>
@@ -19,15 +24,44 @@
   </div>
 
   <!-- Buttons -->
-  <div class="buttons">
+  <!-- <div class="buttons">
     <button class="contact-btn">Contact</button>
     <button class="wallet-btn">Connect Wallet</button>
+  </div> -->
+
+  <!-- User Menu -->
+<div class="user-menu">
+  <img src="images/happy_3.jpg" alt="User Photo" id="user-photo" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen" />
+  <div class="menu-dropdown" *ngIf="isUserMenuOpen">
+    <ul>
+      <li><a href="/user-profile/manage-account">Manage Account</a></li>
+      <li><a href="/user-profile/edit-profile">Customize Profile</a></li>
+    </ul>
+    <hr />
+    <div class="sign-out-container">
+    <button class="sign-out-btn">
+      <i class="fas fa-sign-out-alt"></i>
+      Sign Out
+    </button>
+    </div>
   </div>
+</div>
 
   <!-- Menu Toggle Button for Mobile -->
-  <div class="menu-toggle">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </div>
+<div class="menu-toggle" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+</div>
+
+<!-- Mobile Dropdown Menu -->
+<div class="mobile-dropdown" *ngIf="isMobileMenuOpen">
+  <ul>
+    <li><a href="/dashboard">Home</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Whitepaper</a></li>
+    <li><a href="#">Our Team</a></li>
+  </ul>
+</div>
+
 </header>

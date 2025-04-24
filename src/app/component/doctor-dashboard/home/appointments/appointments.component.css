@@ -41,6 +41,7 @@ th {
   text-align: left;
   color: #475569;
   border-bottom: 1px solid #e2e8f0;
+  text-align: center;
 }
 
 td {
@@ -49,6 +50,7 @@ td {
   color: #334155;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
+  text-align: center;
 }
 
 tr:hover {
@@ -58,7 +60,8 @@ tr:hover {
 .patient-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-evenly;
+  /* gap: 1rem; */
 }
 
 .patient-avatar {

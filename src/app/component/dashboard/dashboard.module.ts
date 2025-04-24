@@ -34,6 +34,9 @@ import { StartNowSectionComponent } from './home/main-content/start-now-section/
   imports: [
     CommonModule,
     DashboardRoutingModule
+  ],
+  exports: [
+    HeaderComponent 
   ]
 })
 export class DashboardModule { }
