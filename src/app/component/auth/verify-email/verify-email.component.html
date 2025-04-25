@@ -10,7 +10,7 @@
           name="otp"
           placeholder="Enter code"
           formControlName="otp"
-          maxlength="6"
+          maxlength="8"
         />
         <div class="text-danger" *ngIf="otp?.invalid && (otp?.touched || submitted)">
           <span *ngIf="otp?.errors?.['required']">Please enter the code</span>

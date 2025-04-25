@@ -57,6 +57,8 @@ export class LoginsignupComponent  {
     this.authService
     this.isFormSubmitted = true;
     this.isRegisterButtonDisabled = true;
+    this.registerButtonText = "Sign Up";
+
 
     if (this.userForm.valid) {
       this.registerButtonText = "Processing...";
@@ -121,42 +123,35 @@ export class LoginsignupComponent  {
       //       }
       //     }
       //   })
+      this.authService.register(this.userForm.value).subscribe({
+        next:(response)=>{
+          console.log(response);
+          this.statusMessage = "Registration successful! Redirecting...";
+          sessionStorage.setItem('email', response.email);
+          this.router.navigate(['/verify-email']);
+        },
+        error:(err:HttpErrorResponse)=>{
+          if(err!.status === 400){
+            console.log("validation");
+            this.statusMessage = "Email is used";
+          }
+          this.isRegisterButtonDisabled = false;
+          this.registerButtonText = "Sign Up";
+        },
+          complete:() => {
+            console.log('register'),
+            this.isRegisterButtonDisabled = false;
+            this.registerButtonText = "Sign Up";
+          }
+      });
     } else {
       this.statusMessage = "Please complete all fields correctly.";
+      this.isRegisterButtonDisabled = false; // re-enable the button if the form is invalid
+      this.registerButtonText = "Sign Up";
     }
-    // this.authService.SignUpUser(
-    //   [ this.userForm.value.email,
-    //   this.userForm.value.password
-    //   ]
-
-    // ).subscribe(res => {
-    // console.log(res);
-    // this.router.navigate(['/verify-email']);
-    // })
-    this.authService.register(this.userForm.value).subscribe({
-      next:(response)=>{
-        console.log(response);
-      },
-      error:(err:HttpErrorResponse)=>{
-        if(err!.status === 400)
-          console.log("validation");
-        },
-        complete:() => console.log('register'),
-    });
 
   }
-  register(){
-    this.authService.register(this.userForm.value).subscribe({
-      next:(response)=>{
-        console.log(response);
-      },
-      error:(err:HttpErrorResponse)=>{
-        if(err!.status === 400)
-          console.log("validation");
-        },
-        complete:() => console.log('register'),
-    });
-  }
+
 
   IsUserValid : boolean = false;
   onLogin() {
@@ -193,17 +188,19 @@ export class LoginsignupComponent  {
     } else {
         this.statusMessage = "Please complete all fields correctly.";
     }
-    this.authService.LoginUser(
-      this.userForm.value
-    ).subscribe(res => {
-      console.log(res);
-    if (res == 'Failure'){
-      this.IsUserValid=false;
-      alert('login unsuc');
-    }else{
-      this.IsUserValid = true;
-      alert('login suc');
-    };
+    this.authService.login(this.userForm.value).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        if (!response.isProfileSetupComplete) {
+          this.router.navigate(['doctor-or-patient']);
+        } else {
+          this.router.navigate(['dashboard']);
+        } // Or wherever you want to redirect
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        alert('Login failed. Please check your credentials.');
+      }
     })
 }
 

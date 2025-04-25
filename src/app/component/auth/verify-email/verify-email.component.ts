@@ -11,7 +11,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class VerifyEmailComponent implements OnInit {
   otpForm: FormGroup;
-  email: string = 'example@domain.com'; // email example
+  email: string | null = null;
   submitted: boolean = false;
 
   constructor(private router: Router,private authService: AuthService) {
@@ -23,7 +23,12 @@ export class VerifyEmailComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.email = sessionStorage.getItem('email');
+    if (!this.email) {
+      // this.router.navigate(['/info']);  // Redirect if no email is found
+    }
+  }
 
   get otp() {
     return this.otpForm.get('otp');
@@ -33,24 +38,45 @@ export class VerifyEmailComponent implements OnInit {
     this.submitted = true;
     if (this.otpForm.valid) {
       const otp = this.otpForm.value.otp;
-      this.authService.OtpVerfiy(
-        [ otp
-        ]
+      this.email = sessionStorage.getItem('email');
+      const email = this.email || '';
+      console.log(email);
+      console.log(otp)
+        // Ensure email is a string, even if null
 
-      ).subscribe(res => {
-      if (res == 'Failure'){
-        alert('login unsuc');
-      }else{
-
-        alert('login suc');
-      };
-      });
-      this.router.navigate(['/doctor-or-patient']);
+        this.authService.OtpVerfiy([email, otp]).subscribe({
+          next: () => {
+            // Only gets here if tap() ran successfully and no error occurred
+            alert('OTP verification successful!');
+            this.router.navigate(['/']);
+          },
+          error: () => {
+            // You can optionally still handle unexpected errors here
+            alert('OTP verification failed. Please try again.');
+          }
+        });
+        // this.authService.Otpverify([email, otp]).subscribe({
+        //   next: () => {
+        //     alert('OTP verification successful!');
+        //     this.router.navigate(['/doctor-or-patient']);
+        //   },
+        //   error: (err) => {
+        //     if (err.error?.errors) {
+        //       const errors = err.error.errors;
+        //       const allMessages = Object.values(errors).flat(); // Flatten nested arrays
+        //       alert(allMessages[0]); // Show the first error message
+        //     } else {
+        //       alert('An unexpected error occurred.');
+        //     }
+        //     console.error('Error verifying OTP:', err);
+        //   }
+        // });
     } else {
       console.log('Form is invalid');
       this.otpForm.markAllAsTouched();
     }
   }
+
 
   resendOTP() {
     console.log('Resend OTP clicked');

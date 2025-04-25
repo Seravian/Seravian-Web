@@ -1,12 +1,14 @@
+import { Tokens } from "./tokens";
+
 export interface AuthResponse {
-  id: string,
+  userId: string,
   email:string,
-  fullname?: string,
-  dateofbirth?:string,
+  fullName?: string,
+  dateOfBirth?:string,
   gender?:number,
   role?:number,
-  isemailverified: Boolean,
-  isdoctorverified?:Boolean,
-  isprofilesetupcomplete:Boolean,
-  token:string
+  isEmailVerified: Boolean,
+  isDoctorVerified?:Boolean,
+  isProfileSetupComplete:Boolean,
+  token:Tokens
 }
