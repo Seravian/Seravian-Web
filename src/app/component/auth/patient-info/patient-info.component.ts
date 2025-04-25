@@ -129,7 +129,7 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
       const profileData: ProfileRequest = {
         fullName: formValues.fullName,
-        dateOfBirth: `${formValues.dob} 00:00:00`,
+        dateOfBirth: formValues.dob,
         gender: Number(formValues.gender),
         role: role
       };
