@@ -4,10 +4,13 @@ import { Component, inject,ViewEncapsulation  } from '@angular/core';
 import {  OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StrongPasswordRegx, StrongEmailRegx } from '../validation.utils';
-import { Auth, AuthErrorCodes, GoogleAuthProvider, signInWithEmailAndPassword,
-createUserWithEmailAndPassword,AuthProvider,sendEmailVerification  } from '@angular/fire/auth';
-import { FacebookAuthProvider, getAuth, GithubAuthProvider } from "firebase/auth";
-import { signInWithPopup } from '@firebase/auth';
+// import { Auth, AuthErrorCodes, GoogleAuthProvider, signInWithEmailAndPassword,
+// createUserWithEmailAndPassword,AuthProvider,sendEmailVerification  } from '@angular/fire/auth';
+// import { FacebookAuthProvider, getAuth, GithubAuthProvider } from "firebase/auth";
+// import { signInWithPopup } from '@firebase/auth';
+import { AuthService } from '../../../services/auth.service';
+import { register } from 'swiper/element';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login-sign-up',
@@ -21,15 +24,15 @@ import { signInWithPopup } from '@firebase/auth';
 
 export class LoginsignupComponent  {
 
-  githubProvider = new GithubAuthProvider();
-  googleAuthProvider = new GoogleAuthProvider();
+  // githubProvider = new GithubAuthProvider();
+  // googleAuthProvider = new GoogleAuthProvider();
 
-  facebookAuthProvider = new FacebookAuthProvider();
+  // facebookAuthProvider = new FacebookAuthProvider();
   isRegisterButtonDisabled: boolean = false;
   registerButtonText: string = "Sign Up";
   errorMessage: string = '';
 
-  auth = inject(Auth);
+  // auth = inject(Auth);
 
 
   private router = inject(Router)
@@ -43,15 +46,15 @@ export class LoginsignupComponent  {
   isLogin: boolean = true;
   statusMessage: string = "";
   // private router: Router, private authService: SocialAuthService
-  constructor() {    this.userForm = new FormGroup({
-      name: new FormControl("",[Validators.required,Validators.minLength(3)]),
+  constructor(private authService: AuthService) {    this.userForm = new FormGroup({
+      // name: new FormControl("",[Validators.required,Validators.minLength(3)]),
       email: new FormControl("",[Validators.required,Validators.pattern(StrongEmailRegx)]),
       password: new FormControl("",[Validators.required,Validators.pattern(StrongPasswordRegx)])
     })
   }
 
-
   onRegister() {
+    this.authService
     this.isFormSubmitted = true;
     this.isRegisterButtonDisabled = true;
 
@@ -64,65 +67,98 @@ export class LoginsignupComponent  {
 
       localStorage.setItem("angular17users", JSON.stringify(users));
       this.statusMessage = "Registration Successful!";
-      createUserWithEmailAndPassword(this.auth, this.userForm.value.email, this.userForm.value.password)
-        .then((response) => {
-          console.log(response);
-          sendEmailVerification(response.user)
-                    .then(() => {
-                        console.log("Verification email sent.");
-                        this.statusMessage = "Registration successful! Please verify your email.";
+      // createUserWithEmailAndPassword(this.auth, this.userForm.value.email, this.userForm.value.password)
+      //   .then((response) => {
+      //     console.log(response);
+      //     sendEmailVerification(response.user)
+      //               .then(() => {
+      //                   console.log("Verification email sent.");
+      //                   this.statusMessage = "Registration successful! Please verify your email.";
 
-                        // Update button text to "Verifying"
-                        this.registerButtonText = "Verifying...";
+      //                   // Update button text to "Verifying"
+      //                   this.registerButtonText = "Verifying...";
 
-                        // Periodically check if the email is verified
-                        const checkVerification = setInterval(() => {
-                            response.user.reload().then(() => {
-                                if (response.user.emailVerified) {
-                                    clearInterval(checkVerification);
-                                    this.isRegisterButtonDisabled = false;
-                                    this.registerButtonText = "Sign Up";
-                                    this.redirectToDashboardPage();
-                                }
-                            });
-                        }, 3000); // Check every 3 seconds
-                    })
-                    .catch((verificationError) => {
-                        console.error("Error sending verification email:", verificationError);
-                        this.errorMessage = "Failed to send verification email. Please try again.";
-                        this.isRegisterButtonDisabled = false;
-                        this.registerButtonText = "Sign Up";
-                    });
-            })
-        .catch(error => {
-          console.log(error)
-          this.isFormSubmitted = false;
-          this.isRegisterButtonDisabled = false;
-          this.registerButtonText = "Sign Up";
-          console.error('error:', error);
-          if (error instanceof Error) {
-            if (error.message.includes(AuthErrorCodes.INVALID_EMAIL)) {
-              this.errorMessage = "Email is not valid";
-            }
-            else if (error.message.includes('auth/invalid-credential')) {
-              this.errorMessage = 'Invalid Email/Passowrd';
-            }
-            else if (error.message.includes(AuthErrorCodes.WEAK_PASSWORD)) {
-              this.errorMessage = 'Please enter a stronger password';
-            }
-            else if (error.message.includes(AuthErrorCodes.EMAIL_EXISTS)) {
-              this.errorMessage = 'The email is already used for another account';
-            }
-            else {
-              this.errorMessage = 'Something went wrong, please try again.';
-            }
-          }
-        })
+      //                   // Periodically check if the email is verified
+      //                   const checkVerification = setInterval(() => {
+      //                       response.user.reload().then(() => {
+      //                           if (response.user.emailVerified) {
+      //                               clearInterval(checkVerification);
+      //                               this.isRegisterButtonDisabled = false;
+      //                               this.registerButtonText = "Sign Up";
+      //                               this.redirectToDashboardPage();
+      //                           }
+      //                       });
+      //                   }, 3000); // Check every 3 seconds
+      //               })
+      //               .catch((verificationError) => {
+      //                   console.error("Error sending verification email:", verificationError);
+      //                   this.errorMessage = "Failed to send verification email. Please try again.";
+      //                   this.isRegisterButtonDisabled = false;
+      //                   this.registerButtonText = "Sign Up";
+      //               });
+      //       })
+      //   .catch(error => {
+      //     console.log(error)
+      //     this.isFormSubmitted = false;
+      //     this.isRegisterButtonDisabled = false;
+      //     this.registerButtonText = "Sign Up";
+      //     console.error('error:', error);
+      //     if (error instanceof Error) {
+      //       if (error.message.includes(AuthErrorCodes.INVALID_EMAIL)) {
+      //         this.errorMessage = "Email is not valid";
+      //       }
+      //       else if (error.message.includes('auth/invalid-credential')) {
+      //         this.errorMessage = 'Invalid Email/Passowrd';
+      //       }
+      //       else if (error.message.includes(AuthErrorCodes.WEAK_PASSWORD)) {
+      //         this.errorMessage = 'Please enter a stronger password';
+      //       }
+      //       else if (error.message.includes(AuthErrorCodes.EMAIL_EXISTS)) {
+      //         this.errorMessage = 'The email is already used for another account';
+      //       }
+      //       else {
+      //         this.errorMessage = 'Something went wrong, please try again.';
+      //       }
+      //     }
+      //   })
     } else {
       this.statusMessage = "Please complete all fields correctly.";
     }
+    // this.authService.SignUpUser(
+    //   [ this.userForm.value.email,
+    //   this.userForm.value.password
+    //   ]
+
+    // ).subscribe(res => {
+    // console.log(res);
+    // this.router.navigate(['/verify-email']);
+    // })
+    this.authService.register(this.userForm.value).subscribe({
+      next:(response)=>{
+        console.log(response);
+      },
+      error:(err:HttpErrorResponse)=>{
+        if(err!.status === 400)
+          console.log("validation");
+        },
+        complete:() => console.log('register'),
+    });
+
+  }
+  register(){
+    this.authService.register(this.userForm.value).subscribe({
+      next:(response)=>{
+        console.log(response);
+      },
+      error:(err:HttpErrorResponse)=>{
+        if(err!.status === 400)
+          console.log("validation");
+        },
+        complete:() => console.log('register'),
+    });
   }
 
+  IsUserValid : boolean = false;
   onLogin() {
     this.isFormSubmitted = true;
     this.statusMessage = '';
@@ -132,111 +168,123 @@ export class LoginsignupComponent  {
         const password = this.userForm.value.password;
 
         // Use Firebase signInWithEmailAndPassword
-        signInWithEmailAndPassword(this.auth, email, password)
-            .then((response) => {
-                // Check if the user's email is verified
-                if (response.user.emailVerified) {
-                    console.log("Login successful:", response);
-                    this.statusMessage = "Login successful!";
-                    localStorage.setItem('loggedUser', JSON.stringify(response.user));
-                    this.router.navigateByUrl('/dashboard');
-                } else {
-                    this.statusMessage = "This account not exist";
-                }
-            })
-            .catch((error) => {
-                console.error("Login error:", error);
-                if (error.code === 'auth/user-not-found') {
-                    this.statusMessage = "User not found. Please check your email.";
-                } else if (error.code === 'auth/wrong-password') {
-                    this.statusMessage = "Incorrect password. Please try again.";
-                } else {
-                    this.statusMessage = "Something went wrong. Please try again later.";
-                }
-            });
+        // signInWithEmailAndPassword(this.auth, email, password)
+        //     .then((response) => {
+        //         // Check if the user's email is verified
+        //         if (response.user.emailVerified) {
+        //             console.log("Login successful:", response);
+        //             this.statusMessage = "Login successful!";
+        //             localStorage.setItem('loggedUser', JSON.stringify(response.user));
+        //             this.router.navigateByUrl('/dashboard');
+        //         } else {
+        //             this.statusMessage = "This account not exist";
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.error("Login error:", error);
+        //         if (error.code === 'auth/user-not-found') {
+        //             this.statusMessage = "User not found. Please check your email.";
+        //         } else if (error.code === 'auth/wrong-password') {
+        //             this.statusMessage = "Incorrect password. Please try again.";
+        //         } else {
+        //             this.statusMessage = "Something went wrong. Please try again later.";
+        //         }
+        //     });
     } else {
         this.statusMessage = "Please complete all fields correctly.";
     }
+    this.authService.LoginUser(
+      this.userForm.value
+    ).subscribe(res => {
+      console.log(res);
+    if (res == 'Failure'){
+      this.IsUserValid=false;
+      alert('login unsuc');
+    }else{
+      this.IsUserValid = true;
+      alert('login suc');
+    };
+    })
 }
 
 
 
-onSignInWithGoogle() {
-  signInWithPopup(this.auth, this.googleAuthProvider)
-    .then(response => {
-      const user = response.user;
+// onSignInWithGoogle() {
+//   signInWithPopup(this.auth, this.googleAuthProvider)
+//     .then(response => {
+//       const user = response.user;
 
-      // Check if the user is new based on metadata
-      if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-        // New user - navigate to the info page
-        this.router.navigate(['/info']);
-      } else {
-        // Existing user - navigate to the dashboard
-        this.router.navigate(['/dashboard']);
-      }
-    })
-    .catch(error => {
-      console.error('Error during Google sign-in:', error);
-      this.errorMessage = 'Something went wrong, please try again.';
-    });
-}
+//       // Check if the user is new based on metadata
+//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
+//         // New user - navigate to the info page
+//         this.router.navigate(['/info']);
+//       } else {
+//         // Existing user - navigate to the dashboard
+//         this.router.navigate(['/dashboard']);
+//       }
+//     })
+//     .catch(error => {
+//       console.error('Error during Google sign-in:', error);
+//       this.errorMessage = 'Something went wrong, please try again.';
+//     });
+// }
 
-  onSignInWithFacebook() {
-    const auth = getAuth();
-    const facebookAuthProvider = new FacebookAuthProvider();
-    this.facebookAuthProvider = facebookAuthProvider;
+//   onSignInWithFacebook() {
+//     const auth = getAuth();
+//     const facebookAuthProvider = new FacebookAuthProvider();
+//     this.facebookAuthProvider = facebookAuthProvider;
 
 
-    signInWithPopup(auth, facebookAuthProvider)
-      .then((response) => {
-        // The signed-in user info.
-        const user = response.user;
+//     signInWithPopup(auth, facebookAuthProvider)
+//       .then((response) => {
+//         // The signed-in user info.
+//         const user = response.user;
 
-      // Check if the user is new
-      if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-        this.router.navigate(['/info']);
-      } else {
-        this.redirectToDashboardPage();
-      }
-    })
-      .catch((error) => {
-        // Log and handle the error
-        console.error("Facebook sign-in error:", error);
+//       // Check if the user is new
+//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
+//         this.router.navigate(['/info']);
+//       } else {
+//         this.redirectToDashboardPage();
+//       }
+//     })
+//       .catch((error) => {
+//         // Log and handle the error
+//         console.error("Facebook sign-in error:", error);
 
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData?.email || "Unknown email";
-        const credential = FacebookAuthProvider.credentialFromError(error);
+//         const errorCode = error.code;
+//         const errorMessage = error.message;
+//         const email = error.customData?.email || "Unknown email";
+//         const credential = FacebookAuthProvider.credentialFromError(error);
 
-        console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
-      });
-  }
+//         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
+//       });
+//   }
 
-  onSignInWithGithub() {
-    const auth = getAuth();
-    const githubProvider = new GithubAuthProvider();
-    this.githubProvider = githubProvider;
-    signInWithPopup(auth, githubProvider)
-      .then((response) => {
-        const user = response.user;
+//   onSignInWithGithub() {
+//     const auth = getAuth();
+//     const githubProvider = new GithubAuthProvider();
+//     this.githubProvider = githubProvider;
+//     signInWithPopup(auth, githubProvider)
+//       .then((response) => {
+//         const user = response.user;
 
-      // Check if the user is new
-      if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-        this.router.navigate(['/info']);
-      } else {
-        this.redirectToDashboardPage();
-      }
-    }).catch((error) => {
-        console.error("Facebook sign-in error:", error);
+//       // Check if the user is new
+//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
+//         this.router.navigate(['/info']);
+//       } else {
+//         this.redirectToDashboardPage();
+//       }
+//     }).catch((error) => {
+//         console.error("Facebook sign-in error:", error);
 
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData?.email || "Unknown email";
-        const credential = FacebookAuthProvider.credentialFromError(error);
+//         const errorCode = error.code;
+//         const errorMessage = error.message;
+//         const email = error.customData?.email || "Unknown email";
+//         const credential = FacebookAuthProvider.credentialFromError(error);
 
-        console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
-      });
-  }
+//         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
+//       });
+//   }
   Forget(){
     this.router.navigate(['/forget-password']);
   }

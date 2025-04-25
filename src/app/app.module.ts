@@ -8,6 +8,8 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { LoginsignupComponent } from './component/auth/login-sign-up/login-sign-up.component';
 import { SeravianBotComponent } from './component/seravian-bot/seravian-bot.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from './services/auth.service';
 
 
 @NgModule({
@@ -18,12 +20,14 @@ import { SeravianBotComponent } from './component/seravian-bot/seravian-bot.comp
   imports: [
     BrowserModule,
     CommonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [
     provideFirebaseApp(() => initializeApp({"projectId":"seravian","appId":"1:51931785705:web:34b4efd31d47cacfdac378","storageBucket":"seravian.firebasestorage.app","apiKey":"AIzaSyDd1DKc_CE2-1DKYKkr3nrRGaE_tV19dZ0","authDomain":"seravian.firebaseapp.com","messagingSenderId":"51931785705","measurementId":"G-ZJCYTY6YGD"})),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    AuthService
   ],
   bootstrap: [AppComponent]
 })
