@@ -29,6 +29,11 @@ const routes: Routes = [{
       .then(m => m.DoctorDashboardModule),
   },
   {
+    path: 'user-profile',
+    loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
+      .then(m => m.UserProfileModule),
+  },
+  {
     path: 'seravianbot', component: SeravianBotComponent
   },
   {
@@ -49,7 +54,7 @@ const routes: Routes = [{
   {
     path: 'doctor-or-patient', component: DoctorOrPatientComponent
   }
-  
+
 ]
 
 @NgModule({

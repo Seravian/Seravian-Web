@@ -1,0 +1,159 @@
+<!-- <app-header></app-header> -->
+
+
+<!-- user-dashboard.component.html -->
+<div class="dashboard-container">
+  <nav class="sidebar">
+    <div class="profile-section">
+      <div class="profile-photo">
+        <img [src]="userProfile.profilePhoto" alt="Profile Photo">
+        <label class="photo-upload">
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
+          <span class="upload-icon">📷</span>
+        </label>
+      </div>
+      <h3>{{ userProfile.name }}</h3>
+    </div>
+
+    <ul class="nav-links">
+      <li [class.active]="activeSection === 'profile'" (click)="onSectionChange('profile')">
+        <i class="fas fa-user"></i> Profile
+      </li>
+      <li [class.active]="activeSection === 'account'" (click)="onSectionChange('account')">
+        <i class="fas fa-cog"></i> Account
+      </li>
+      <li [class.active]="activeSection === 'password'" (click)="onSectionChange('password')">
+        <i class="fas fa-lock"></i> Password
+      </li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <div *ngIf="activeSection === 'profile'" class="section">
+      <h2>Profile Information</h2>
+      <form [formGroup]="profileForm" (ngSubmit)="onProfileSubmit()" class="form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" formControlName="name">
+          <div class="error" *ngIf="profileForm.get('name')?.errors?.['required'] && profileForm.get('name')?.touched">
+            Name is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" formControlName="email">
+          <div class="error" *ngIf="profileForm.get('email')?.errors?.['required'] && profileForm.get('email')?.touched">
+            Email is required
+          </div>
+          <div class="error" *ngIf="profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched">
+            Please enter a valid email
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" formControlName="phone">
+          <div class="error" *ngIf="profileForm.get('phone')?.errors?.['required'] && profileForm.get('phone')?.touched">
+            Phone number is required
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="!profileForm.valid">Save Changes</button>
+      </form>
+    </div>
+
+
+    <div *ngIf="activeSection === 'account'" class="section">
+      <!-- Account Settings Section -->
+      <div class="account-section">
+        <h2>Account Settings</h2>
+
+        <div class="settings-group">
+          <h3>Notifications</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Email Notifications</label>
+              <p>Receive email updates about your account</p>
+            </div>
+            <input type="checkbox" class="toggle-switch">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>SMS Notifications</label>
+              <p>Receive text messages for appointments</p>
+            </div>
+            <input type="checkbox" class="toggle-switch">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Privacy</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Profile Visibility</label>
+              <p>Control who can see your profile</p>
+            </div>
+            <select class="select-input">
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+              <option value="doctors">Doctors Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Language & Region</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Language</label>
+              <p>Choose your preferred language</p>
+            </div>
+            <select class="select-input">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="activeSection === 'password'" class="section">
+      <h2>Change Password</h2>
+      <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="form">
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" formControlName="currentPassword">
+          <div class="error" *ngIf="passwordForm.get('currentPassword')?.errors?.['required'] && passwordForm.get('currentPassword')?.touched">
+            Current password is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" formControlName="newPassword">
+          <div class="error" *ngIf="passwordForm.get('newPassword')?.errors?.['required'] && passwordForm.get('newPassword')?.touched">
+            New password is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" formControlName="confirmPassword">
+          <div class="error" *ngIf="passwordForm.get('confirmPassword')?.errors?.['required'] && passwordForm.get('confirmPassword')?.touched">
+            Please confirm your password
+          </div>
+          <div class="error" *ngIf="passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched">
+            Passwords do not match
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="!passwordForm.valid">Update Password</button>
+      </form>
+    </div>
+  </main>
+</div>
