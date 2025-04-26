@@ -13,12 +13,33 @@ export class VerifyEmailComponent implements OnInit {
   otpForm: FormGroup;
   email: string | null = null;
   submitted: boolean = false;
+  successMessage: boolean = false;
+
+  statusMessage: string = '';
+  preventSpace(event: KeyboardEvent) {
+    if (event.code === 'Space') {
+      event.preventDefault();
+    }
+  }
+
+
+  sanitizePaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const clipboardData = event.clipboardData || (window as any).clipboardData;
+    const pastedText = clipboardData.getData('text').replace(/\s/g, ''); // Remove all spaces
+    this.otp?.setValue(pastedText.substring(0, 8)); // Also make sure it's not longer than 8
+  }
+  clearStatusMessageAfterDelay() {
+    setTimeout(() => {
+      this.statusMessage = '';
+    }, 5000); // 5 seconds
+  }
 
   constructor(private router: Router,private authService: AuthService) {
     this.otpForm = new FormGroup({
       otp: new FormControl('', [
         Validators.required,
-        // Validators.pattern(/^\d{6}$/), // Only 6-digit numbers
+        Validators.minLength(8),
       ]),
     });
   }
@@ -36,41 +57,31 @@ export class VerifyEmailComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+    this.statusMessage = '';
     if (this.otpForm.valid) {
       const otp = this.otpForm.value.otp;
       this.email = sessionStorage.getItem('email');
       const email = this.email || '';
-      console.log(email);
-      console.log(otp)
-        // Ensure email is a string, even if null
+
 
         this.authService.OtpVerfiy([email, otp]).subscribe({
           next: () => {
-            // Only gets here if tap() ran successfully and no error occurred
+            this.statusMessage = 'OTP verification successful!';
             alert('OTP verification successful!');
             this.router.navigate(['/']);
           },
-          error: () => {
-            // You can optionally still handle unexpected errors here
-            alert('OTP verification failed. Please try again.');
+          error: (err) => {
+            if (err.error?.errors) {
+              const errors = err.error.errors;
+              const allMessages = Object.values(errors).flat();
+              this.statusMessage = String(allMessages[0]);
+            } else {
+              this.statusMessage = 'Unexpected error occurred. Please try again.';
+            }
+            console.error('OTP verification failed:', err);
           }
         });
-        // this.authService.Otpverify([email, otp]).subscribe({
-        //   next: () => {
-        //     alert('OTP verification successful!');
-        //     this.router.navigate(['/doctor-or-patient']);
-        //   },
-        //   error: (err) => {
-        //     if (err.error?.errors) {
-        //       const errors = err.error.errors;
-        //       const allMessages = Object.values(errors).flat(); // Flatten nested arrays
-        //       alert(allMessages[0]); // Show the first error message
-        //     } else {
-        //       alert('An unexpected error occurred.');
-        //     }
-        //     console.error('Error verifying OTP:', err);
-        //   }
-        // });
+
     } else {
       console.log('Form is invalid');
       this.otpForm.markAllAsTouched();
@@ -79,7 +90,38 @@ export class VerifyEmailComponent implements OnInit {
 
 
   resendOTP() {
-    console.log('Resend OTP clicked');
+    this.submitted = false;
+    this.statusMessage = '';
+    this.email = sessionStorage.getItem('email');
+    console.log(this.email);
+    const email = this.email || '';
+    if (!email) {
+      console.error('No email found for resending OTP.');
+      this.statusMessage = 'Email not found. Please try again.';
+      this.clearStatusMessageAfterDelay();
+      return;
+    }
+
+    this.authService.ResendOtpVerfiy([email]).subscribe({
+      next: () => {
+        this.statusMessage = 'Verification email has been resent!';
+        this.successMessage = true;
+        this.clearStatusMessageAfterDelay();
+      },
+      error: (err) => {
+        this.successMessage = false;
+        if (err.error?.errors) {
+          const errors = err.error.errors;
+          const allMessages = Object.values(errors).flat();
+          this.statusMessage = String(allMessages[0]);
+        } else {
+          this.statusMessage = 'Failed to resend email. Please try again.';
+        }
+        console.error('Resend OTP failed:', err);
+        this.clearStatusMessageAfterDelay();
+      }
+    });
   }
+
 }
 

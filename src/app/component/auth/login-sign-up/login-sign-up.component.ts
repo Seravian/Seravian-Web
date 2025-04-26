@@ -31,6 +31,15 @@ export class LoginsignupComponent  {
   isRegisterButtonDisabled: boolean = false;
   registerButtonText: string = "Sign Up";
   errorMessage: string = '';
+  toggleSignIn() {
+    this.isSignDivVisiable = false;
+    this.statusMessage = ''; // Clear the status message when switching to Sign In
+  }
+
+  toggleSignUp() {
+    this.isSignDivVisiable = true;
+    this.statusMessage = ''; // Clear the status message when switching to Sign Up
+  }
 
   // auth = inject(Auth);
 
@@ -62,67 +71,7 @@ export class LoginsignupComponent  {
 
     if (this.userForm.valid) {
       this.registerButtonText = "Processing...";
-      const newUser = this.userForm.value;
-      const localUser = localStorage.getItem("angular17users");
-      const users = localUser ? JSON.parse(localUser) : [];
-      users.push(newUser);
 
-      localStorage.setItem("angular17users", JSON.stringify(users));
-      this.statusMessage = "Registration Successful!";
-      // createUserWithEmailAndPassword(this.auth, this.userForm.value.email, this.userForm.value.password)
-      //   .then((response) => {
-      //     console.log(response);
-      //     sendEmailVerification(response.user)
-      //               .then(() => {
-      //                   console.log("Verification email sent.");
-      //                   this.statusMessage = "Registration successful! Please verify your email.";
-
-      //                   // Update button text to "Verifying"
-      //                   this.registerButtonText = "Verifying...";
-
-      //                   // Periodically check if the email is verified
-      //                   const checkVerification = setInterval(() => {
-      //                       response.user.reload().then(() => {
-      //                           if (response.user.emailVerified) {
-      //                               clearInterval(checkVerification);
-      //                               this.isRegisterButtonDisabled = false;
-      //                               this.registerButtonText = "Sign Up";
-      //                               this.redirectToDashboardPage();
-      //                           }
-      //                       });
-      //                   }, 3000); // Check every 3 seconds
-      //               })
-      //               .catch((verificationError) => {
-      //                   console.error("Error sending verification email:", verificationError);
-      //                   this.errorMessage = "Failed to send verification email. Please try again.";
-      //                   this.isRegisterButtonDisabled = false;
-      //                   this.registerButtonText = "Sign Up";
-      //               });
-      //       })
-      //   .catch(error => {
-      //     console.log(error)
-      //     this.isFormSubmitted = false;
-      //     this.isRegisterButtonDisabled = false;
-      //     this.registerButtonText = "Sign Up";
-      //     console.error('error:', error);
-      //     if (error instanceof Error) {
-      //       if (error.message.includes(AuthErrorCodes.INVALID_EMAIL)) {
-      //         this.errorMessage = "Email is not valid";
-      //       }
-      //       else if (error.message.includes('auth/invalid-credential')) {
-      //         this.errorMessage = 'Invalid Email/Passowrd';
-      //       }
-      //       else if (error.message.includes(AuthErrorCodes.WEAK_PASSWORD)) {
-      //         this.errorMessage = 'Please enter a stronger password';
-      //       }
-      //       else if (error.message.includes(AuthErrorCodes.EMAIL_EXISTS)) {
-      //         this.errorMessage = 'The email is already used for another account';
-      //       }
-      //       else {
-      //         this.errorMessage = 'Something went wrong, please try again.';
-      //       }
-      //     }
-      //   })
       this.authService.register(this.userForm.value).subscribe({
         next:(response)=>{
           console.log(response);

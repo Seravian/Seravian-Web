@@ -30,16 +30,8 @@ export class AuthService {
   login(data:LoginRequest):Observable<AuthResponse>{
     return this.http.post<AuthResponse>(`${this.APIUrl}/login`,data).pipe(
       map((response)=>{
-        // if(!response.isProfileSetupComplete){
-        //   // localStorage.setItem(this.tokenkey,response.token.accessToken)
-        //   // sessionStorage.setItem('email', data.email);
-        //   console.log("hi")
-        // }
-
-        // localStorage.setItem(this.tokenkey,response.token.accessToken)
 
         if(response.isEmailVerified){
-          console.log("hi")
           console.log(response.tokens.accessToken)
           localStorage.setItem(this.tokenkey,response.tokens.accessToken)
           return response;
@@ -47,11 +39,8 @@ export class AuthService {
         }else{
           console.log(response.tokens.accessToken)
           localStorage.setItem(this.tokenkey,response.tokens.accessToken)
-
           return response;
         }
-
-        return response;
       })
     )
   }
@@ -64,12 +53,8 @@ export class AuthService {
           localStorage.setItem(this.tokenkey,response.tokens.accessToken)
           return response;
 
-        }else{
-          console.log(response)
-          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
-
-          return response;
         }
+          return response;
       })
     )
   }
@@ -118,27 +103,7 @@ export class AuthService {
 
   private getToken = ():string | null => localStorage.getItem(this.tokenkey) || '';
 
-  // SignUpUser(user: Array<string>){
-  //   return this.http.post(this.baseServerUrl + "register",
-  //   {
-  //   email: user[0],
-  //   password: user[1]
-  //   },
-  //   {
-  //     responseType:'text'
-  //   });
-  // }
 
-  Otpverify(otp: Array<string>){
-    return this.http.post(this.baseServerUrl + "verify-otp",
-    {
-    email: otp[0],
-    otpCode: otp[1]
-    },
-    {
-      responseType:'text'
-    });
-  }
 
   OtpVerfiy(data: [string, string]): Observable<AuthResponse> {
     const [email, otpCode] = data;
@@ -147,16 +112,15 @@ export class AuthService {
       map((response) => {
         console.log('OTP verification successful.');
         return response;
-      }),
-      catchError((error) => {
-        if (error.error?.errors) {
-          const errors = error.error.errors;
-          const allMessages = Object.values(errors).flat();
-          console.error('OTP verification error:', allMessages[0]); // Log the first error message
-        } else {
-          console.error('Unexpected error verifying OTP:', error);
-        }
-        return EMPTY;
+      })
+    );
+  }
+  ResendOtpVerfiy(data: [string]): Observable<AuthResponse> {
+    const [email] = data;
+
+    return this.http.post<AuthResponse>(`${this.APIUrl}/resend-otp`, { email }).pipe(
+      map((response) => {
+        return response;
       })
     );
   }
