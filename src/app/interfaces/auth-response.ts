@@ -10,5 +10,5 @@ export interface AuthResponse {
   isEmailVerified: Boolean,
   isDoctorVerified?:Boolean,
   isProfileSetupComplete:Boolean,
-  token:Tokens
+  tokens:Tokens
 }

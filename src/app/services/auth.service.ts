@@ -4,7 +4,8 @@ import { environment } from '../../environments/environment.development';
 import { LoginRequest } from '../interfaces/login-request';
 import { map, Observable } from 'rxjs';
 import { AuthResponse } from '../interfaces/auth-response';
-import jwt_decode, { jwtDecode } from 'jwt-decode';
+// import jwt_decode, { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { da, fa, faCountryTranslations } from 'intl-tel-input/i18n';
 import { RegisterRequest } from '../interfaces/register-request';
 import { catchError, tap } from 'rxjs/operators';
@@ -16,11 +17,16 @@ import { ProfileRequest } from '../interfaces/profile-request';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
+
   APIUrl:string = environment.APIUrl;
   private tokenkey = 'token'
+
   constructor(private http: HttpClient) { }
+
   baseServerUrl= "https://seravian.runasp.net/auth/";
+
   login(data:LoginRequest):Observable<AuthResponse>{
     return this.http.post<AuthResponse>(`${this.APIUrl}/login`,data).pipe(
       map((response)=>{
@@ -29,6 +35,22 @@ export class AuthService {
         //   // sessionStorage.setItem('email', data.email);
         //   console.log("hi")
         // }
+
+        // localStorage.setItem(this.tokenkey,response.token.accessToken)
+
+        if(response.isEmailVerified){
+          console.log("hi")
+          console.log(response.tokens.accessToken)
+          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
+          return response;
+
+        }else{
+          console.log(response.tokens.accessToken)
+          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
+
+          return response;
+        }
+
         return response;
       })
     )
@@ -38,21 +60,30 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.APIUrl}/register`,data).pipe(
       map((response)=>{
         if(response.isEmailVerified){
-          localStorage.setItem(this.tokenkey,response.token.accessToken)
+          console.log(response)
+          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
+          return response;
+
+        }else{
+          console.log(response)
+          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
+
+          return response;
         }
-        return response;
       })
     )
   }
+
   private tempRole: number | null = null;
 
-setTempRole(role: number) {
-  this.tempRole = role;
-}
+  setTempRole(role: number) {
+    this.tempRole = role;
+  }
 
-getTempRole(): number | null {
-  return this.tempRole;
-}
+  getTempRole(): number | null {
+    return this.tempRole;
+  }
+
   getUserDetail = () =>{
     const token = this.getToken();
     if(!token) return true;
@@ -71,6 +102,7 @@ getTempRole(): number | null {
     if(!token) return false ;
     return !this.isTokenExpired();
   };
+
   private isTokenExpired(){
     const token = this.getToken();
     if(!token) return true;
@@ -85,23 +117,29 @@ getTempRole(): number | null {
   }
 
   private getToken = ():string | null => localStorage.getItem(this.tokenkey) || '';
-  SignUpUser(user: Array<string>){
-    return this.http.post(this.baseServerUrl + "register",{
-    email: user[0],
-    password: user[1]
-    },
-    {
-      responseType:'text'});
-  }
+
+  // SignUpUser(user: Array<string>){
+  //   return this.http.post(this.baseServerUrl + "register",
+  //   {
+  //   email: user[0],
+  //   password: user[1]
+  //   },
+  //   {
+  //     responseType:'text'
+  //   });
+  // }
 
   Otpverify(otp: Array<string>){
-    return this.http.post(this.baseServerUrl + "verify-otp",{
+    return this.http.post(this.baseServerUrl + "verify-otp",
+    {
     email: otp[0],
     otpCode: otp[1]
     },
     {
-      responseType:'text'});
+      responseType:'text'
+    });
   }
+
   OtpVerfiy(data: [string, string]): Observable<AuthResponse> {
     const [email, otpCode] = data;
 
@@ -122,6 +160,7 @@ getTempRole(): number | null {
       })
     );
   }
+
   completeProfile(data: ProfileRequest): Observable<any> {
     return this.http.post(`${this.APIUrl}/complete-profile-setup`, data).pipe(
       tap(() => console.log('Profile info submitted')),
