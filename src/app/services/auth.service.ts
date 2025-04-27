@@ -37,8 +37,6 @@ export class AuthService {
           return response;
 
         }else{
-          console.log(response.tokens.accessToken)
-          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
           return response;
         }
       })
@@ -48,12 +46,6 @@ export class AuthService {
   register(data:RegisterRequest):Observable<AuthResponse>{
     return this.http.post<AuthResponse>(`${this.APIUrl}/register`,data).pipe(
       map((response)=>{
-        if(response.isEmailVerified){
-          console.log(response)
-          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
-          return response;
-
-        }
           return response;
       })
     )

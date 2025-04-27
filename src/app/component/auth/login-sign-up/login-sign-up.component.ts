@@ -140,15 +140,23 @@ export class LoginsignupComponent  {
     this.authService.login(this.userForm.value).subscribe({
       next: (response) => {
         console.log('Login successful:', response);
-        if (!response.isProfileSetupComplete) {
+        if(!response.isEmailVerified){
+          this.router.navigate(['verify-email']);
+        }
+        else if (!response.isProfileSetupComplete) {
           this.router.navigate(['doctor-or-patient']);
         } else {
           this.router.navigate(['dashboard']);
         } // Or wherever you want to redirect
       },
       error: (error) => {
-        console.error('Login error:', error);
-        alert('Login failed. Please check your credentials.');
+        if (error.error?.errors) {
+          const errors = error.error.errors;
+          const allMessages = Object.values(errors).flat();
+          this.statusMessage = String(allMessages[0]);
+        } else {
+          this.statusMessage = 'Unexpected error occurred. Please try again.';
+        }
       }
     })
 }

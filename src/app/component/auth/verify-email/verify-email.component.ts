@@ -67,7 +67,6 @@ export class VerifyEmailComponent implements OnInit {
         this.authService.OtpVerfiy([email, otp]).subscribe({
           next: () => {
             this.statusMessage = 'OTP verification successful!';
-            alert('OTP verification successful!');
             this.router.navigate(['/']);
           },
           error: (err) => {
