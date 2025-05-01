@@ -1,3 +1,4 @@
+import { ChatSidebarComponent } from './component/chat_layout/chat-sidebar/chat-sidebar.component';
 import { SeravianBotComponent } from './component/seravian-bot/seravian-bot.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -10,10 +11,11 @@ import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.co
 import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
 import { AuthGuard } from './guard/auth_guards/auth.guard';
 import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
+import { ChatComponent } from './component/chat_layout/chat/chat.component';
 
 const routes: Routes = [{
   path : '',
-  component:LoginsignupComponent,
+  component:ChatComponent,
   },
   {
     path: 'auth',

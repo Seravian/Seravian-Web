@@ -17,7 +17,7 @@ export class SeravianBotComponent {
 
   selectOption(option: string): void {
     console.log(`Selected option: ${option}`);
-    this.isPopupVisible = false; 
+    this.isPopupVisible = false;
   }
 
   @HostListener('document:click', ['$event'])
