@@ -17,7 +17,7 @@
           <span>Full Name is required</span>
         </div>
 
-        <span>Phone Number</span>
+        <!-- <span>Phone Number</span>
           <input
             type="tel"
             id="phoneNumber"
@@ -30,7 +30,7 @@
           class="text-danger"
           *ngIf="patientForm.controls['phoneNumber'].invalid && (patientForm.controls['phoneNumber'].touched || patientForm.controls['phoneNumber'].dirty)">
           <span>Please enter a valid phone number</span>
-        </div>
+        </div> -->
 
         <span>Date of Birth</span>
         <input
@@ -52,7 +52,7 @@
               type="radio"
               style="height: 15px;"
               name="gender"
-              value="male"
+              [value]="0"
               formControlName="gender"
             >
             Male
@@ -62,7 +62,7 @@
               type="radio"
               style="height: 15px;"
               name="gender"
-              value="female"
+              [value]="1"
               formControlName="gender"
             >
             Female

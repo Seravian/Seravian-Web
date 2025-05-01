@@ -2,6 +2,9 @@ import { AfterViewInit, Component, OnInit, Renderer2, ViewChild, ElementRef, OnD
 import intlTelInput from 'intl-tel-input';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { ProfileRequest } from '../../../interfaces/profile-request';
+
 
 @Component({
   selector: 'app-patient-info',
@@ -13,10 +16,10 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
   patientForm: FormGroup;
   intlTelInstance: any;
 
-  constructor(private fb: FormBuilder, private router: Router, private renderer: Renderer2) {
+  constructor(private fb: FormBuilder, private router: Router, private renderer: Renderer2,private authService: AuthService) {
     this.patientForm = this.fb.group({
       fullName: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      // phoneNumber: ['', Validators.required],
       dob: ['', Validators.required],
       gender: ['', Validators.required],
     });
@@ -42,7 +45,7 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
         .then(() => {
           console.log('Utils script loaded successfully.');
 
-          this.phoneInput.nativeElement.addEventListener('blur', this.validatePhoneNumber.bind(this));
+          // this.phoneInput.nativeElement.addEventListener('blur', this.validatePhoneNumber.bind(this));
         })
         .catch((error : unknown) => {
           console.error('Utils script load error:', error);
@@ -91,35 +94,58 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
   }
 
 
-  validatePhoneNumber(): void {
-    if (this.intlTelInstance) {
-      const isValid = this.intlTelInstance.isValidNumber();
-      console.log('Validation result:', isValid);
+  // validatePhoneNumber(): void {
+  //   if (this.intlTelInstance) {
+  //     const isValid = this.intlTelInstance.isValidNumber();
+  //     console.log('Validation result:', isValid);
 
-      if (isValid === false) {
-        console.log('Phone number is invalid.');
-      } else if (isValid === true) {
-        const phoneNumber = this.intlTelInstance.getNumber();
-        console.log('Valid phone number:', phoneNumber);
-      } else {
-        console.error('Unexpected null validation result.');
-        const phoneNumber = this.intlTelInstance.getNumber();
-        console.log('Valid phone number:', phoneNumber);
-      }
-    } else {
-      console.error('IntlTelInstance is not defined.');
-    }
-  }
+  //     if (isValid === false) {
+  //       console.log('Phone number is invalid.');
+  //     } else if (isValid === true) {
+  //       const phoneNumber = this.intlTelInstance.getNumber();
+  //       console.log('Valid phone number:', phoneNumber);
+  //     } else {
+  //       console.error('Unexpected null validation result.');
+  //       const phoneNumber = this.intlTelInstance.getNumber();
+  //       console.log('Valid phone number:', phoneNumber);
+  //     }
+  //   } else {
+  //     console.error('IntlTelInstance is not defined.');
+  //   }
+  // }
 
 
 
   onSubmit() {
     if (this.patientForm.valid) {
-      // console.log('Form Submitted Successfully', this.patientForm.value);
-      this.router.navigate(['/dashboard']);
+      const role = this.authService.getTempRole();
+      if (role === null) {
+        alert('Role not set. Please go back and select your role.');
+        return;
+      }
+
+      const formValues = this.patientForm.value;
+      const formattedDOB = `${formValues.dob} 00:00:00`;
+
+      const profileData: ProfileRequest = {
+        fullName: formValues.fullName,
+        dateOfBirth: formValues.dob,
+        gender: Number(formValues.gender),
+        role: role
+      };
+      console.log(profileData)
+
+      this.authService.completeProfile(profileData).subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          alert('Failed to complete profile. Try again.');
+          console.error(err);
+        }
+      });
     } else {
       this.markAllAsTouched(this.patientForm);
-      return;
     }
   }
 
@@ -139,7 +165,7 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
   ngOnDestroy(): void {
     if (this.phoneInput) {
-      this.phoneInput.nativeElement.removeEventListener('blur', this.validatePhoneNumber.bind(this));
+      // this.phoneInput.nativeElement.removeEventListener('blur', this.validatePhoneNumber.bind(this));
     }
   }
 

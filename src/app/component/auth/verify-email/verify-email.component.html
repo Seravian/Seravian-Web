@@ -10,12 +10,23 @@
           name="otp"
           placeholder="Enter code"
           formControlName="otp"
-          maxlength="6"
+          maxlength="8"
+          (keypress)="preventSpace($event)"
+          (paste)="sanitizePaste($event)"
         />
-        <div class="text-danger" *ngIf="otp?.invalid && (otp?.touched || submitted)">
-          <span *ngIf="otp?.errors?.['required']">Please enter the code</span>
-          <span *ngIf="otp?.errors?.['pattern']">Code must be a 6-digit number</span>
+        <div *ngIf="(otp?.invalid && (otp?.touched || submitted))">
+          <div class="text-danger">
+            <span *ngIf="otp?.errors?.['required']">Please enter the code</span>
+            <span *ngIf="otp?.errors?.['minlength']">Code must be exactly 8 characters</span>
+          </div>
         </div>
+
+        <div *ngIf="statusMessage">
+          <div [ngClass]="{'text-success': successMessage, 'text-danger': !successMessage}">
+            {{ statusMessage }}
+          </div>
+        </div>
+
         <button type="submit">Continue</button>
       </form>
       <a (click)="resendOTP()">Resend email</a>

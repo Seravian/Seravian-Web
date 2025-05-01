@@ -20,7 +20,7 @@
                   <span *ngIf="userForm.controls['name'].errors?.['required']">This is required</span>
                   <span *ngIf="userForm.controls['name'].errors?.['minlength']"> MIn 3 Charactors Required </span>
               </div> -->
-
+              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
               <input type="email" name="email" [(ngModel)]="signUpObj.email" placeholder="Email" formControlName="email">
               <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
                   <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
@@ -35,7 +35,6 @@
 
               <button type="button" id="signup" (click)="onRegister()" [disabled]="isRegisterButtonDisabled">
                 {{ registerButtonText }}</button>
-              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
           </form>
       </div>
       <div class="form-container sign-in" >
@@ -48,6 +47,7 @@
                   <a href="#" class="icon" title="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
               </div>
               <span>or use your email password</span>
+              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
               <input type="email" name="email" [(ngModel)]="loginObj.email" placeholder="Email" formControlName="email">
               <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
                 <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
@@ -60,7 +60,6 @@
             </div>
               <a type="button" (click)="Forget()">→ Forget Your Password? ←</a>
               <button type="button" (click)="onLogin()">Sign In</button>
-              <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
           </form>
       </div>
       <div class="toggle-container">
@@ -68,13 +67,13 @@
               <div class="toggle-panel toggle-left">
                   <h1>Welcome Back!</h1>
                   <p>Enter your personal details to use all of site features</p>
-                  <button type="button" class="hidden" id="login" (click)="isSignDivVisiable = false">Sign In</button>
-              </div>
+                  <button type="button" class="hidden" id="login" (click)="toggleSignIn()">Sign In</button>
+                </div>
               <div class="toggle-panel toggle-right">
                   <h1>Seravian</h1>
                   <p>Register with your personal details to use all of site features</p>
-                  <button type="button" class="hidden" id="register" (click)="isSignDivVisiable = true">Sign Up</button>
-              </div>
+                  <button type="button" class="hidden" id="register" (click)="toggleSignUp()">Sign Up</button>
+                </div>
           </div>
       </div>
   </div>

@@ -7,7 +7,6 @@
 }
 
 .parent {
-  background-color: #c9d6ff;
   background: linear-gradient(to right, #c9d6ff, #7059f1);
   display: flex;
   align-items: center;
@@ -30,8 +29,6 @@ p {
   background-color: #fff;
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-  position: relative;
-  overflow: hidden;
   width: 425px;
   max-width: 100%;
   min-height: 450px;
@@ -39,11 +36,11 @@ p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .container span {
   font-size: 14px;
-  margin-bottom: 0;
   align-self: start;
   color: #2d333a;
   font-weight: bolder;
@@ -64,7 +61,7 @@ p {
   color: #fff;
   font-size: 12px;
   padding: 10px 45px;
-  border: 1px solid transparent;
+  border: none;
   border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -74,7 +71,6 @@ p {
 }
 
 .container form {
-  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,6 +78,7 @@ p {
   padding: 0 30px;
   height: 100%;
   text-align: center;
+  width: 100%;
 }
 
 .container input {
@@ -95,13 +92,18 @@ p {
   outline: none;
 }
 
-.form-container{
-  position: relative;
-  width: 100%;
+.text-danger, .text-success {
+  font-weight: bold;
+  font-size: 14px;
+  margin: 8px 0;
+  padding-left: 10px;
+  text-align: left;
 }
 
-.text-danger span {
+.text-danger {
   color: red;
-  font-size: 13px;
 }
 
+.text-success {
+  color: green;
+}
