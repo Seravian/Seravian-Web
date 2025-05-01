@@ -1,16 +1,15 @@
+import { AuthResponse } from './../../../interfaces/auth-response';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, inject,ViewEncapsulation  } from '@angular/core';
 import {  OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StrongPasswordRegx, StrongEmailRegx } from '../validation.utils';
-// import { Auth, AuthErrorCodes, GoogleAuthProvider, signInWithEmailAndPassword,
-// createUserWithEmailAndPassword,AuthProvider,sendEmailVerification  } from '@angular/fire/auth';
-// import { FacebookAuthProvider, getAuth, GithubAuthProvider } from "firebase/auth";
-// import { signInWithPopup } from '@firebase/auth';
 import { AuthService } from '../../../services/auth.service';
 import { register } from 'swiper/element';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { id } from 'intl-tel-input/i18n';
 
 @Component({
   selector: 'app-login-sign-up',
@@ -24,10 +23,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export class LoginsignupComponent  {
 
-  // githubProvider = new GithubAuthProvider();
-  // googleAuthProvider = new GoogleAuthProvider();
-
-  // facebookAuthProvider = new FacebookAuthProvider();
   isRegisterButtonDisabled: boolean = false;
   registerButtonText: string = "Sign Up";
   errorMessage: string = '';
@@ -54,9 +49,8 @@ export class LoginsignupComponent  {
   isFormSubmitted: boolean = false;
   isLogin: boolean = true;
   statusMessage: string = "";
-  // private router: Router, private authService: SocialAuthService
+
   constructor(private authService: AuthService) {    this.userForm = new FormGroup({
-      // name: new FormControl("",[Validators.required,Validators.minLength(3)]),
       email: new FormControl("",[Validators.required,Validators.pattern(StrongEmailRegx)]),
       password: new FormControl("",[Validators.required,Validators.pattern(StrongPasswordRegx)])
     })
@@ -74,6 +68,28 @@ export class LoginsignupComponent  {
 
       this.authService.register(this.userForm.value).subscribe({
         next:(response)=>{
+
+          const profile = {
+            id: response.userId,
+            fullName: response.fullName,
+            email: response.email,
+            dateOfBirth: response.dateOfBirth,
+            gender: response.gender,
+            role: response.role,
+            isEmailVerified: response.isEmailVerified
+          };
+
+          localStorage.setItem('profile', JSON.stringify(profile));
+
+          const profileTokens = {
+            accessToken: response.tokens.accessToken,
+            refreshToken: response.tokens.refreshToken,
+            accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+          }
+
+
+          localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
           console.log(response);
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
@@ -110,35 +126,40 @@ export class LoginsignupComponent  {
     if (this.userForm.controls['email'].valid && this.userForm.controls['password'].valid) {
         const email = this.userForm.value.email;
         const password = this.userForm.value.password;
-
-        // Use Firebase signInWithEmailAndPassword
-        // signInWithEmailAndPassword(this.auth, email, password)
-        //     .then((response) => {
-        //         // Check if the user's email is verified
-        //         if (response.user.emailVerified) {
-        //             console.log("Login successful:", response);
-        //             this.statusMessage = "Login successful!";
-        //             localStorage.setItem('loggedUser', JSON.stringify(response.user));
-        //             this.router.navigateByUrl('/dashboard');
-        //         } else {
-        //             this.statusMessage = "This account not exist";
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         console.error("Login error:", error);
-        //         if (error.code === 'auth/user-not-found') {
-        //             this.statusMessage = "User not found. Please check your email.";
-        //         } else if (error.code === 'auth/wrong-password') {
-        //             this.statusMessage = "Incorrect password. Please try again.";
-        //         } else {
-        //             this.statusMessage = "Something went wrong. Please try again later.";
-        //         }
-        //     });
+        console.log(this.userForm.value)
     } else {
         this.statusMessage = "Please complete all fields correctly.";
     }
     this.authService.login(this.userForm.value).subscribe({
       next: (response) => {
+
+        const profile = {
+          id: response.userId,
+          fullName: response.fullName,
+          email: response.email,
+          dateOfBirth: response.dateOfBirth,
+          gender: response.gender,
+          role: response.role,
+          isEmailVerified: response.isEmailVerified
+        };
+
+        localStorage.setItem('profile', JSON.stringify(profile));
+
+        // if (!response.tokens.accessToken || !response.tokens.refreshToken) {
+        //   this.statusMessage = 'Login response missing tokens.';
+        //   console.error('Missing access or refresh token in response:', response.tokens);
+        //   return;
+        // }
+
+        const profileTokens = {
+          accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
+          refreshToken: this.authService.EncryptToken(response.tokens.refreshToken!),
+          accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+        }
+
+
+        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
         console.log('Login successful:', response);
         if(!response.isEmailVerified){
           this.router.navigate(['verify-email']);
@@ -155,90 +176,15 @@ export class LoginsignupComponent  {
           const allMessages = Object.values(errors).flat();
           this.statusMessage = String(allMessages[0]);
         } else {
+          console.log('Login error:', error);
           this.statusMessage = 'Unexpected error occurred. Please try again.';
+
         }
       }
     })
-}
+  }
 
 
-
-// onSignInWithGoogle() {
-//   signInWithPopup(this.auth, this.googleAuthProvider)
-//     .then(response => {
-//       const user = response.user;
-
-//       // Check if the user is new based on metadata
-//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-//         // New user - navigate to the info page
-//         this.router.navigate(['/info']);
-//       } else {
-//         // Existing user - navigate to the dashboard
-//         this.router.navigate(['/dashboard']);
-//       }
-//     })
-//     .catch(error => {
-//       console.error('Error during Google sign-in:', error);
-//       this.errorMessage = 'Something went wrong, please try again.';
-//     });
-// }
-
-//   onSignInWithFacebook() {
-//     const auth = getAuth();
-//     const facebookAuthProvider = new FacebookAuthProvider();
-//     this.facebookAuthProvider = facebookAuthProvider;
-
-
-//     signInWithPopup(auth, facebookAuthProvider)
-//       .then((response) => {
-//         // The signed-in user info.
-//         const user = response.user;
-
-//       // Check if the user is new
-//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-//         this.router.navigate(['/info']);
-//       } else {
-//         this.redirectToDashboardPage();
-//       }
-//     })
-//       .catch((error) => {
-//         // Log and handle the error
-//         console.error("Facebook sign-in error:", error);
-
-//         const errorCode = error.code;
-//         const errorMessage = error.message;
-//         const email = error.customData?.email || "Unknown email";
-//         const credential = FacebookAuthProvider.credentialFromError(error);
-
-//         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
-//       });
-//   }
-
-//   onSignInWithGithub() {
-//     const auth = getAuth();
-//     const githubProvider = new GithubAuthProvider();
-//     this.githubProvider = githubProvider;
-//     signInWithPopup(auth, githubProvider)
-//       .then((response) => {
-//         const user = response.user;
-
-//       // Check if the user is new
-//       if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-//         this.router.navigate(['/info']);
-//       } else {
-//         this.redirectToDashboardPage();
-//       }
-//     }).catch((error) => {
-//         console.error("Facebook sign-in error:", error);
-
-//         const errorCode = error.code;
-//         const errorMessage = error.message;
-//         const email = error.customData?.email || "Unknown email";
-//         const credential = FacebookAuthProvider.credentialFromError(error);
-
-//         console.error(`Error Code: ${errorCode}, Message: ${errorMessage}, Email: ${email}`);
-//       });
-//   }
   Forget(){
     this.router.navigate(['/forget-password']);
   }

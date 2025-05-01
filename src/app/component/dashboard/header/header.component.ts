@@ -1,34 +1,18 @@
 import { Component,ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-// export class HeaderComponent {
-//   isSidebarActive: boolean = false;
-
-//   toggleMenu(): void {
-//     this.isSidebarActive = true;
-//   }
-
-//   closeMenu(): void {
-//     this.isSidebarActive = false;
-//   }
-// }
 
 export class HeaderComponent {
-  // isSidebarActive: boolean = false;
-  // userMenuOpen: boolean = false;
-
-
-  // toggleUserMenu(): void {
-  //   this.userMenuOpen = !this.userMenuOpen;
-  // }
 
   isSidebarActive: boolean = false;
   isUserMenuOpen: boolean = false;
   isMobileMenuOpen: boolean = false;
+
 
   toggleUserMenu(): void {
     this.isUserMenuOpen = !this.isUserMenuOpen;
@@ -46,7 +30,7 @@ export class HeaderComponent {
     this.isMobileMenuOpen = false;
   }
 
-  constructor() {
+  constructor(private authService: AuthService) {
     document.addEventListener('click', this.handleDocumentClick.bind(this));
   }
 
@@ -59,6 +43,10 @@ export class HeaderComponent {
     if (!target.closest('.menu-toggle') && !target.closest('.mobile-dropdown')) {
       this.closeMobileMenu();
     }
+  }
+
+  signOut(): void {
+    this.authService.logout();
   }
 
 }

@@ -1,5 +1,5 @@
 export interface Tokens {
-  accessToken: string;
-  accessTokenExpirationUtc: string;
+  accessToken: string | null;
+  accessTokenExpirationUtc: string ;
   refreshToken: string | null;
 }

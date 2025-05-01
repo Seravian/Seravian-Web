@@ -8,6 +8,8 @@ import { VerifyEmailComponent } from './component/auth/verify-email/verify-email
 import { PatientInfoComponent } from './component/auth/patient-info/patient-info.component';
 import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
+import { AuthGuard } from './guard/auth_guards/auth.guard';
+import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
 
 const routes: Routes = [{
   path : '',
@@ -22,6 +24,7 @@ const routes: Routes = [{
     path: 'dashboard',
     loadChildren: () => import('./component/dashboard/dashboard.module')
       .then(m => m.DashboardModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'doctor-dashboard',
@@ -31,10 +34,10 @@ const routes: Routes = [{
   {
     path: 'user-profile',
     loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
-      .then(m => m.UserProfileModule),
+      .then(m => m.UserProfileModule), canActivate: [AuthGuard]
   },
   {
-    path: 'seravianbot', component: SeravianBotComponent
+    path: 'seravianbot', component: SeravianBotComponent , canActivate: [AuthGuard]
   },
   {
     path: 'forget-password', component: ForgetPasswordComponent
@@ -43,18 +46,17 @@ const routes: Routes = [{
     path: 'new-password', component: NewPasswordComponent
   },
   {
-    path: 'verify-email', component: VerifyEmailComponent
+    path: 'verify-email', component: VerifyEmailComponent, canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'patient-info', component: PatientInfoComponent
+    path: 'patient-info', component: PatientInfoComponent , canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'doctor-info', component: DoctorInfoComponent
+    path: 'doctor-info', component: DoctorInfoComponent , canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'doctor-or-patient', component: DoctorOrPatientComponent
+    path: 'doctor-or-patient', component: DoctorOrPatientComponent , canActivate: [VerifyEmailGuard]
   }
-
 ]
 
 @NgModule({

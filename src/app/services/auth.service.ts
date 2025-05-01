@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { LoginRequest } from '../interfaces/login-request';
 import { map, Observable } from 'rxjs';
@@ -11,6 +11,9 @@ import { RegisterRequest } from '../interfaces/register-request';
 import { catchError, tap } from 'rxjs/operators';
 import { of, EMPTY } from 'rxjs';
 import { ProfileRequest } from '../interfaces/profile-request';
+import { Tokens } from '../interfaces/tokens';
+import { Router } from '@angular/router';
+import * as CryptoJS from 'crypto-js';
 
 
 
@@ -25,18 +28,29 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+    private router = inject(Router)
+
   baseServerUrl= "https://seravian.runasp.net/auth/";
 
-  login(data:LoginRequest):Observable<AuthResponse>{
+  login(data:LoginRequest):Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.APIUrl}/login`,data).pipe(
       map((response)=>{
 
         if(response.isEmailVerified){
-          console.log(response.tokens.accessToken)
-          localStorage.setItem(this.tokenkey,response.tokens.accessToken)
+          // const encryptedAccessToken = this.EncryptToken(response.tokens.accessToken!);
+          // const encryptedRefreshToken = this.EncryptToken(response.tokens.refreshToken!);
+          // const profileTokens = {
+          //   accessToken: encryptedAccessToken,
+          //   refreshToken: encryptedRefreshToken,
+          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc,
+          // };
+
+          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+          console.log('email verified login is working');
           return response;
 
         }else{
+          console.log('email not verified');
           return response;
         }
       })
@@ -61,39 +75,61 @@ export class AuthService {
     return this.tempRole;
   }
 
-  getUserDetail = () =>{
-    const token = this.getToken();
-    if(!token) return true;
-    const decodedToken : any = jwtDecode(token);
-    const userDetail = {
-      id: decodedToken.nameid,
-      fullname: decodedToken.name,
-      email: decodedToken.email,
-      roles: decodedToken.role || [],
-    }
-    return userDetail;
-  }
+  // getUserDetail = () =>{
+  //   const token = this.getToken();
+  //   if(!token) return true;
+  //   const decodedToken : any = jwtDecode(token);
+  //   const userDetail = {
+  //     id: decodedToken.nameid,
+  //     fullname: decodedToken.name,
+  //     email: decodedToken.email,
+  //     roles: decodedToken.role || [],
+  //   }
+  //   return userDetail;
+  // }
 
   isLoggedIn =():boolean =>{
-    const token = this.getToken();
+    const token = this.getToken() ;
     if(!token) return false ;
     return !this.isTokenExpired();
   };
 
-  private isTokenExpired(){
-    const token = this.getToken();
-    if(!token) return true;
-    const decoded = jwtDecode(token);
-    const isTokenExpired= Date.now() > decoded['exp']! *1000;
-    if(isTokenExpired) this,this.logout();
-    return isTokenExpired;
+  private isTokenExpired(): boolean {
+    const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
+    if (!expiryString) return true;
+
+    const expiry = new Date(expiryString).getTime();
+    return Date.now() > expiry;
   }
 
-  logout=():void => {
-    localStorage.removeItem(this.tokenkey)
+  logout = (): void => {
+    const refreshToken = this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
+
+    if (refreshToken) {
+      this.http.post(`${this.APIUrl}/logout`, { refreshToken })
+        .subscribe({
+          next: () => {
+            console.log('Logout request sent successfully.');
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            console.error('Error during logout request:', err);
+          },
+          complete: () => {
+            this.clearLocalStorage();
+          }
+        });
+    } else {
+      console.log('No refresh token found.');
+    }
+  };
+
+  private clearLocalStorage(): void {
+    localStorage.removeItem('profile');
+    localStorage.removeItem('profileTokens');
   }
 
-  private getToken = ():string | null => localStorage.getItem(this.tokenkey) || '';
+  private getToken = ():string | null => JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken;
 
 
 
@@ -126,4 +162,37 @@ export class AuthService {
       })
     );
   }
+
+
+  refreshTokens(): Observable<Tokens> {
+    const refreshToken = this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
+
+    if (!refreshToken) {
+      throw new Error('No refresh token found');
+    }
+
+    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {
+      refreshToken: refreshToken
+    });
+  }
+
+
+  EncryptToken(token: string): string | null {
+    if (!token){ console.log('no token was passed to encryption'); return null;}
+    const encrypted = CryptoJS.AES.encrypt(token, JSON.parse(localStorage.getItem('profile') || '{}').id).toString();
+    return encrypted;
+  }
+
+  DecryptToken(encrypted : string): string | null {
+    if (!encrypted) { console.log('no token was passed to decryption'); return null;}
+    try {
+      const bytes = CryptoJS.AES.decrypt(encrypted, JSON.parse(localStorage.getItem('profile') || '{}').id);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      console.error('Failed to decrypt token', error);
+      return null;
+    }
+  }
+
+
 }
