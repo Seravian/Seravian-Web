@@ -31,8 +31,9 @@ export class SeravianBotComponent implements OnInit {
   }
 
   sendMessage(): void {
-    const message = this.userMessage.trim();
-    if (message && this.selectedChat) {
+    // const message = this.userMessage.trim();
+      const message = this.userMessage;
+      if (message && this.selectedChat) {
       this.selectedChat.messages.push({ sender: 'user', text: message });
       this.userMessage = '';
 
@@ -42,6 +43,13 @@ export class SeravianBotComponent implements OnInit {
       }, 50);
     }
   }
+
+  receiveMessage(message: string): void {
+    if (message && this.selectedChat) {
+      this.selectedChat.messages.push({ sender: 'bot', text: message });
+    }
+  }
+
 
   scrollToBottom(): void {
     try {
@@ -59,18 +67,6 @@ export class SeravianBotComponent implements OnInit {
     }
     // If Shift+Enter, do nothing (allows newline)
   }
-
-
-  // adjustTextareaHeight(textarea: HTMLTextAreaElement): void {
-  //   textarea.style.height = 'auto'; // reset height
-  //   textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px'; // auto-grow up to 150px
-  // }
-
-  // adjustTextareaHeight(textarea: HTMLTextAreaElement): void {
-  //   textarea.style.height = 'auto'; // Reset height
-  //   const maxHeight = 120;          // Match the CSS max-height
-  //   textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
-  // }
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement): void {
     // Reset height to auto to measure the content height

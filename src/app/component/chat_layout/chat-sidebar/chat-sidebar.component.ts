@@ -36,22 +36,23 @@ export class ChatSidebarComponent {
   //   this.chatService.setSelectedChat(chat);
   // }
 
-  // selectChat(chatId: string) {
-  //   // Find the full chat object by its ID
-  //   const selectedChat = this.chats.find(chat => chat.id === chatId);
+  selectChat(chatId: string) {
+    this.selectedChatId = chatId;
+    // Find the full chat object by its ID
+    const selectedChat = this.chats.find(chat => chat.id === chatId);
 
-  //   if (selectedChat) {
-  //     // Send the full chat object to the chat service
-  //     this.chatService.setSelectedChat(selectedChat);
-  //   }
-  // }
-
-
-    selectChat(id: string) {
-    if (id) {
-      this.selectedChatId = id;
+    if (selectedChat) {
+      // Send the full chat object to the chat service
+      this.chatService.setSelectedChat(selectedChat);
     }
   }
+
+
+  //   selectChat(id: string) {
+  //   if (id) {
+  //     this.selectedChatId = id;
+  //   }
+  // }
 
   @ViewChild('inputField') inputField: ElementRef | undefined;
 

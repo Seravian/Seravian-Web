@@ -15,7 +15,7 @@ import { ChatComponent } from './component/chat_layout/chat/chat.component';
 
 const routes: Routes = [{
   path : '',
-  component:ChatComponent,
+  component:LoginsignupComponent,
   },
   {
     path: 'auth',
