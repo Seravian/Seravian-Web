@@ -54,18 +54,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         //  If token expired, try refreshing it
         return authService.refreshTokens().pipe(
           switchMap((tokens) => {
-            // ✅ Save new tokens
-            const encryptedAccessToken = authService.EncryptToken(tokens.accessToken!);
-            const encryptedRefreshToken = authService.EncryptToken(tokens.refreshToken!);
-            const profileTokens = {
-              accessToken: encryptedAccessToken,
-              refreshToken: encryptedRefreshToken,
-              accessTokenExpirationUtc: tokens.accessTokenExpirationUtc,
-            };
-
-            localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-
-            console.log('New token info', tokens);
             //  Retry original request with new access token
             const retryRequest = req.clone({
               setHeaders: {

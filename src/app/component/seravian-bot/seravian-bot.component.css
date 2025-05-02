@@ -18,12 +18,21 @@
 
 body {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: linear-gradient(to right, #c9d6ff, #7059f1);
 
 }
+/*
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ */
 
 
 .pop-window {
@@ -118,7 +127,7 @@ body {
   gap: 11px;
   align-items: center;
 }
-
+/* ****************************************************************************** */
 .chat-footer {
   position: absolute;
   bottom: 0;
@@ -138,7 +147,8 @@ body {
   outline: 1px solid #CCCCE5;
 }
 
-.form-ofchat .message-field {
+/* .form-ofchat .message-field {
+
   overflow-y: hidden;
   border: none;
   outline: none;
@@ -148,7 +158,50 @@ body {
   font-size: 0.95rem;
   padding: 14px 0 13px 18px;
   border-radius: inherit;
+} */
+
+/* .form-ofchat .message-field {
+  max-height: 120px;
+  overflow-y: auto;
+  border: none;
+  outline: none;
+  height: 47px;
+  width: 100%;
+  resize: none;
+  font-size: 0.95rem;
+  padding: 14px 0 13px 18px;
+  border-radius: inherit;
+  line-height: 1.4;
+  box-sizing: border-box;
+} */
+
+
+.form-ofchat .message-field {
+  max-height: 120px;             /* Limit the maximum height */
+  overflow-y: auto;              /* Allow scrolling when content exceeds max-height */
+  border: none;
+  outline: none;
+  height: 70px;                  /* Default height */
+  width: 100%;
+  resize: none;
+  font-size: 0.95rem;
+  padding: 14px 0 13px 18px;
+  border-radius: inherit;
+  line-height: 1.4;              /* Ensure line height matches your content */
+  box-sizing: border-box;
+  display: flex;                 /* Flexbox to center content */
+  justify-content: center;       /* Center content horizontally */
+  align-items: center;           /* Center content vertically */
+  text-align: left;              /* Ensure text inside is aligned to the left */
 }
+
+.form-ofchat .message-field::placeholder {
+  text-align: left;
+  display: flex;
+  align-items: center;          /* Align placeholder text to the left */
+}
+
+
 
 .form-ofchat .chat-controls {
   display: flex;
@@ -188,7 +241,7 @@ body {
   background: #5350c4;
 }
 
-
+/* *************************************************************************** */
 
 .popup-menu ul {
   position: absolute;
@@ -469,6 +522,7 @@ body.show-emoji-picker em-emoji-picker{
     height: 42px;
     padding: 12px;
     font-size: 1rem;
+
   }
 
   .form-ofchat .chat-controls {
@@ -490,3 +544,76 @@ body.show-emoji-picker em-emoji-picker{
     top: -300px;
   }
 }
+
+
+/* ********************************************************************************************************* */
+
+
+/* .chat-sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  height: 100vh;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  overflow-y: auto;
+}
+
+.create-chat-btn {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-chat-btn:hover {
+  background-color: #0056b3;
+}
+
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.chat-name {
+  flex: 1;
+  cursor: pointer;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chat-actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3rem;
+}
+
+.chat-actions i {
+  font-size: 14px;
+  color: #555;
+}
+
+.chat-actions button:hover i {
+  color: #000;
+}
+ */

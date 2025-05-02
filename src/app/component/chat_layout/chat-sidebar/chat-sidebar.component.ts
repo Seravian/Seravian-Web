@@ -1,4 +1,6 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ChatService } from '../../../services/chat.service';
+import { Chat } from '../../../interfaces/chat';
 
 @Component({
   selector: 'app-chat-sidebar',
@@ -13,11 +15,43 @@ export class ChatSidebarComponent {
   showConfirmModal = false;
   chatToDeleteId: string | null = null;
 
-  chats = [
-    { id: '1', title: 'Chat with AI', isEditing: false },
-    { id: '2', title: 'Daily Notes', isEditing: false },
-    { id: '3', title: 'Project Ideas', isEditing: false }
+  constructor(private chatService: ChatService) {}
+
+  chats:Chat[] = [
+    { id: '1', title: 'Chat with AI', isEditing: false ,messages: [
+      { sender: 'user', text: 'Hi!' },
+      { sender: 'bot', text: 'Hello, how can I help you?' },
+    ] },
+    { id: '2', title: 'Daily Notes', isEditing: false ,messages: [
+      { sender: 'user', text: 'Don’t forget groceries.' },
+      { sender: 'bot', text: 'Got it. Anything else?' },
+    ] },
+    { id: '3', title: 'Project Ideas', isEditing: false , messages: [
+      { sender: 'user', text: 'What about a note app?' },
+      { sender: 'bot', text: 'Sounds great! Want a to-do list too?' },
+    ] },
   ];
+
+  // selectChat(chat: Chat) {
+  //   this.chatService.setSelectedChat(chat);
+  // }
+
+  // selectChat(chatId: string) {
+  //   // Find the full chat object by its ID
+  //   const selectedChat = this.chats.find(chat => chat.id === chatId);
+
+  //   if (selectedChat) {
+  //     // Send the full chat object to the chat service
+  //     this.chatService.setSelectedChat(selectedChat);
+  //   }
+  // }
+
+
+    selectChat(id: string) {
+    if (id) {
+      this.selectedChatId = id;
+    }
+  }
 
   @ViewChild('inputField') inputField: ElementRef | undefined;
 
@@ -33,17 +67,15 @@ export class ChatSidebarComponent {
     const newChat = {
       id: Math.random().toString(),
       title: 'New Chat',
-      isEditing: false
+      isEditing: false,
+      messages: []
     };
     this.chats.unshift(newChat);
     this.selectedChatId = newChat.id;
   }
 
-  selectChat(id: string) {
-    if (id) {
-      this.selectedChatId = id;
-    }
-  }
+
+
 
   startRename(chat: any) {
     chat.isEditing = true;

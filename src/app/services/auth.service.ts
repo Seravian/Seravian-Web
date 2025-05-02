@@ -13,7 +13,7 @@ import { of, EMPTY } from 'rxjs';
 import { ProfileRequest } from '../interfaces/profile-request';
 import { Tokens } from '../interfaces/tokens';
 import { Router } from '@angular/router';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
 
 
 
@@ -37,15 +37,6 @@ export class AuthService {
       map((response)=>{
 
         if(response.isEmailVerified){
-          // const encryptedAccessToken = this.EncryptToken(response.tokens.accessToken!);
-          // const encryptedRefreshToken = this.EncryptToken(response.tokens.refreshToken!);
-          // const profileTokens = {
-          //   accessToken: encryptedAccessToken,
-          //   refreshToken: encryptedRefreshToken,
-          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc,
-          // };
-
-          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
           console.log('email verified login is working');
           return response;
 
@@ -93,6 +84,14 @@ export class AuthService {
     if(!token) return false ;
     return !this.isTokenExpired();
   };
+
+  private beforeTokenExpires(): boolean {
+    const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
+    if (!expiryString) return true;
+    const expiry = new Date(expiryString).getTime();
+    const expiryWithBuffer = expiry + 15_000; // Add 15 seconds buffer
+    return Date.now() > expiryWithBuffer;
+  }
 
   private isTokenExpired(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
@@ -171,9 +170,22 @@ export class AuthService {
       throw new Error('No refresh token found');
     }
 
-    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {
-      refreshToken: refreshToken
-    });
+    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {refreshToken: refreshToken})
+    .pipe(
+      map((response) => {
+        // Save new tokens
+        const encryptedAccessToken = this.EncryptToken(response.accessToken!);
+        const encryptedRefreshToken = this.EncryptToken(response.refreshToken!);
+        const profileTokens = {
+          accessToken: encryptedAccessToken,
+          refreshToken: encryptedRefreshToken,
+          accessTokenExpirationUtc: response.accessTokenExpirationUtc,
+        };
+        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
+        return response;
+      })
+    );
   }
 
 
@@ -191,6 +203,23 @@ export class AuthService {
     } catch (error) {
       console.error('Failed to decrypt token', error);
       return null;
+    }
+  }
+
+  getTokenForSignalR(): string | null {
+    if (this.beforeTokenExpires() === false) {
+      return this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken);
+    } else {
+      let token: string | null = null;
+      this.refreshTokens().subscribe({
+        next: (tokens) => {
+          token = tokens.accessToken || '';
+        },
+        error: (err) => {
+          console.error('error from getTokenForSignalR', err);
+        }
+      });
+      return token;
     }
   }
 

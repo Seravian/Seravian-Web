@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';  // Import this
 import { FormsModule } from '@angular/forms';  // Import FormsModule here
+import { ChatService } from './services/chat.service';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { FormsModule } from '@angular/forms';  // Import FormsModule here
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     AuthService,
+    ChatService,
     provideHttpClient(withInterceptors([tokenInterceptor])),
   ],
   bootstrap: [AppComponent]
