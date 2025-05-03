@@ -42,18 +42,20 @@ export class LoginsignupComponent  {
   private router = inject(Router)
 
   isSignDivVisiable: boolean  = true;
-
-  signUpObj: SignUpModel  = new SignUpModel();
-  loginObj: LoginModel  = new LoginModel();
-  userForm: FormGroup;
-  isFormSubmitted: boolean = false;
+  signUpForm: FormGroup;
+  loginForm: FormGroup;  isFormSubmitted: boolean = false;
   isLogin: boolean = true;
   statusMessage: string = "";
 
-  constructor(private authService: AuthService) {    this.userForm = new FormGroup({
-      email: new FormControl("",[Validators.required,Validators.pattern(StrongEmailRegx)]),
-      password: new FormControl("",[Validators.required,Validators.pattern(StrongPasswordRegx)])
-    })
+  constructor(private authService: AuthService) {   this.signUpForm = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
+    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)])
+  });
+
+  this.loginForm = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
+    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)])
+  });
   }
 
   onRegister() {
@@ -63,12 +65,13 @@ export class LoginsignupComponent  {
     this.registerButtonText = "Sign Up";
 
 
-    if (this.userForm.valid) {
+    if (this.signUpForm.valid) {
       this.registerButtonText = "Processing...";
 
-      this.authService.register(this.userForm.value).subscribe({
+      this.authService.register(this.signUpForm.value).subscribe({
         next:(response)=>{
 
+<<<<<<< Updated upstream
           // const profile = {
           //   id: response.userId,
           //   fullName: response.fullName,
@@ -89,8 +92,11 @@ export class LoginsignupComponent  {
 
 
           // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+=======
 
-          console.log(response);
+
+>>>>>>> Stashed changes
+
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
           this.router.navigate(['/verify-email']);
@@ -123,14 +129,11 @@ export class LoginsignupComponent  {
     this.isFormSubmitted = true;
     this.statusMessage = '';
 
-    if (this.userForm.controls['email'].valid && this.userForm.controls['password'].valid) {
-        const email = this.userForm.value.email;
-        const password = this.userForm.value.password;
-        console.log(this.userForm.value)
-    } else {
-        this.statusMessage = "Please complete all fields correctly.";
+    if (!this.loginForm.valid) {
+      this.statusMessage = "Please complete all fields correctly.";
+      return;
     }
-    this.authService.login(this.userForm.value).subscribe({
+    this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
 
         const profile = {

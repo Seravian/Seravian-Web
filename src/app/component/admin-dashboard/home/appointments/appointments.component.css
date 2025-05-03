@@ -1,0 +1,141 @@
+
+.appointments-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fe;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+.appointments-table {
+  background: #fff;
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+thead {
+  background-color: #f1f5f9;
+}
+
+th {
+  padding: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  text-align: center;
+}
+
+tr:hover {
+  background-color: #f9fafb;
+}
+
+.patient-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  /* gap: 1rem; */
+}
+
+.patient-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.patient-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.patient-age {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.payment-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.payment-badge.cash {
+  background-color: #2dc520;
+  color: #f7f7f7;
+}
+
+.payment-badge.online {
+  background-color: #de4547;
+  color: #f7f7f7;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.completed {
+  background-color: #e0fbea;
+  color: #059669;
+}
+
+.status-badge.cancelled {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  table {
+    min-width: 600px;
+  }
+}
+

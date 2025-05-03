@@ -1,0 +1,67 @@
+<div class="dashboard-container">
+  <app-sidebar></app-sidebar>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="project-logo"> <h1>Seravian</h1> </div>
+      <div class="logout-button">Logout</div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon earnings">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">${{earnings}}</h3>
+          <p class="stat-label">Earnings</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon appointments">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{appointments}}</h3>
+          <p class="stat-label">Appointments</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon patients">
+          <i class="fas fa-user-friends"></i>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{patients}}</h3>
+          <p class="stat-label">Patients</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest Bookings -->
+    <div class="bookings-container">
+      <h2 class="section-title">
+        <i class="fas fa-calendar-alt"></i>
+        Latest Bookings
+      </h2>
+
+      <div class="bookings-list">
+        <div *ngFor="let booking of latestBookings" class="booking-item">
+          <div class="booking-info">
+            <img [src]="booking.avatar" [alt]="booking.name" class="patient-avatar">
+            <div class="booking-details">
+              <h4>{{booking.name}}</h4>
+              <p>Booking on {{booking.date | date}}</p>
+            </div>
+          </div>
+          <div class="booking-status" [ngClass]="booking.status.toLowerCase()">
+            {{booking.status}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -2,7 +2,7 @@
 <div class="parent">
   <div class="container" [ngClass]="isSignDivVisiable ? 'active' :'' " id="container">
       <div class="form-container sign-up" >
-          <form [formGroup]="userForm">
+          <form [formGroup]="signUpForm">
               <h1>Create Account</h1>
               <div class="social-icons">
                 <!-- <button type="button" (click)="handleGoogleSignIn()" class="custom-google-signin">hi</button> -->
@@ -21,16 +21,16 @@
                   <span *ngIf="userForm.controls['name'].errors?.['minlength']"> MIn 3 Charactors Required </span>
               </div> -->
               <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
-              <input type="email" name="email" [(ngModel)]="signUpObj.email" placeholder="Email" formControlName="email">
-              <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
-                  <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
-                  <span *ngIf="userForm.controls['email'].errors?.['pattern']">Invalid email format</span>
+              <input type="email" name="email"  placeholder="Email" formControlName="email">
+              <div class="text-danger" *ngIf="signUpForm.controls['email'].invalid && (isFormSubmitted || signUpForm.controls['email'].touched || signUpForm.controls['email'].dirty)">
+                  <span *ngIf="signUpForm.controls['email'].errors?.['required']">This is required</span>
+                  <span *ngIf="signUpForm.controls['email'].errors?.['pattern']">Invalid email format</span>
               </div>
 
-              <input type="password" name="password" [(ngModel)]="signUpObj.password" placeholder="Password" formControlName="password">
-              <div class="text-danger" *ngIf="userForm.controls['password'].invalid && (isFormSubmitted || userForm.controls['password'].touched || userForm.controls['password'].dirty)">
-                  <span *ngIf="userForm.controls['password'].errors?.['required']">This is required</span>
-                  <span *ngIf="userForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
+              <input type="password" name="password"  placeholder="Password" formControlName="password">
+              <div class="text-danger" *ngIf="signUpForm.controls['password'].invalid && (isFormSubmitted || signUpForm.controls['password'].touched || signUpForm.controls['password'].dirty)">
+                  <span *ngIf="signUpForm.controls['password'].errors?.['required']">This is required</span>
+                  <span *ngIf="signUpForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
               </div>
 
               <button type="button" id="signup" (click)="onRegister()" [disabled]="isRegisterButtonDisabled">
@@ -38,7 +38,7 @@
           </form>
       </div>
       <div class="form-container sign-in" >
-          <form [formGroup]="userForm" >
+          <form [formGroup]="loginForm" >
               <h1>Sign In</h1>
               <div class="social-icons">
                   <a  class="icon" title="Visit Google"> <!--(click)="onSignInWithGoogle()"--> <i class="fa-brands fa-google-plus-g"></i></a>
@@ -48,15 +48,15 @@
               </div>
               <span>or use your email password</span>
               <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
-              <input type="email" name="email" [(ngModel)]="loginObj.email" placeholder="Email" formControlName="email">
-              <div class="text-danger" *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)">
-                <span *ngIf="userForm.controls['email'].errors?.['required']">This is required</span>
-                <span *ngIf="userForm.controls['email'].errors?.['pattern']">Invalid email format</span>
+              <input type="email" name="email"  placeholder="Email" formControlName="email">
+              <div class="text-danger" *ngIf="loginForm.controls['email'].invalid && (isFormSubmitted || loginForm.controls['email'].touched || loginForm.controls['email'].dirty)">
+                <span *ngIf="loginForm.controls['email'].errors?.['required']">This is required</span>
+                <span *ngIf="loginForm.controls['email'].errors?.['pattern']">Invalid email format</span>
             </div>
-              <input type="password" name="password" [(ngModel)]="loginObj.password"  placeholder="Password" formControlName="password" >
-              <div class="text-danger" *ngIf="userForm.controls['password'].invalid && (isFormSubmitted || userForm.controls['password'].touched || userForm.controls['password'].dirty)">
-                <span *ngIf="userForm.controls['password'].errors?.['required']">This is required</span>
-                <span *ngIf="userForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
+              <input type="password" name="password"  placeholder="Password" formControlName="password" >
+              <div class="text-danger" *ngIf="loginForm.controls['password'].invalid && (isFormSubmitted || loginForm.controls['password'].touched || loginForm.controls['password'].dirty)">
+                <span *ngIf="loginForm.controls['password'].errors?.['required']">This is required</span>
+                <span *ngIf="loginForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
             </div>
               <a type="button" (click)="Forget()">→ Forget Your Password? ←</a>
               <button type="button" (click)="onLogin()">Sign In</button>

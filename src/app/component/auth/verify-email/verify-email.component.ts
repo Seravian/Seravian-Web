@@ -58,29 +58,35 @@ export class VerifyEmailComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     this.statusMessage = '';
+    this.successMessage = false;
+
     if (this.otpForm.valid) {
       const otp = this.otpForm.value.otp;
       this.email = sessionStorage.getItem('email');
       const email = this.email || '';
 
+      this.authService.OtpVerfiy([email, otp]).subscribe({
+        next: () => {
+          this.statusMessage = 'OTP verification successful!';
+          this.successMessage = true;
 
-        this.authService.OtpVerfiy([email, otp]).subscribe({
-          next: () => {
-            this.statusMessage = 'OTP verification successful!';
+          // Wait 3 seconds, then navigate
+          setTimeout(() => {
             this.router.navigate(['/']);
-          },
-          error: (err) => {
-            if (err.error?.errors) {
-              const errors = err.error.errors;
-              const allMessages = Object.values(errors).flat();
-              this.statusMessage = String(allMessages[0]);
-            } else {
-              this.statusMessage = 'Unexpected error occurred. Please try again.';
-            }
-            console.error('OTP verification failed:', err);
+          }, 3000);
+        },
+        error: (err) => {
+          this.successMessage = false;
+          if (err.error?.errors) {
+            const errors = err.error.errors;
+            const allMessages = Object.values(errors).flat();
+            this.statusMessage = String(allMessages[0]);
+          } else {
+            this.statusMessage = 'Unexpected error occurred. Please try again.';
           }
-        });
-
+          console.error('OTP verification failed:', err);
+        }
+      });
     } else {
       console.log('Form is invalid');
       this.otpForm.markAllAsTouched();

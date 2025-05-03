@@ -60,9 +60,6 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
     }
   }
 
-  goBack() {
-    this.router.navigate(['/doctor-or-patient']);
-  }
 
   private markAllAsTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
