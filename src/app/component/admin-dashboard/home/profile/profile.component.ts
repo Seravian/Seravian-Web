@@ -1,33 +1,31 @@
 import { Component } from '@angular/core';
 
-interface Doctor {
+interface Admin {
   name: string;
-  degree: string;
-  experience: number;
-  about: string;
-  fee: number;
+  email: string;
+  username: string;
+  contact: string;
   address: string;
-  available: boolean;
 }
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
+  standalone:false,
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent {
-  doctor : Doctor = {
-    name: 'Dr. Ahmed Hassan',
-    degree: 'MBBS - General physician',
-    experience: 4,
-    about: 'Dr. Richard has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-    fee: 50,
-    address: '24 Main Street\n10 Clause Road',
-    available: true,
+  admin: Admin = {
+    name: 'Admin User',
+    email: 'admin@example.com',
+    username: 'admin123',
+    contact: '123-456-7890',
+    address: 'Admin Street, City, Country',
   };
 
+
   onSubmit() {
-    console.log('Doctor profile saved:', this.doctor);
-    alert('Profile updated successfully!');
+    console.log('Admin profile saved:', this.admin);
+    alert('Admin profile updated successfully!');
   }
 }

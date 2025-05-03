@@ -4,7 +4,7 @@
   <div class="main-content">
     <div class="profile-card">
       <div class="profile-left">
-        <img src="images/Male-Therapist.jpg" alt="Doctor Profile" class="profile-image" />
+        <img src="images/Male-Therapist.jpg" alt="Admin Profile" class="profile-image" />
         <label for="imageUpload" class="upload-btn">Change Photo</label>
         <input type="file" id="imageUpload" hidden />
       </div>
@@ -13,39 +13,27 @@
         <form (ngSubmit)="onSubmit()" #profileForm="ngForm">
           <div class="form-group">
             <label>Full Name</label>
-            <input type="text" [(ngModel)]="doctor.name" name="name" required />
+            <input type="text" [(ngModel)]="admin.name" name="name" required />
           </div>
 
           <div class="form-group">
-            <label>Degree</label>
-            <input type="text" [(ngModel)]="doctor.degree" name="degree" required />
+            <label>Email</label>
+            <input type="email" [(ngModel)]="admin.email" name="email" required />
           </div>
 
           <div class="form-group">
-            <label>Experience (Years)</label>
-            <input type="number" [(ngModel)]="doctor.experience" name="experience" min="0" required />
+            <label>Username</label>
+            <input type="text" [(ngModel)]="admin.username" name="username" required />
           </div>
 
           <div class="form-group">
-            <label>About</label>
-            <textarea [(ngModel)]="doctor.about" name="about" rows="4" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Appointment Fee ($)</label>
-            <input type="number" [(ngModel)]="doctor.fee" name="fee" required />
+            <label>Contact</label>
+            <input type="tel" [(ngModel)]="admin.contact" name="contact" />
           </div>
 
           <div class="form-group">
             <label>Address</label>
-            <textarea [(ngModel)]="doctor.address" name="address" rows="2" required></textarea>
-          </div>
-
-          <div class="form-group inline-group">
-            <label>
-              <input type="checkbox" [(ngModel)]="doctor.available" name="available" />
-              Available
-            </label>
+            <textarea [(ngModel)]="admin.address" name="address" rows="2"></textarea>
           </div>
 
           <button type="submit" class="save-btn">Save Changes</button>

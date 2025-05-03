@@ -1,65 +1,64 @@
 import { Component,OnInit } from '@angular/core';
 
-interface Appointment {
+interface TherapistRequest {
   id: number;
-  patient: string;
-  payment: string;
+  name: string;
+  qualification: string;
+  experience: number;
   age: number;
-  dateTime: string;
-  fees: string;
-  status: 'Completed' | 'Cancelled' | 'Pending';
   avatar: string;
+  licenseImage: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
 }
 
 @Component({
   selector: 'app-appointments',
+  standalone:false,
   templateUrl: './appointments.component.html',
   styleUrl: './appointments.component.css'
 })
 export class AppointmentsComponent implements OnInit {
 
-  appointments: Appointment[] = [
+  requests: TherapistRequest[] = [
     {
       id: 0,
-      patient: 'Avinash Kr',
-      payment: 'CASH',
-      age: 31,
-      dateTime: '5 Oct 2024, 12:00 PM',
-      fees: '$50',
-      status: 'Pending',
-      avatar: 'images/happy_1.jpg'
+      name: 'Dr. Sarah Ahmed',
+      qualification: 'Master of Psychotherapy',
+      experience: 5,
+      age: 35,
+      avatar: 'images/Male-Therapist.jpg',
+      licenseImage: 'images/Male-Therapist.jpg',
+      status: 'Pending'
     },
     {
       id: 1,
-      patient: 'GreatStack',
-      payment: 'ONLINE',
-      age: 24,
-      dateTime: '26 Sep 2024, 11:00 AM',
-      fees: '$40',
-      status: 'Cancelled',
-      avatar: 'images/happy_2.jpg'
-    },
-    {
-      id: 2,
-      patient: 'GreatStack',
-      payment: 'CASH',
-      age: 24,
-      dateTime: '25 Sep 2024, 02:00 PM',
-      fees: '$40',
-      status: 'Completed',
-      avatar: 'images/happy_3.jpg'
-    },
-    {
-      id: 3,
-      patient: 'GreatStack',
-      payment: 'CASH',
-      age: 24,
-      dateTime: '23 Sep 2024, 11:00 AM',
-      fees: '$40',
-      status: 'Completed',
-      avatar: 'images/happy_1.jpg'
+      name: 'Dr. Mohammed Abdullah',
+      qualification: 'PhD in Psychology',
+      experience: 10,
+      age: 42,
+      avatar: 'images/Male-Therapist.jpg',
+      licenseImage: 'images/Male-Therapist.jpg',
+      status: 'Approved'
     }
   ];
+  approveRequest(request: TherapistRequest): void {
+  request.status = 'Approved';
+}
+selectedLicenseImage: string = '';  // To hold the selected image URL for the modal
+isModalOpen: boolean = false;  // Flag to show/hide the modal
+
+openLicenseImage(image: string): void {
+  this.selectedLicenseImage = image;  // Set the clicked license image to be displayed in the modal
+  this.isModalOpen = true;  // Open the modal
+}
+
+closeModal(): void {
+  this.isModalOpen = false;  // Close the modal when clicked outside
+}
+
+rejectRequest(request: TherapistRequest): void {
+  request.status = 'Rejected';
+}
 
   constructor() { }
 

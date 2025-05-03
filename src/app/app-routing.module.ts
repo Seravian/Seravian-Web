@@ -38,6 +38,11 @@ const routes: Routes = [{
       .then(m => m.DoctorDashboardModule),
   },
   {
+    path: 'admin-dashboard',
+    loadChildren: () => import('./component/admin-dashboard/admin-dashboard.module')
+      .then(m => m.AdminDashboardModule),
+  },
+  {
     path: 'user-profile',
     loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
       .then(m => m.UserProfileModule), canActivate: [AuthGuard]

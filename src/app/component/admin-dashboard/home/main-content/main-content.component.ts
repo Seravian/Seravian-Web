@@ -10,6 +10,7 @@ interface Booking {
 
 @Component({
   selector: 'app-main-content',
+  standalone:false,
   templateUrl: './main-content.component.html',
   styleUrl: './main-content.component.css'
 })

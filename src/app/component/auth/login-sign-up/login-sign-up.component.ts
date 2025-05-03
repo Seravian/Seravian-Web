@@ -71,7 +71,6 @@ export class LoginsignupComponent  {
       this.authService.register(this.signUpForm.value).subscribe({
         next:(response)=>{
 
-<<<<<<< Updated upstream
           // const profile = {
           //   id: response.userId,
           //   fullName: response.fullName,
@@ -92,10 +91,7 @@ export class LoginsignupComponent  {
 
 
           // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-=======
 
-
->>>>>>> Stashed changes
 
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
