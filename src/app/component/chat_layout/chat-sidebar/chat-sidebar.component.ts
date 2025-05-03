@@ -1,13 +1,14 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '../../../services/chat.service';
 import { Chat } from '../../../interfaces/chat';
+import { ChatMessage } from '../../../interfaces/chat-message';
 
 @Component({
   selector: 'app-chat-sidebar',
   templateUrl: './chat-sidebar.component.html',
   styleUrls: ['./chat-sidebar.component.css']
 })
-export class ChatSidebarComponent {
+export class ChatSidebarComponent implements OnInit {
   isSidebarOpen = true;
   isSearchOpen = false;
   selectedChatId: string | null = null;
@@ -17,42 +18,40 @@ export class ChatSidebarComponent {
 
   constructor(private chatService: ChatService) {}
 
-  chats:Chat[] = [
-    { id: '1', title: 'Chat with AI', isEditing: false ,messages: [
-      { sender: 'user', text: 'Hi!' },
-      { sender: 'bot', text: 'Hello, how can I help you?' },
-    ] },
-    { id: '2', title: 'Daily Notes', isEditing: false ,messages: [
-      { sender: 'user', text: 'Don’t forget groceries.' },
-      { sender: 'bot', text: 'Got it. Anything else?' },
-    ] },
-    { id: '3', title: 'Project Ideas', isEditing: false , messages: [
-      { sender: 'user', text: 'What about a note app?' },
-      { sender: 'bot', text: 'Sounds great! Want a to-do list too?' },
-    ] },
-  ];
 
-  // selectChat(chat: Chat) {
-  //   this.chatService.setSelectedChat(chat);
-  // }
 
-  selectChat(chatId: string) {
-    this.selectedChatId = chatId;
-    // Find the full chat object by its ID
-    const selectedChat = this.chats.find(chat => chat.id === chatId);
+  chats: Chat[] = [];
 
-    if (selectedChat) {
-      // Send the full chat object to the chat service
-      this.chatService.setSelectedChat(selectedChat);
-    }
+  ngOnInit(): void {
+    this.chatService.getChats().subscribe({
+      next: (chats) => {
+        this.chats = chats;
+      },
+      error: (err) => {
+        console.error('Failed to load chats:', err);
+      }
+    });
   }
 
 
-  //   selectChat(id: string) {
-  //   if (id) {
-  //     this.selectedChatId = id;
-  //   }
-  // }
+  selectChat(chatId: string) {
+    this.selectedChatId = chatId;
+    console.log('Selected chat ID:', chatId);
+
+    this.chatService.getChatMessages(chatId).subscribe({
+      next: (chatMessages:Chat) => {
+        const selectedChat = this.chats.find(chat => chat.id === chatId);
+        if (selectedChat) {
+          selectedChat.messages = chatMessages.messages??[];
+          this.chatService.setSelectedChat({ ...selectedChat }); // optional
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load chat messages:', err);
+      }
+    });
+  }
+
 
   @ViewChild('inputField') inputField: ElementRef | undefined;
 
@@ -64,18 +63,18 @@ export class ChatSidebarComponent {
     this.isSearchOpen = !this.isSearchOpen;
   }
 
+
   createNewChat() {
-    const newChat = {
-      id: Math.random().toString(),
-      title: 'New Chat',
-      isEditing: false,
-      messages: []
-    };
-    this.chats.unshift(newChat);
-    this.selectedChatId = newChat.id;
+    this.chatService.createChat('New Chat').subscribe({
+      next: (chat) => {
+        this.chats.unshift({ ...chat, isEditing: false, messages: [] });
+        this.selectedChatId = chat.id;
+      },
+      error: (err) => {
+        console.error('Failed to create chat:', err);
+      }
+    });
   }
-
-
 
 
   startRename(chat: any) {
@@ -86,11 +85,20 @@ export class ChatSidebarComponent {
     }, 0);
   }
 
+
   renameChat(chat: any) {
-    if (chat) {
-      chat.isEditing = false;
-    }
+    if (!chat.title.trim()) return;
+
+    this.chatService.updateChat(chat.id, chat.title).subscribe({
+      next: () => {
+        chat.isEditing = false;
+      },
+      error: (err) => {
+        console.error('Failed to rename chat:', err);
+      }
+    });
   }
+
 
   promptDelete(id: string) {
     this.chatToDeleteId = id;
@@ -100,12 +108,21 @@ export class ChatSidebarComponent {
 
   confirmDelete() {
     if (this.chatToDeleteId) {
-      this.chats = this.chats.filter(c => c.id !== this.chatToDeleteId);
-      if (this.selectedChatId === this.chatToDeleteId) this.selectedChatId = null;
-      this.chatToDeleteId = null;
+      this.chatService.deleteChat(this.chatToDeleteId).subscribe({
+        next: () => {
+          this.chats = this.chats.filter(c => c.id !== this.chatToDeleteId);
+          if (this.selectedChatId === this.chatToDeleteId) this.selectedChatId = null;
+          this.chatToDeleteId = null;
+          this.showConfirmModal = false;
+        },
+        error: (err) => {
+          console.error('Failed to delete chat:', err);
+          this.showConfirmModal = false;
+        }
+      });
     }
-    this.showConfirmModal = false;
   }
+
 
   cancelDelete() {
     this.chatToDeleteId = null;

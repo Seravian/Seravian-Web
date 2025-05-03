@@ -23,7 +23,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // const isPublicRequest = req.url.includes('/');
+  // const isPublicRequest = req.url.includes('/auth/register');
   // if (isPublicRequest) {
   //   return next(req); // Bypass token logic
   // }
@@ -33,6 +33,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   let newRequest = req;
 
   if (token) {
+    console.log('Token found in interceptor request:');
     newRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,

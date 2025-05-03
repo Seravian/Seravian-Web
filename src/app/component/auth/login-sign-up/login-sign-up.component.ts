@@ -69,26 +69,26 @@ export class LoginsignupComponent  {
       this.authService.register(this.userForm.value).subscribe({
         next:(response)=>{
 
-          const profile = {
-            id: response.userId,
-            fullName: response.fullName,
-            email: response.email,
-            dateOfBirth: response.dateOfBirth,
-            gender: response.gender,
-            role: response.role,
-            isEmailVerified: response.isEmailVerified
-          };
+          // const profile = {
+          //   id: response.userId,
+          //   fullName: response.fullName,
+          //   email: response.email,
+          //   dateOfBirth: response.dateOfBirth,
+          //   gender: response.gender,
+          //   role: response.role,
+          //   isEmailVerified: response.isEmailVerified
+          // };
 
-          localStorage.setItem('profile', JSON.stringify(profile));
+          // localStorage.setItem('profile', JSON.stringify(profile));
 
-          const profileTokens = {
-            accessToken: response.tokens.accessToken,
-            refreshToken: response.tokens.refreshToken,
-            accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
-          }
+          // const profileTokens = {
+          //   accessToken: response.tokens.accessToken,
+          //   refreshToken: response.tokens.refreshToken,
+          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+          // }
 
 
-          localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
           console.log(response);
           this.statusMessage = "Registration successful! Redirecting...";
@@ -140,7 +140,8 @@ export class LoginsignupComponent  {
           dateOfBirth: response.dateOfBirth,
           gender: response.gender,
           role: response.role,
-          isEmailVerified: response.isEmailVerified
+          isEmailVerified: response.isEmailVerified,
+          isProfileSetupComplete: response.isProfileSetupComplete
         };
 
         localStorage.setItem('profile', JSON.stringify(profile));

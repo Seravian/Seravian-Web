@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../interfaces/chat';
+import { ChatMessage } from '../../interfaces/chat-message';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -14,15 +16,24 @@ export class SeravianBotComponent implements OnInit {
   isPopupVisible = false;
   selectedChat: Chat | null = null;
   userMessage: string = '';
+  message : ChatMessage = {id:null, isAi: false, content: '', timestampUtc: new Date() };
+
 
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
 
-  constructor(private chatService: ChatService) {}
+
+  constructor(
+    private chatService: ChatService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
 
   ngOnInit(): void {
     this.chatService.selectedChat$.subscribe(chat => {
+      console.log('Selected chat received:', chat);
       this.selectedChat = chat;
+      this.cdr.detectChanges(); // Force refresh of template bindings
     });
   }
 
@@ -34,7 +45,7 @@ export class SeravianBotComponent implements OnInit {
     // const message = this.userMessage.trim();
       const message = this.userMessage;
       if (message && this.selectedChat) {
-      this.selectedChat.messages.push({ sender: 'user', text: message });
+      this.selectedChat.messages.push({id:null ,isAi: false, content: message, timestampUtc: new Date() });
       this.userMessage = '';
 
       setTimeout(() => {
@@ -46,7 +57,7 @@ export class SeravianBotComponent implements OnInit {
 
   receiveMessage(message: string): void {
     if (message && this.selectedChat) {
-      this.selectedChat.messages.push({ sender: 'bot', text: message });
+      this.selectedChat.messages.push({id:null, isAi: true, content: message , timestampUtc: new Date() });
     }
   }
 
@@ -87,6 +98,10 @@ export class SeravianBotComponent implements OnInit {
 
 
 
+
+  trackByMessageId(index: number, message: ChatMessage) {
+    return message.id ?? index;
+  }
 
 
   togglePopup(): void {

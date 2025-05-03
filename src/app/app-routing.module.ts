@@ -18,6 +18,10 @@ const routes: Routes = [{
   component:LoginsignupComponent,
   },
   {
+  path : 'chatbot',
+  component:ChatComponent,
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./component/auth/auth.module')
       .then(m => m.AuthModule)

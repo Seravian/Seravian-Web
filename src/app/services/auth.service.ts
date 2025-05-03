@@ -26,6 +26,8 @@ export class AuthService {
   APIUrl:string = environment.APIUrl;
   private tokenkey = 'token'
 
+
+
   constructor(private http: HttpClient) { }
 
     private router = inject(Router)
@@ -85,12 +87,20 @@ export class AuthService {
     return !this.isTokenExpired();
   };
 
-  private beforeTokenExpires(): boolean {
+  //expiry = 03:00:00 UTC
+  //date now = 02:50:00 UTC
+  //epiry buffer = 02:59:00 UTC
+  //
+  //
+  //
+  //
+
+  private isSignalRTokenValid(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
     if (!expiryString) return true;
     const expiry = new Date(expiryString).getTime();
-    const expiryWithBuffer = expiry + 15_000; // Add 15 seconds buffer
-    return Date.now() > expiryWithBuffer;
+    const expiryWithBuffer = expiry - 60_000; // Add 1 min buffer
+    return expiryWithBuffer > Date.now();
   }
 
   private isTokenExpired(): boolean {
@@ -182,7 +192,6 @@ export class AuthService {
           accessTokenExpirationUtc: response.accessTokenExpirationUtc,
         };
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-
         return response;
       })
     );
@@ -207,12 +216,18 @@ export class AuthService {
   }
 
   getTokenForSignalR(): string | null {
-    if (this.beforeTokenExpires() === false) {
-      return this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken);
+    console.log('getTokenForSignalR called');
+
+    if (this.isSignalRTokenValid() === true) {
+      const Tokens = JSON.parse(localStorage.getItem('profileTokens') || '{}');
+      Tokens.accessToken = this.DecryptToken(Tokens.accessToken);
+      console.log('Access token is not expired:', Tokens);
+      return Tokens.accessToken ;
     } else {
       let token: string | null = null;
       this.refreshTokens().subscribe({
         next: (tokens) => {
+          console.log('Token refreshed successfully:', tokens);
           token = tokens.accessToken || '';
         },
         error: (err) => {
