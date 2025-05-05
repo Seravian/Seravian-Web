@@ -33,7 +33,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   let newRequest = req;
 
   if (token) {
-    console.log('Token found in interceptor request:');
+    // console.log('Token found in interceptor request:');
     newRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
