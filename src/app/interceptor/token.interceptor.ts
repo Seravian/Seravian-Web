@@ -45,11 +45,11 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((error) => {
-      if(error.status === 400) {
-        alert("looks like you are not logged in, please login again");
-        router.navigate(['/']);
-        return throwError(() => error);
-      }
+      // if(error.status === 400) {
+      //   alert("looks like you are not logged in, please login again");
+      //   router.navigate(['/']);
+      //   return throwError(() => error);
+      // }
 
       if (error.status === 401) {
         //  If token expired, try refreshing it

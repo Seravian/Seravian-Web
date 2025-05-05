@@ -1,6 +1,7 @@
 export interface ChatMessage {
+  clientMessageId?: string | null;
   id?: number | null;
-  isAi: boolean;
-  content: string;
+  content: string | null;
   timestampUtc: Date;
+  isAI: boolean;
 }
