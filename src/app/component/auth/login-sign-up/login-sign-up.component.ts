@@ -131,6 +131,8 @@ export class LoginsignupComponent  {
     }
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
+        console.log(response);
+
 
         const profile = {
           id: response.userId,
@@ -142,8 +144,13 @@ export class LoginsignupComponent  {
           isEmailVerified: response.isEmailVerified,
           isProfileSetupComplete: response.isProfileSetupComplete
         };
+        console.log("hi",profile)
 
         localStorage.setItem('profile', JSON.stringify(profile));
+        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
+        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
+
+
 
         // if (!response.tokens.accessToken || !response.tokens.refreshToken) {
         //   this.statusMessage = 'Login response missing tokens.';
