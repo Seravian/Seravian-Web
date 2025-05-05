@@ -30,7 +30,8 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isLoggedIn()) {
       return of(true);
     } else {
-      const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
+      const refreshToken = this.authService.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
+      // const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
       if (!refreshToken) {
         console.log('1-no refresh token found!!!');
         return of(this.router.parseUrl(this.router.url));

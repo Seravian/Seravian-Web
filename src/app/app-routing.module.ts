@@ -19,7 +19,7 @@ const routes: Routes = [{
   },
   {
   path : 'chatbot',
-  component:ChatComponent,
+  component:ChatComponent, canActivate: [AuthGuard]
   },
   {
     path: 'auth',
