@@ -1,0 +1,46 @@
+<div class="profile-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <div class="profile-card">
+      <div class="profile-left">
+        <img src="images/Male-Therapist.jpg" alt="Admin Profile" class="profile-image" />
+        <label for="imageUpload" class="upload-btn">Change Photo</label>
+        <input type="file" id="imageUpload" hidden />
+      </div>
+
+      <div class="profile-right">
+        <form (ngSubmit)="onSubmit()" #profileForm="ngForm">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" [(ngModel)]="admin.name" name="name" required />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="admin.email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" [(ngModel)]="admin.username" name="username" required />
+          </div>
+
+          <div class="form-group">
+            <label>Contact</label>
+            <input type="tel" [(ngModel)]="admin.contact" name="contact" />
+          </div>
+
+          <div class="form-group">
+            <label>Address</label>
+            <textarea [(ngModel)]="admin.address" name="address" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

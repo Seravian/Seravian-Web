@@ -23,7 +23,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // const isPublicRequest = req.url.includes('/');
+  // const isPublicRequest = req.url.includes('/auth/register');
   // if (isPublicRequest) {
   //   return next(req); // Bypass token logic
   // }
@@ -33,6 +33,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   let newRequest = req;
 
   if (token) {
+    console.log('Token found in interceptor request:');
     newRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
@@ -44,28 +45,16 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((error) => {
-      if(error.status === 400) {
-        alert("looks like you are not logged in, please login again");
-        router.navigate(['/']);
-        return throwError(() => error);
-      }
+      // if(error.status === 400) {
+      //   alert("looks like you are not logged in, please login again");
+      //   router.navigate(['/']);
+      //   return throwError(() => error);
+      // }
 
       if (error.status === 401) {
         //  If token expired, try refreshing it
         return authService.refreshTokens().pipe(
           switchMap((tokens) => {
-            // ✅ Save new tokens
-            const encryptedAccessToken = authService.EncryptToken(tokens.accessToken!);
-            const encryptedRefreshToken = authService.EncryptToken(tokens.refreshToken!);
-            const profileTokens = {
-              accessToken: encryptedAccessToken,
-              refreshToken: encryptedRefreshToken,
-              accessTokenExpirationUtc: tokens.accessTokenExpirationUtc,
-            };
-
-            localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-
-            console.log('New token info', tokens);
             //  Retry original request with new access token
             const retryRequest = req.clone({
               setHeaders: {

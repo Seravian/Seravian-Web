@@ -39,11 +39,17 @@
           placeholder="Select Your DOB"
           formControlName="dob"
         >
-        <div
-          class="text-danger"
-          *ngIf="patientForm.controls['dob'].invalid && (patientForm.controls['dob'].touched || patientForm.controls['dob'].dirty)">
-          <span>Date of Birth is required</span>
-        </div>
+      <div class="text-danger"
+              *ngIf="patientForm.controls['dob'].invalid &&
+                      (patientForm.controls['dob'].touched || patientForm.controls['dob'].dirty)">
+            <span *ngIf="patientForm.controls['dob'].errors?.['required']">
+              Date of Birth is required
+            </span>
+            <span *ngIf="patientForm.controls['dob'].errors?.['futureDate']">
+              Date of Birth cannot be in the future
+            </span>
+    </div>
+
 
         <span>Gender</span>
         <div class="gender">

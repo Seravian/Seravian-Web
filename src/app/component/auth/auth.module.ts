@@ -9,6 +9,7 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { PatientInfoComponent } from './patient-info/patient-info.component';
 import { DoctorInfoComponent } from './doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './doctor-or-patient/doctor-or-patient.component';
+import { WaitingLandingComponent } from './waiting-landing/waiting-landing.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { DoctorOrPatientComponent } from './doctor-or-patient/doctor-or-patient.
     VerifyEmailComponent,
     PatientInfoComponent,
     DoctorInfoComponent,
-    DoctorOrPatientComponent
+    DoctorOrPatientComponent,
+    WaitingLandingComponent
   ],
   imports: [
     ReactiveFormsModule,
