@@ -287,15 +287,15 @@ export class ChatService {
         const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
         console.log('Last timestamp:', lastTimestamp);
 
-        this.syncMessages(selectedChat.id, lastTimestamp).subscribe({
-          next: (missedMessages) => {
-            console.log('Synced missed messages:', missedMessages);
-            missedMessages.forEach((msg) => this.addMessage(msg));
-          },
-          error: (error) => {
-            console.error('Error syncing messages:', error);
-          }
-        });
+        // this.syncMessages(selectedChat.id, lastTimestamp).subscribe({
+        //   next: (missedMessages) => {
+        //     console.log('Synced missed messages:', missedMessages);
+        //     missedMessages.forEach((msg) => this.addMessage(msg));
+        //   },
+        //   error: (error) => {
+        //     console.error('Error syncing messages:', error);
+        //   }
+        // });
       }
     });
 
