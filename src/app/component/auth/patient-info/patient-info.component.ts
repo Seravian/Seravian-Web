@@ -11,16 +11,30 @@ import { ProfileRequest } from '../../../interfaces/profile-request';
   templateUrl: './patient-info.component.html',
   styleUrl: './patient-info.component.css'
 })
+
 export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
   @ViewChild('phoneInput', { static: false }) phoneInput!: ElementRef; // Reference to the phone input element
   patientForm: FormGroup;
   intlTelInstance: any;
+  dateNotInFuture(control: any): { [key: string]: boolean } | null {
+    const inputDate = new Date(control.value);
+    const today = new Date();
+
+    // Remove time for accurate comparison
+    inputDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    if (control.value && inputDate > today) {
+      return { futureDate: true };
+    }
+    return null;
+  }
 
   constructor(private fb: FormBuilder, private router: Router, private renderer: Renderer2,private authService: AuthService) {
     this.patientForm = this.fb.group({
       fullName: ['', Validators.required],
       // phoneNumber: ['', Validators.required],
-      dob: ['', Validators.required],
+      dob: ['', [Validators.required ,this.dateNotInFuture.bind(this)]],
       gender: ['', Validators.required],
     });
   }
@@ -126,6 +140,9 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
       const formValues = this.patientForm.value;
       const formattedDOB = `${formValues.dob} 00:00:00`;
+      const email = JSON.parse(localStorage.getItem('profile') || '{}').email
+      const password = JSON.parse(localStorage.getItem('profile') || '{}').password
+
 
       const profileData: ProfileRequest = {
         fullName: formValues.fullName,
@@ -137,7 +154,17 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
       this.authService.completeProfile(profileData).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          console.log(email,password);
+
+          this.authService.login({email, password}).subscribe({
+            next: () => {
+              this.router.navigate(['/dashboard']);
+            },
+            error: (err) => {
+              alert('Login failed after profile completion. Try logging in manually.');
+              console.error(err);
+            }
+          });
         },
         error: (err) => {
           alert('Failed to complete profile. Try again.');
