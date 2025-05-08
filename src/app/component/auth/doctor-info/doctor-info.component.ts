@@ -53,7 +53,7 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
       // const formData = this.patientForm.value;
       // console.log('Patient Information Submitted:', formData);
 
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/doctor-dashboard/main-content']);
     } else {
       this.markAllAsTouched(this.doctorForm);
       return;

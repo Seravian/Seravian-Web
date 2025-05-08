@@ -56,17 +56,17 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
 
             // Sync missed messages
-            this.chatService.syncMessages(chat.id, lastTimestamp).subscribe(
-              (missedMessages) => {
-                console.log('Synced messages in component:', missedMessages);
-                chat.messages.push(...missedMessages);
-                this.scrollToBottom();
-                this.cdr.detectChanges();
-              },
-              (error) => {
-                console.error('Failed to sync messages:', error);
-              }
-            );
+            // this.chatService.syncMessages(chat.id, lastTimestamp).subscribe({
+            //   next:(missedMessages) => {
+            //     console.log('Synced messages in component:', missedMessages);
+            //     chat.messages.push(...missedMessages);
+            //     this.scrollToBottom();
+            //     this.cdr.detectChanges();
+            //   },
+            //   error:(error) => {
+            //     console.error('Failed to sync messages:', error);
+            //   }
+            // });
           })
           .catch(err => console.error('Failed to join chat', err));
       }
