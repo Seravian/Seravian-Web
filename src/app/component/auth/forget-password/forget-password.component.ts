@@ -16,6 +16,7 @@ import { signInWithPopup } from '@firebase/auth';
 })
 export class ForgetPasswordComponent {
   userForm: FormGroup;
+  router = inject(Router); // Inject Router
 
   constructor() {
     this.userForm = new FormGroup({
@@ -30,19 +31,20 @@ export class ForgetPasswordComponent {
   }
 
   onSubmit() {
-    const auth = getAuth();
+    // const auth = getAuth();
     if (this.userForm.valid) {
       const email = this.userForm.value.email;
-      sendPasswordResetEmail(auth, email)
-  .then(() => {
-    alert("email sent")
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert(errorMessage)
-  });
-    } else {
+      this.router.navigate(['/verify-email']);
+  //     sendPasswordResetEmail(auth, email)
+  // .then(() => {
+  //   alert("email sent")
+  // })
+  // .catch((error) => {
+  //   const errorCode = error.code;
+  //   const errorMessage = error.message;
+  //   alert(errorMessage)
+  // });
+  //   } else {
       console.log("Form is invalid");
     }
   }

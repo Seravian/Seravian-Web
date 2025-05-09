@@ -1,6 +1,6 @@
 import { AuthResponse } from './../../../interfaces/auth-response';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, inject,ViewEncapsulation  } from '@angular/core';
 import {  OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -35,7 +35,13 @@ export class LoginsignupComponent  {
     this.isSignDivVisiable = true;
     this.statusMessage = ''; // Clear the status message when switching to Sign Up
   }
-
+  passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    return password && confirmPassword && password.value !== confirmPassword.value
+      ? { passwordMismatch: true }
+      : null;
+  }
   // auth = inject(Auth);
 
 
@@ -49,14 +55,15 @@ export class LoginsignupComponent  {
 
   constructor(private authService: AuthService) {   this.signUpForm = new FormGroup({
     email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
-    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)])
-  });
+    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+    confirmPassword: new FormControl("", [Validators.required])
+  }, { validators: this.passwordsMatchValidator }); // <-- form-level validator
 
   this.loginForm = new FormGroup({
     email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
     password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)])
   });
-  }
+}
 
   onRegister() {
     this.authService

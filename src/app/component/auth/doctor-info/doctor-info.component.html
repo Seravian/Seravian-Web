@@ -86,7 +86,30 @@
           *ngIf="doctorForm.controls['speciallity'].invalid && (doctorForm.controls['speciallity'].touched || doctorForm.controls['speciallity'].dirty)">
           <span>Speciallity is required</span>
         </div>
+        <span>License</span>
+        <input
+          type="file"
+          name="license"
+          formControlName="license"
+          accept=".pdf,.jpg,.png,.jpeg"
+          (change)="onLicenseChange($event)"
+        />
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['license'].invalid && (doctorForm.controls['license'].touched || doctorForm.controls['license'].dirty)">
+          <span>License is required</span>
+        </div>
 
+
+        <div>
+          <input type="checkbox" id="terms" name="terms" required>
+          <label for="terms">
+            I have read and agree to Seravian's
+            <a href="/terms-of-service" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
+            and
+            <a href="/privacy-policy" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
+          </label>
+        </div>
         <button type="submit">Continue</button>
       </form>
     </div>
