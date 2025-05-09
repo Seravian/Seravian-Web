@@ -4,19 +4,6 @@
       <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
         <h1>Doctor Information</h1>
 
-        <span>Full Name</span>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter Your Full Name"
-          formControlName="fullName"
-        >
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['fullName'].invalid && (doctorForm.controls['fullName'].touched || doctorForm.controls['fullName'].dirty)">
-          <span>Full Name is required</span>
-        </div>
-
         <span>Phone Number</span>
           <input
             type="tel"
@@ -30,48 +17,6 @@
           class="text-danger"
           *ngIf="doctorForm.controls['phoneNumber'].invalid && (doctorForm.controls['phoneNumber'].touched || doctorForm.controls['phoneNumber'].dirty)">
           <span>Please enter a valid phone number</span>
-        </div>
-
-        <span>Date of Birth</span>
-        <input
-          type="date"
-          name="dob"
-          placeholder="Select Your DOB"
-          formControlName="dob"
-        >
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['dob'].invalid && (doctorForm.controls['dob'].touched || doctorForm.controls['dob'].dirty)">
-          <span>Date of Birth is required</span>
-        </div>
-
-        <span>Gender</span>
-        <div class="gender">
-          <label class="gender-option">
-            <input
-              type="radio"
-              style="height: 15px;"
-              name="gender"
-              value="male"
-              formControlName="gender"
-            >
-            Male
-          </label>
-          <label class="gender-option">
-            <input
-              type="radio"
-              style="height: 15px;"
-              name="gender"
-              value="female"
-              formControlName="gender"
-            >
-            Female
-          </label>
-        </div>
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['gender'].invalid && (doctorForm.controls['gender'].touched || doctorForm.controls['gender'].dirty)">
-          <span>Gender is required</span>
         </div>
 
         <span>Speciallity</span>
@@ -100,17 +45,25 @@
           <span>License is required</span>
         </div>
 
+        <div class="time-range">
+          <mat-form-field appearance="outline">
+            <mat-label>Available From</mat-label>
+            <input matInput [ngxTimepicker]="fromPicker" formControlName="availableFrom" readonly>
+            <ngx-material-timepicker #fromPicker></ngx-material-timepicker>
+            <mat-icon matSuffix>schedule</mat-icon>
+          </mat-form-field>
 
-        <div>
-          <input type="checkbox" id="terms" name="terms" required>
-          <label for="terms">
-            I have read and agree to Seravian's
-            <a href="/terms-of-service" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
-            and
-            <a href="/privacy-policy" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
-          </label>
+          <mat-form-field appearance="outline">
+            <mat-label>Available To</mat-label>
+            <input matInput [ngxTimepicker]="toPicker" formControlName="availableTo" readonly>
+            <ngx-material-timepicker #toPicker></ngx-material-timepicker>
+            <mat-icon matSuffix>schedule</mat-icon>
+          </mat-form-field>
         </div>
-        <button type="submit">Continue</button>
+
+
+        <button type="submit">Submit</button>
+
       </form>
     </div>
   </div>
