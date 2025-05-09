@@ -15,6 +15,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   isPopupVisible = false;
   selectedChat: Chat | null = null;
+  oldSelectedChat: Chat | null = null;
+  // newSelectedChat: Chat | null = null;
   userMessage: string = '';
   message: ChatMessage | null = null;
 
@@ -44,39 +46,48 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     // });
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
-      this.selectedChat = chat;
 
-      if (chat) {
-        this.chatService.joinChat(chat.id)
-          .then(() => {
-            console.log(`Joined chat ${chat.id}`);
+      if(this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id){ //first time selected or new chat selected
 
-            // Get the last message timestamp
-            const lastMessage = chat.messages?.[chat.messages.length - 1];
-            const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
+        this.selectedChat = chat;
+        this.oldSelectedChat = chat;
 
-            // Sync missed messages
-            // this.chatService.syncMessages(chat.id, lastTimestamp).subscribe({
-            //   next:(missedMessages) => {
-            //     console.log('Synced messages in component:', missedMessages);
-            //     chat.messages.push(...missedMessages);
-            //     this.scrollToBottom();
-            //     this.cdr.detectChanges();
-            //   },
-            //   error:(error) => {
-            //     console.error('Failed to sync messages:', error);
-            //   }
-            // });
-          })
-          .catch(err => console.error('Failed to join chat', err));
+        if (chat) {
+          this.chatService.joinChat(chat.id)
+            .then(() => {
+              console.log(`1 Joined chat ${chat.id}`);
+
+              // Get the last message timestamp
+              const lastMessage = chat.messages?.[chat.messages.length - 1];
+              const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
+
+              // Sync missed messages
+              // this.chatService.syncMessages(chat.id, lastTimestamp).subscribe({
+              //   next:(missedMessages) => {
+              //     console.log('Synced messages in component:', missedMessages);
+              //     chat.messages.push(...missedMessages);
+              //     this.scrollToBottom();
+              //     this.cdr.detectChanges();
+              //   },
+              //   error:(error) => {
+              //     console.error('Failed to sync messages:', error);
+              //   }
+              // });
+            })
+            .catch(err => console.error('Failed to join chat', err));
+
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+
+        }
+
+      }else{
+        console.log('Same chat selected, no action taken.');
       }
 
-      this.cdr.detectChanges();
-
-      setTimeout(() => {
-        this.scrollToBottom();
-        this.messageInputRef.nativeElement.focus();
-      }, 50);
     });
 
 

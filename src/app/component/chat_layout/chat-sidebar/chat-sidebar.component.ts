@@ -43,7 +43,7 @@ export class ChatSidebarComponent implements OnInit {
         const selectedChat = this.chats.find(chat => chat.id === chatId);
         if (selectedChat) {
           selectedChat.messages = chatMessages.messages??[];
-          this.chatService.setSelectedChat({ ...selectedChat }); // optional
+          this.chatService.setSelectedChat(selectedChat); // optional
         }
       },
       error: (err) => {
