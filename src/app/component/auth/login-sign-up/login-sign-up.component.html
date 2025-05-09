@@ -32,6 +32,17 @@
                   <span *ngIf="signUpForm.controls['password'].errors?.['required']">This is required</span>
                   <span *ngIf="signUpForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
               </div>
+              <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Your Password"
+          formControlName="confirmPassword"
+        >
+        <div
+          class="text-danger"
+          *ngIf="signUpForm.controls['confirmPassword'].touched && signUpForm.hasError('passwordMismatch')">
+          <span>Passwords do not match</span>
+        </div>
 
               <button type="button" id="signup" (click)="onRegister()" [disabled]="isRegisterButtonDisabled">
                 {{ registerButtonText }}</button>

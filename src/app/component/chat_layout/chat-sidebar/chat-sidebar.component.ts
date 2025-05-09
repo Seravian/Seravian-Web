@@ -43,7 +43,7 @@ export class ChatSidebarComponent implements OnInit {
         const selectedChat = this.chats.find(chat => chat.id === chatId);
         if (selectedChat) {
           selectedChat.messages = chatMessages.messages??[];
-          this.chatService.setSelectedChat({ ...selectedChat }); // optional
+          this.chatService.setSelectedChat(selectedChat); 
         }
       },
       error: (err) => {
@@ -77,16 +77,27 @@ export class ChatSidebarComponent implements OnInit {
   }
 
 
+  // startRename(chat: Chat) {
+  //   chat.isEditing = true;
+  //   this.dropdownVisible = null;
+  //   setTimeout(() => {
+  //     this.inputField?.nativeElement.focus();
+  //   }, 0);
+  // }
+
   startRename(chat: any) {
     chat.isEditing = true;
     this.dropdownVisible = null;
+
+    // Delay focus until after view updates
     setTimeout(() => {
       this.inputField?.nativeElement.focus();
-    }, 0);
+    }, 100); // try 100ms instead of 0
   }
 
 
-  renameChat(chat: any) {
+
+  renameChat(chat: Chat) {
     if (!chat.title.trim()) return;
 
     this.chatService.updateChat(chat.id, chat.title).subscribe({
@@ -136,11 +147,32 @@ export class ChatSidebarComponent implements OnInit {
     }
   }
 
+  // @HostListener('document:click', ['$event'])
+  // onDocumentClick(event: MouseEvent) {
+  //   const target = event.target as HTMLElement;
+  //   if (!target.closest('.dropdown-trigger') && !target.closest('.dropdown-menu')) {
+  //     this.dropdownVisible = null;
+  //   }
+  // }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-trigger') && !target.closest('.dropdown-menu')) {
+
+    const clickedInsideDropdown = target.closest('.dropdown-trigger') || target.closest('.dropdown-menu');
+    const clickedInsideInput = target.closest('input'); // assuming it's only used for rename
+
+    if (!clickedInsideDropdown && !clickedInsideInput) {
       this.dropdownVisible = null;
+
+      // If any chat is currently being renamed, stop editing it when clicked outside
+      for (const chat of this.chats) {
+        if (chat.isEditing) {
+          chat.isEditing = false;
+        }
+      }
     }
   }
+
+
 }

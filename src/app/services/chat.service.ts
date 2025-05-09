@@ -230,6 +230,17 @@ export class ChatService {
     this.selectedChatSource.next(chat);
   }
 
+
+  // latest message info
+  private latestMessageSource = new BehaviorSubject<any>(null);
+  latestMessage$ = this.latestMessageSource.asObservable();
+
+  setLatestMessage(message: ConfirmClientRequestDto) {
+    this.latestMessageSource.next(message);
+  }
+
+
+
   // ***********************************************************************************
 
   // signalR logic
@@ -253,10 +264,6 @@ export class ChatService {
     });
 
 
-    this.hubConnection.on('confirm-client-request', (data:ConfirmClientRequestDto) => {
-      console.log('Confirmed client message', data);
-    });
-
     this.hubConnection.on('receive-ai-response', (data) => {
       console.log('AI responded', data);
       this.addMessage({
@@ -266,6 +273,13 @@ export class ChatService {
         isAI: true
       });
     });
+
+
+    this.hubConnection.on('confirm-client-request', (data:ConfirmClientRequestDto) => {
+      console.log('Confirmed client message', data);
+      this.setLatestMessage(data);
+    });
+
 
     this.hubConnection.onreconnected(async(connectionId) => {
       console.log('Reconnected to SignalR server');

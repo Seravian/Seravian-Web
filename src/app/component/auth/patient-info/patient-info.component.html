@@ -2,7 +2,7 @@
   <div class="container">
     <div class="form-container">
       <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
-        <h1>Patient Information</h1>
+        <h1>User Information</h1>
 
         <span>Full Name</span>
         <input
@@ -78,6 +78,16 @@
           class="text-danger"
           *ngIf="patientForm.controls['gender'].invalid && (patientForm.controls['gender'].touched || patientForm.controls['gender'].dirty)">
           <span>Gender is required</span>
+        </div>
+
+        <div>
+          <input type="checkbox" id="terms" name="terms" required>
+          <label for="terms">
+            I have read and agree to Seravian's
+            <a href="/terms-of-service" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
+            and
+            <a href="/privacy-policy" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
+          </label>
         </div>
 
         <button type="submit">Continue</button>
