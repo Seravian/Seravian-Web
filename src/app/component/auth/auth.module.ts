@@ -30,10 +30,9 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     ReactiveFormsModule,
     CommonModule,
     AuthRoutingModule,
-    NgxMaterialTimepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
   ]
 })
 export class AuthModule { }

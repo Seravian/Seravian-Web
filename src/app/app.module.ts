@@ -34,7 +34,7 @@ import { ChatService } from './services/chat.service';
     AppRoutingModule,
     HttpClientModule,
     MatIconModule, MatMenuModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [
     provideFirebaseApp(() => initializeApp({"projectId":"seravian","appId":"1:51931785705:web:34b4efd31d47cacfdac378","storageBucket":"seravian.firebasestorage.app","apiKey":"AIzaSyDd1DKc_CE2-1DKYKkr3nrRGaE_tV19dZ0","authDomain":"seravian.firebaseapp.com","messagingSenderId":"51931785705","measurementId":"G-ZJCYTY6YGD"})),
