@@ -20,6 +20,7 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
       dob: ['', Validators.required],
       gender: ['', Validators.required],
       speciallity:['', Validators.required],
+      license: [null, Validators.required],
     });
   }
 
@@ -44,6 +45,13 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
           this.doctorForm.controls['phoneNumber'].setValue(phoneNumber);
         }
       });
+    }
+  }
+
+  onLicenseChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.doctorForm.controls['license'].setValue(file);
     }
   }
 
