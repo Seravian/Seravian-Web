@@ -31,19 +31,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
-    //   this.selectedChat = chat;
-    //   if (chat) {
-    //     this.chatService.joinChat(chat.id)
-    //       .then(() => console.log(`Joined chat ${chat.id}`))
-    //       .catch(err => console.error('Failed to join chat', err));
-    //   }
-    //   this.cdr.detectChanges();
-    //   setTimeout(() => {
-    //     this.scrollToBottom();
-    //     this.messageInputRef.nativeElement.focus();
-    //   }, 50);
-    // });
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
 
