@@ -4,6 +4,8 @@ import { Chat } from '../../interfaces/chat';
 import { ChatMessage } from '../../interfaces/chat-message';
 import { ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { th } from 'intl-tel-input/i18n';
+import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -16,9 +18,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   isPopupVisible = false;
   selectedChat: Chat | null = null;
   oldSelectedChat: Chat | null = null;
-  // newSelectedChat: Chat | null = null;
   userMessage: string = '';
   message: ChatMessage | null = null;
+  unConfirmedMessages: UnConfirmedClientMessages[] = [];
 
   private chatSubscription!: Subscription;
 
@@ -36,30 +38,13 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
       if(this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id){ //first time selected or new chat selected
 
-        this.selectedChat = chat;
+        this.selectedChat = chat; 
         this.oldSelectedChat = chat;
 
         if (chat) {
           this.chatService.joinChat(chat.id)
             .then(() => {
               console.log(`1 Joined chat ${chat.id}`);
-
-              // Get the last message timestamp
-              const lastMessage = chat.messages?.[chat.messages.length - 1];
-              const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
-
-              // Sync missed messages
-              // this.chatService.syncMessages(chat.id, lastTimestamp).subscribe({
-              //   next:(missedMessages) => {
-              //     console.log('Synced messages in component:', missedMessages);
-              //     chat.messages.push(...missedMessages);
-              //     this.scrollToBottom();
-              //     this.cdr.detectChanges();
-              //   },
-              //   error:(error) => {
-              //     console.error('Failed to sync messages:', error);
-              //   }
-              // });
             })
             .catch(err => console.error('Failed to join chat', err));
 
@@ -109,6 +94,57 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         }, 50);
       }
     });
+
+
+    // Listen to SignalR confirm-client-request
+    this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
+      if (this.selectedChat) {
+        const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
+        console.log('Confirmed message:', confirmedMessage);
+        if (confirmedMessage) {
+          // Optimistic UI update
+          this.selectedChat.messages.push({
+            id: data.messageId,
+            content: confirmedMessage.content,
+            timestampUtc: data.timestampUtc,
+            isAI: false
+          });
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+
+          console.log('chat messages',this.selectedChat.messages);
+        }
+      }
+    });
+
+
+  }
+
+  sendMessage(): void {
+    const message = this.userMessage.trim();
+    if (message && this.selectedChat) {
+      const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
+
+      // Optimistic UI update
+      this.unConfirmedMessages.push({
+        clientMessageId: messageClientId,
+        content: message,
+        timestampUtc: new Date()
+      });
+
+      this.chatService.sendClientRequest(message, messageClientId)
+        .catch(err => console.error('SignalR send failed', err));
+
+
+      this.userMessage = '';
+
+      setTimeout(() => {
+        this.scrollToBottom();
+        this.messageInputRef.nativeElement.focus();
+      }, 50);
+    }
   }
 
   private generateGuid(): string {
@@ -123,31 +159,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.selectedChat?.messages ?? [];
   }
 
-  sendMessage(): void {
-    const message = this.userMessage.trim();
-    if (message && this.selectedChat) {
-      const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
 
-      // Optimistic UI update
-      this.selectedChat.messages.push({
-        clientMessageId: messageClientId,
-        id: null,
-        isAI: false,
-        content: message,
-        timestampUtc: new Date()
-      });
-
-      this.chatService.sendClientRequest(message, messageClientId)
-        .catch(err => console.error('SignalR send failed', err));
-
-      this.userMessage = '';
-
-      setTimeout(() => {
-        this.scrollToBottom();
-        this.messageInputRef.nativeElement.focus();
-      }, 50);
-    }
-  }
 
 
   ngOnDestroy(): void {
