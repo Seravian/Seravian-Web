@@ -23,6 +23,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   unConfirmedMessages: UnConfirmedClientMessages[] = [];
 
   private chatSubscription!: Subscription;
+  private missedMessagesSubscription!: Subscription;
 
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
@@ -38,7 +39,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
       if(this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id){ //first time selected or new chat selected
 
-        this.selectedChat = chat; 
+        this.selectedChat = chat;
         this.oldSelectedChat = chat;
 
         if (chat) {
@@ -63,6 +64,32 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     });
 
 
+    // One-time missed messages sync
+    this.missedMessagesSubscription = this.chatService.missedMessages$.subscribe((missedMessages: ChatMessage[]) => {
+      console.log('Missed messages number:', missedMessages.length);
+      console.log('Missed messages:', missedMessages);
+      if (missedMessages.length > 0 && this.selectedChat) {
+        console.log('Missed messages:', missedMessages);
+        this.selectedChat.messages.push(...missedMessages.map((message: ChatMessage) => ({
+          id: message.id,
+          isAI: false,
+          content: message.content,
+          timestampUtc: message.timestampUtc
+        })));
+
+        // Clear missed messages after syncing
+        this.chatService.setMissedMessages([]);
+        console.log('Missed messages synced and cleared.');
+
+        setTimeout(() => {
+          this.scrollToBottom();
+          this.messageInputRef.nativeElement.focus();
+        }, 50);
+      }else{
+      }
+    });
+
+
     // Listen to SignalR receive-client-request
     this.chatService['hubConnection'].on('receive-client-request', (data: any) => {
       if (this.selectedChat) {
@@ -72,6 +99,27 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           content: data.message,
           timestampUtc: data.timestampUtc
         });
+
+        // this.chatService.missedMessages$.subscribe((missedMessages: ChatMessage[]) => {
+
+        //   if(missedMessages.length>0){
+        //     console.log('Missed messages:', missedMessages);
+        //     this.selectedChat?.messages.push(...missedMessages.map((message: ChatMessage) => ({
+        //       id: message.id,
+        //       isAI: false,
+        //       content: message.content,
+        //       timestampUtc: message.timestampUtc
+        //     })));
+
+        //     // Clear missed messages after syncing
+        //     this.chatService.setMissedMessages([]);
+        //     console.log('Missed messages synced and cleared.');
+        //   }else{
+        //     console.log('No missed messages to sync.');
+        //   }
+
+        // });
+
         setTimeout(() => {
           this.scrollToBottom();
           this.messageInputRef.nativeElement.focus();
@@ -164,6 +212,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chatSubscription?.unsubscribe();
+    this.missedMessagesSubscription?.unsubscribe();
+    this.chatService.setMissedMessages([]); // Clear missed messages on destroy
   }
 
 // **********************************************

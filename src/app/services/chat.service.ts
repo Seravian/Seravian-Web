@@ -18,10 +18,6 @@ export class ChatService {
   HubUrl: string = environment.HubUrl;
   ChatUrl: string = environment.ChatUrl;
 
-  private messageQueue: { message: string; clientId: string }[] = [];
-  private canSend = false; // controls whether messages can go through immediately
-
-
   // Add to top of the class
   private messagesSubject = new BehaviorSubject<any[]>([]);
   messages$ = this.messagesSubject.asObservable();
@@ -39,6 +35,18 @@ export class ChatService {
   setSelectedChat(chat: Chat) {
     this.selectedChatSource.next(chat);
   }
+
+  private missedMessagesSource = new BehaviorSubject<any[]>([]);
+  missedMessages$ = this.missedMessagesSource.asObservable();
+
+  setMissedMessages(messages: ChatMessage[] | null) {
+  if (!Array.isArray(messages)) {
+    console.warn('Expected an array in setMissedMessages, received:', messages);
+    return;
+  }
+  this.missedMessagesSource.next(messages);
+}
+
 
 
 
@@ -90,9 +98,9 @@ export class ChatService {
         const delayEnabled = sessionStorage.getItem('delayReconnection') === 'true';
 
         if (delayEnabled) {
-          console.log('15 seconds delay started before joining chat');
-          await new Promise(res => setTimeout(res, 15000));
-          console.log('15 seconds delay ended');
+          console.log('25 seconds delay started before joining chat');
+          await new Promise(res => setTimeout(res, 25000));
+          console.log('25 seconds delay ended');
         }
 
         this.joinChat(selectedChat.id);
@@ -110,7 +118,8 @@ export class ChatService {
           this.syncMessages(selectedChat.id, lastTimestamp).subscribe({
             next:(missedMessages) => {
               console.log('Synced missed messages:', missedMessages);
-              missedMessages.forEach((msg) => this.addMessage(msg));
+              // missedMessages.forEach((msg) => this.setMissedMessages(msg)); //one at a time
+              this.setMissedMessages(missedMessages); //all at once
             },
             error:(error) => {
               console.error('Error syncing messages:', error);
