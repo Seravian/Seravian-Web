@@ -46,6 +46,16 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           this.chatService.joinChat(chat.id)
             .then(() => {
               console.log(`1 Joined chat ${chat.id}`);
+
+              // Get the last message from the selected chat
+              if (chat.messages && chat.messages.length > 0) {
+                const lastMessage = chat.messages[chat.messages.length - 1];
+                this.chatService.addMessage(lastMessage);
+                console.log('added message:', lastMessage);
+              }else{
+                console.log('No messages in the selected chat yet.');
+              }
+
             })
             .catch(err => console.error('Failed to join chat', err));
 
@@ -99,27 +109,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           content: data.message,
           timestampUtc: data.timestampUtc
         });
-
-        // this.chatService.missedMessages$.subscribe((missedMessages: ChatMessage[]) => {
-
-        //   if(missedMessages.length>0){
-        //     console.log('Missed messages:', missedMessages);
-        //     this.selectedChat?.messages.push(...missedMessages.map((message: ChatMessage) => ({
-        //       id: message.id,
-        //       isAI: false,
-        //       content: message.content,
-        //       timestampUtc: message.timestampUtc
-        //     })));
-
-        //     // Clear missed messages after syncing
-        //     this.chatService.setMissedMessages([]);
-        //     console.log('Missed messages synced and cleared.');
-        //   }else{
-        //     console.log('No missed messages to sync.');
-        //   }
-
-        // });
-
         setTimeout(() => {
           this.scrollToBottom();
           this.messageInputRef.nativeElement.focus();

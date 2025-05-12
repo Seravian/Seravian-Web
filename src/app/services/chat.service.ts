@@ -24,6 +24,7 @@ export class ChatService {
 
   // Helper to add messages
   addMessage(message: any) {
+    console.log('Adding message:', message);
     const current = this.messagesSubject.value;
     this.messagesSubject.next([...current, message]);
   }
