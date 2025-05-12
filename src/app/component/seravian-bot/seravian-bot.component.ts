@@ -4,6 +4,8 @@ import { Chat } from '../../interfaces/chat';
 import { ChatMessage } from '../../interfaces/chat-message';
 import { ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { th } from 'intl-tel-input/i18n';
+import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -16,11 +18,12 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   isPopupVisible = false;
   selectedChat: Chat | null = null;
   oldSelectedChat: Chat | null = null;
-  // newSelectedChat: Chat | null = null;
   userMessage: string = '';
   message: ChatMessage | null = null;
+  unConfirmedMessages: UnConfirmedClientMessages[] = [];
 
   private chatSubscription!: Subscription;
+  private missedMessagesSubscription!: Subscription;
 
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
@@ -44,22 +47,15 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             .then(() => {
               console.log(`1 Joined chat ${chat.id}`);
 
-              // Get the last message timestamp
-              const lastMessage = chat.messages?.[chat.messages.length - 1];
-              const lastTimestamp = lastMessage?.timestampUtc || new Date(0).toISOString();
+              // Get the last message from the selected chat
+              if (chat.messages && chat.messages.length > 0) {
+                const lastMessage = chat.messages[chat.messages.length - 1];
+                this.chatService.addMessage(lastMessage);
+                console.log('added message:', lastMessage);
+              }else{
+                console.log('No messages in the selected chat yet.');
+              }
 
-              // Sync missed messages
-              // this.chatService.syncMessages(chat.id, lastTimestamp).subscribe({
-              //   next:(missedMessages) => {
-              //     console.log('Synced messages in component:', missedMessages);
-              //     chat.messages.push(...missedMessages);
-              //     this.scrollToBottom();
-              //     this.cdr.detectChanges();
-              //   },
-              //   error:(error) => {
-              //     console.error('Failed to sync messages:', error);
-              //   }
-              // });
             })
             .catch(err => console.error('Failed to join chat', err));
 
@@ -75,6 +71,32 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         console.log('Same chat selected, no action taken.');
       }
 
+    });
+
+
+    // One-time missed messages sync
+    this.missedMessagesSubscription = this.chatService.missedMessages$.subscribe((missedMessages: ChatMessage[]) => {
+      console.log('Missed messages number:', missedMessages.length);
+      console.log('Missed messages:', missedMessages);
+      if (missedMessages.length > 0 && this.selectedChat) {
+        console.log('Missed messages:', missedMessages);
+        this.selectedChat.messages.push(...missedMessages.map((message: ChatMessage) => ({
+          id: message.id,
+          isAI: false,
+          content: message.content,
+          timestampUtc: message.timestampUtc
+        })));
+
+        // Clear missed messages after syncing
+        this.chatService.setMissedMessages([]);
+        console.log('Missed messages synced and cleared.');
+
+        setTimeout(() => {
+          this.scrollToBottom();
+          this.messageInputRef.nativeElement.focus();
+        }, 50);
+      }else{
+      }
     });
 
 
@@ -109,6 +131,57 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         }, 50);
       }
     });
+
+
+    // Listen to SignalR confirm-client-request
+    this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
+      if (this.selectedChat) {
+        const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
+        console.log('Confirmed message:', confirmedMessage);
+        if (confirmedMessage) {
+          // Optimistic UI update
+          this.selectedChat.messages.push({
+            id: data.messageId,
+            content: confirmedMessage.content,
+            timestampUtc: data.timestampUtc,
+            isAI: false
+          });
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+
+          console.log('chat messages',this.selectedChat.messages);
+        }
+      }
+    });
+
+
+  }
+
+  sendMessage(): void {
+    const message = this.userMessage.trim();
+    if (message && this.selectedChat) {
+      const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
+
+      // Optimistic UI update
+      this.unConfirmedMessages.push({
+        clientMessageId: messageClientId,
+        content: message,
+        timestampUtc: new Date()
+      });
+
+      this.chatService.sendClientRequest(message, messageClientId)
+        .catch(err => console.error('SignalR send failed', err));
+
+
+      this.userMessage = '';
+
+      setTimeout(() => {
+        this.scrollToBottom();
+        this.messageInputRef.nativeElement.focus();
+      }, 50);
+    }
   }
 
   private generateGuid(): string {
@@ -123,35 +196,13 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.selectedChat?.messages ?? [];
   }
 
-  sendMessage(): void {
-    const message = this.userMessage.trim();
-    if (message && this.selectedChat) {
-      const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
 
-      // Optimistic UI update
-      this.selectedChat.messages.push({
-        clientMessageId: messageClientId,
-        id: null,
-        isAI: false,
-        content: message,
-        timestampUtc: new Date()
-      });
-
-      this.chatService.sendClientRequest(message, messageClientId)
-        .catch(err => console.error('SignalR send failed', err));
-
-      this.userMessage = '';
-
-      setTimeout(() => {
-        this.scrollToBottom();
-        this.messageInputRef.nativeElement.focus();
-      }, 50);
-    }
-  }
 
 
   ngOnDestroy(): void {
     this.chatSubscription?.unsubscribe();
+    this.missedMessagesSubscription?.unsubscribe();
+    this.chatService.setMissedMessages([]); // Clear missed messages on destroy
   }
 
 // **********************************************
