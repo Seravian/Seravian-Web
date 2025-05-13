@@ -2,8 +2,7 @@ import { AfterViewInit, Component, OnInit, Renderer2, ViewChild, ElementRef } fr
 import intlTelInput from 'intl-tel-input';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-// import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-doctor-info',
