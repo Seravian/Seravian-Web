@@ -88,6 +88,10 @@ h1 {
   height: 100%;
   text-align: center;
 }
+/* Spacing for the form controls */
+.container form > * {
+  margin-bottom: 20px; /* Adds space between each form element */
+}
 
 .form-container {
   position: relative;
@@ -140,4 +144,35 @@ h1 {
 form h1,
 form button {
   align-self: center;
+}
+.time-range {
+  display: flex;
+  gap: 1rem; /* Space between the two fields */
+  flex-wrap: nowrap; /* Prevents wrapping on small screens */
+}
+
+.time-range mat-form-field {
+  flex: 1 1 220px; /* Ensures both fields take equal width */
+  min-width: 190px  ;}
+
+/* Ensures that the form fields do not wrap and always stay next to each other */
+.time-range {
+  display: flex;
+  gap: 8px; /* Adjust space between fields as needed */
+  flex-wrap: nowrap; /* Prevents wrapping of the fields */
+  justify-content: space-between;
+  margin-top: 25px;}
+.time-range .mat-mdc-text-field-wrapper {
+  width: 75% !important;
+}
+.mat-mdc-form-field-required-marker {
+  display: none !important;
+}
+.mat-form-field-required {
+  display: none !important;
+}
+@media (max-width: 600px) {
+  .time-range {
+    flex-direction: column; /* Stacks the time pickers vertically on smaller screens */
+  }
 }
