@@ -154,16 +154,7 @@ export class LoginsignupComponent  {
         console.log("hi",profile)
 
         localStorage.setItem('profile', JSON.stringify(profile));
-        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
-        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
 
-
-
-        // if (!response.tokens.accessToken || !response.tokens.refreshToken) {
-        //   this.statusMessage = 'Login response missing tokens.';
-        //   console.error('Missing access or refresh token in response:', response.tokens);
-        //   return;
-        // }
 
         const profileTokens = {
           accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
@@ -171,6 +162,7 @@ export class LoginsignupComponent  {
           accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
         }
 
+        console.log("encrypted tokens after signing in",profileTokens)
 
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
