@@ -136,6 +136,12 @@ export class LoginsignupComponent  {
       this.statusMessage = "Please complete all fields correctly.";
       return;
     }
+
+    const email = this.loginForm.get('email')?.value;
+    this.authService.setTempEmail(email); // Store email in service for later use
+    const password = this.loginForm.get('password')?.value;
+    this.authService.setTempPass(password); // Store password in service for later use
+
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         console.log(response);
@@ -154,16 +160,7 @@ export class LoginsignupComponent  {
         console.log("hi",profile)
 
         localStorage.setItem('profile', JSON.stringify(profile));
-        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
-        console.log(JSON.parse(localStorage.getItem('profile') || '{}').email);
 
-
-
-        // if (!response.tokens.accessToken || !response.tokens.refreshToken) {
-        //   this.statusMessage = 'Login response missing tokens.';
-        //   console.error('Missing access or refresh token in response:', response.tokens);
-        //   return;
-        // }
 
         const profileTokens = {
           accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
@@ -171,6 +168,7 @@ export class LoginsignupComponent  {
           accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
         }
 
+        console.log("encrypted tokens after signing in",profileTokens)
 
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 

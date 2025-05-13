@@ -57,7 +57,7 @@ export class AuthService {
       })
     )
   }
-
+// ***************************************************************
   private tempRole: number | null = null;
 
   setTempRole(role: number) {
@@ -67,33 +67,36 @@ export class AuthService {
   getTempRole(): number | null {
     return this.tempRole;
   }
+// **********************************************************
+  private email: string | null = null;
 
-  // getUserDetail = () =>{
-  //   const token = this.getToken();
-  //   if(!token) return true;
-  //   const decodedToken : any = jwtDecode(token);
-  //   const userDetail = {
-  //     id: decodedToken.nameid,
-  //     fullname: decodedToken.name,
-  //     email: decodedToken.email,
-  //     roles: decodedToken.role || [],
-  //   }
-  //   return userDetail;
-  // }
+  setTempEmail(email: string | null) {
+    this.email = email;
+  }
+
+  getTempEmail(): string | null {
+    return this.email;
+  }
+// ***********************************************************
+
+  private pass: string | null = null;
+
+  setTempPass(pass: string | null) {
+    this.pass = pass;
+  }
+
+  getTempPass(): string | null {
+    return this.pass;
+  }
+// ************************************************************
+
+
 
   isLoggedIn =():boolean =>{
     const token = this.getToken() ;
     if(!token) return false ;
     return !this.isTokenExpired();
   };
-
-  //expiry = 03:00:00 UTC
-  //date now = 02:50:00 UTC
-  //epiry buffer = 02:59:00 UTC
-  //
-  //
-  //
-  //
 
   private isSignalRTokenValid(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
@@ -239,4 +242,9 @@ export class AuthService {
   }
 
 
+}
+
+export interface tempPass {
+  email: string;
+  password: string;
 }
