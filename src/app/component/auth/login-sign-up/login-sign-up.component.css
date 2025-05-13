@@ -16,6 +16,7 @@
     justify-content: center;
     flex-direction: column;
     height: 100vh;
+    /* padding:0 10px; */
 }
 
 a{
@@ -228,4 +229,30 @@ a{
 
 .container.active .toggle-right{
     transform: translateX(200%);
+}
+
+
+/* responsive design */
+
+/* @media (max-width: 1024px) {
+  .container {
+    width: 90%;
+    min-height: 500px;
+  }
+} */
+
+@media (max-width: 792px) {
+  .container {
+    width: 90%;
+    min-height: 550px;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    min-height: 650px;
+  }
+  h1{
+    font-size: 1.5rem;
+  }
 }
