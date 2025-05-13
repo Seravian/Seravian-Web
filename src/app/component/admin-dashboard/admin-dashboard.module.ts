@@ -9,6 +9,7 @@ import { MainContentComponent } from '../admin-dashboard/home/main-content/main-
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { AppointmentsComponent } from '../admin-dashboard/home/appointments/appointments.component';
 import { ProfileComponent } from './home/profile/profile.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { ProfileComponent } from './home/profile/profile.component';
   ],
   imports: [
     CommonModule,
-    AdminDashboardRoutingModule
+    AdminDashboardRoutingModule,
+    FormsModule
   ]
 })
 export class AdminDashboardModule { }
