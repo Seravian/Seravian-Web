@@ -140,8 +140,9 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
       const formValues = this.patientForm.value;
       const formattedDOB = `${formValues.dob} 00:00:00`;
-      const email = JSON.parse(localStorage.getItem('profile') || '{}').email
-      const password = JSON.parse(localStorage.getItem('profile') || '{}').password
+
+      const email = this.authService.getTempEmail() ?? '';
+      const password = this.authService.getTempPass() ?? '';
 
 
       const profileData: ProfileRequest = {
@@ -155,22 +156,60 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
       this.authService.completeProfile(profileData).subscribe({
         next: () => {
           console.log(email,password);
-
-          this.authService.login({email, password}).subscribe({
-            next: () => {
-              this.router.navigate(['/dashboard']);
-            },
-            error: (err) => {
-              alert('Login failed after profile completion. Try logging in manually.');
-              console.error(err);
-            }
-          });
         },
         error: (err) => {
           alert('Failed to complete profile. Try again.');
           console.error(err);
         }
       });
+
+
+      this.authService.login({email, password}).subscribe({
+        next: (response) => {
+        console.log(response);
+
+
+        const profile = {
+          id: response.userId,
+          fullName: response.fullName,
+          email: response.email,
+          dateOfBirth: response.dateOfBirth,
+          gender: response.gender,
+          role: response.role,
+          isEmailVerified: response.isEmailVerified,
+          isProfileSetupComplete: response.isProfileSetupComplete
+        };
+        console.log("hi",profile)
+
+        localStorage.setItem('profile', JSON.stringify(profile));
+
+
+        const profileTokens = {
+          accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
+          refreshToken: this.authService.EncryptToken(response.tokens.refreshToken!),
+          accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+        }
+
+        console.log("encrypted tokens after signing in",profileTokens)
+
+        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
+        console.log('Login successful:', response);
+        if(!response.isEmailVerified){
+          this.router.navigate(['verify-email']);
+        }
+        else if (!response.isProfileSetupComplete) {
+          this.router.navigate(['doctor-or-patient']);
+        } else {
+          this.router.navigate(['dashboard']);
+        } // Or wherever you want to redirect
+      },
+        error: (err) => {
+          alert('Login failed after profile completion. Try logging in manually.');
+          console.error(err);
+        }
+      });
+
     } else {
       this.markAllAsTouched(this.patientForm);
     }

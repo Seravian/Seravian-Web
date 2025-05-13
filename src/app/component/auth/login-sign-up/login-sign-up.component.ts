@@ -136,6 +136,12 @@ export class LoginsignupComponent  {
       this.statusMessage = "Please complete all fields correctly.";
       return;
     }
+
+    const email = this.loginForm.get('email')?.value;
+    this.authService.setTempEmail(email); // Store email in service for later use
+    const password = this.loginForm.get('password')?.value;
+    this.authService.setTempPass(password); // Store password in service for later use
+
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         console.log(response);
