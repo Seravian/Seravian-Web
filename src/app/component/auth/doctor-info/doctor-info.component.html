@@ -45,21 +45,35 @@
           <span>License is required</span>
         </div>
 
-        <div class="time-range">
-          <mat-form-field appearance="outline">
-            <mat-label>Available From</mat-label>
-            <input matInput [ngxTimepicker]="fromPicker" formControlName="availableFrom" readonly>
-            <ngx-material-timepicker #fromPicker></ngx-material-timepicker>
-            <mat-icon matSuffix>schedule</mat-icon>
-          </mat-form-field>
+        <div class="time-range-section">
+          <label class="time-range-label">Available Time Range</label>
+          <div class="time-range">
+            <mat-form-field appearance="outline" class="no-border">
+              <mat-label>Available From</mat-label>
+              <input
+                matInput
+                placeholder="Available From"
+                [ngxTimepicker]="fromPicker"
+                formControlName="availableFrom"
+                readonly
+              />
+              <ngx-material-timepicker #fromPicker></ngx-material-timepicker>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Available To</mat-label>
-            <input matInput [ngxTimepicker]="toPicker" formControlName="availableTo" readonly>
-            <ngx-material-timepicker #toPicker></ngx-material-timepicker>
-            <mat-icon matSuffix>schedule</mat-icon>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="no-border">
+              <mat-label>Available To</mat-label>
+              <input
+                matInput
+                placeholder="Available To"
+                [ngxTimepicker]="toPicker"
+                formControlName="availableTo"
+                readonly
+              />
+              <ngx-material-timepicker #toPicker></ngx-material-timepicker>
+            </mat-form-field>
+          </div>
         </div>
+
 
 
         <button type="submit">Submit</button>

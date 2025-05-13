@@ -95,53 +95,8 @@ h1 {
 
 .form-container {
   position: relative;
-  width: 100%;
 }
 
-.text-danger {
-  margin-top: 2px;
-}
-
-.text-danger span {
-  color: red;
-  font-size: 13px;
-}
-
-.gender {
-  display: flex;
-  justify-content: space-between;
-}
-
-.gender-option {
-  background-color: #fff;
-  padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  flex: 0.492;
-  margin-right: 10px;
-  font-weight: bolder;
-}
-
-.gender-option:last-child {
-  margin-right: 0;
-}
-
-.gender-option:hover {
-  background-color: #f0f0f0;
-}
-
-.gender-option input {
-  margin: 7px 0;
-  accent-color: #4e34cf;
-}
-
-.gender-option input:hover {
-  cursor: pointer;
-}
-
-form h1,
 form button {
   align-self: center;
 }
@@ -171,8 +126,18 @@ form button {
 .mat-form-field-required {
   display: none !important;
 }
+.mat-mdc-form-field-infix {
+  flex: auto;
+  min-width: 0;
+  width: 180px;
+  position: relative;
+  box-sizing: border-box;
+  height: 40px;
+}
+
 @media (max-width: 600px) {
   .time-range {
-    flex-direction: column; /* Stacks the time pickers vertically on smaller screens */
+    /* flex-direction: column; */
+    height: 56px;
   }
 }
