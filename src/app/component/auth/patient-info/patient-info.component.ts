@@ -195,6 +195,7 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
         console.log('Login successful:', response);
+
         if(!response.isEmailVerified){
           this.router.navigate(['verify-email']);
         }
@@ -202,7 +203,7 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
           this.router.navigate(['doctor-or-patient']);
         } else {
           this.router.navigate(['dashboard']);
-        } // Or wherever you want to redirect
+        }
       },
         error: (err) => {
           alert('Login failed after profile completion. Try logging in manually.');
