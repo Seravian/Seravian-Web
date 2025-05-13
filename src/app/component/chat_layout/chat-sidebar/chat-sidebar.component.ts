@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '../../../services/chat.service';
 import { Chat } from '../../../interfaces/chat';
 import { ChatMessage } from '../../../interfaces/chat-message';
@@ -8,8 +8,9 @@ import { ChatMessage } from '../../../interfaces/chat-message';
   templateUrl: './chat-sidebar.component.html',
   styleUrls: ['./chat-sidebar.component.css']
 })
-export class ChatSidebarComponent implements OnInit {
+export class ChatSidebarComponent implements OnInit,OnDestroy {
   isSidebarOpen = true;
+  mobileBreakpoint = 500;
   isSearchOpen = false;
   selectedChatId: string | null = null;
   dropdownVisible: string | null = null;
@@ -23,6 +24,11 @@ export class ChatSidebarComponent implements OnInit {
   chats: Chat[] = [];
 
   ngOnInit(): void {
+    // UI Feature
+    this.checkWindowWidth(); // Check at start
+    window.addEventListener('resize', this.checkWindowWidth.bind(this));
+    // **************************************************************************
+
     this.chatService.getChats().subscribe({
       next: (chats) => {
         this.chats = chats;
@@ -43,7 +49,7 @@ export class ChatSidebarComponent implements OnInit {
         const selectedChat = this.chats.find(chat => chat.id === chatId);
         if (selectedChat) {
           selectedChat.messages = chatMessages.messages??[];
-          this.chatService.setSelectedChat(selectedChat); 
+          this.chatService.setSelectedChat(selectedChat);
         }
       },
       error: (err) => {
@@ -76,14 +82,6 @@ export class ChatSidebarComponent implements OnInit {
     });
   }
 
-
-  // startRename(chat: Chat) {
-  //   chat.isEditing = true;
-  //   this.dropdownVisible = null;
-  //   setTimeout(() => {
-  //     this.inputField?.nativeElement.focus();
-  //   }, 0);
-  // }
 
   startRename(chat: any) {
     chat.isEditing = true;
@@ -147,13 +145,14 @@ export class ChatSidebarComponent implements OnInit {
     }
   }
 
-  // @HostListener('document:click', ['$event'])
-  // onDocumentClick(event: MouseEvent) {
-  //   const target = event.target as HTMLElement;
-  //   if (!target.closest('.dropdown-trigger') && !target.closest('.dropdown-menu')) {
-  //     this.dropdownVisible = null;
-  //   }
-  // }
+  checkWindowWidth(): void {
+    if (window.innerWidth <= this.mobileBreakpoint) {
+      this.isSidebarOpen = false;
+    } else {
+      this.isSidebarOpen = true;
+    }
+  }
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -172,6 +171,10 @@ export class ChatSidebarComponent implements OnInit {
         }
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.checkWindowWidth.bind(this));
   }
 
 
