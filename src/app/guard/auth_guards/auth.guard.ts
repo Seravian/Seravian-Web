@@ -30,26 +30,26 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isLoggedIn()) {
       return of(true);
     } else {
+      // const refreshToken = this.authService.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
       const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
+      console.log('refresh token:', refreshToken);
       if (!refreshToken) {
         console.log('1-no refresh token found!!!');
         return of(this.router.parseUrl(this.router.url));
       }
 
-      return this.http
-        .post<any>(`${environment.APIUrl}/refresh-token`, { refreshToken })
-        .pipe(
-          map((response) => {
-            // Assume response contains: accessToken, refreshToken, accessTokenExpirationUtc
-            localStorage.setItem('profileTokens', JSON.stringify(response));
-            return true; // Retry navigation
-          }),
-          catchError(() => {
-            // If refresh fails, redirect to login
-            console.log('there was an error in auth guard');
+      try {
+        return this.authService.refreshTokens().pipe(
+          map(() => true),
+          catchError((error) => {
+            console.error('Token refresh failed in AuthGuard:', error);
             return of(this.router.parseUrl(this.router.url));
           })
         );
+      } catch (err) {
+        console.error('Caught error before refresh call (e.g., missing token):', err);
+        return of(this.router.parseUrl(this.router.url));
+      }
     }
   }
 }

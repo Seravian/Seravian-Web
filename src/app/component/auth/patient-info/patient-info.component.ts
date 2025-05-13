@@ -11,16 +11,30 @@ import { ProfileRequest } from '../../../interfaces/profile-request';
   templateUrl: './patient-info.component.html',
   styleUrl: './patient-info.component.css'
 })
+
 export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
   @ViewChild('phoneInput', { static: false }) phoneInput!: ElementRef; // Reference to the phone input element
   patientForm: FormGroup;
   intlTelInstance: any;
+  dateNotInFuture(control: any): { [key: string]: boolean } | null {
+    const inputDate = new Date(control.value);
+    const today = new Date();
+
+    // Remove time for accurate comparison
+    inputDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    if (control.value && inputDate > today) {
+      return { futureDate: true };
+    }
+    return null;
+  }
 
   constructor(private fb: FormBuilder, private router: Router, private renderer: Renderer2,private authService: AuthService) {
     this.patientForm = this.fb.group({
       fullName: ['', Validators.required],
       // phoneNumber: ['', Validators.required],
-      dob: ['', Validators.required],
+      dob: ['', [Validators.required ,this.dateNotInFuture.bind(this)]],
       gender: ['', Validators.required],
     });
   }
@@ -127,6 +141,10 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
       const formValues = this.patientForm.value;
       const formattedDOB = `${formValues.dob} 00:00:00`;
 
+      const email = this.authService.getTempEmail() ?? '';
+      const password = this.authService.getTempPass() ?? '';
+
+
       const profileData: ProfileRequest = {
         fullName: formValues.fullName,
         dateOfBirth: formValues.dob,
@@ -137,13 +155,62 @@ export class PatientInfoComponent implements OnInit, AfterViewInit, OnDestroy{
 
       this.authService.completeProfile(profileData).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          console.log(email,password);
         },
         error: (err) => {
           alert('Failed to complete profile. Try again.');
           console.error(err);
         }
       });
+
+
+      this.authService.login({email, password}).subscribe({
+        next: (response) => {
+        console.log(response);
+
+
+        const profile = {
+          id: response.userId,
+          fullName: response.fullName,
+          email: response.email,
+          dateOfBirth: response.dateOfBirth,
+          gender: response.gender,
+          role: response.role,
+          isEmailVerified: response.isEmailVerified,
+          isProfileSetupComplete: response.isProfileSetupComplete
+        };
+        console.log("hi",profile)
+
+        localStorage.setItem('profile', JSON.stringify(profile));
+
+
+        const profileTokens = {
+          accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
+          refreshToken: this.authService.EncryptToken(response.tokens.refreshToken!),
+          accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+        }
+
+        console.log("encrypted tokens after signing in",profileTokens)
+
+        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
+        console.log('Login successful:', response);
+
+        if(!response.isEmailVerified){
+          this.router.navigate(['verify-email']);
+        }
+        else if (!response.isProfileSetupComplete) {
+          this.router.navigate(['doctor-or-patient']);
+        } else {
+          this.router.navigate(['dashboard']);
+        }
+      },
+        error: (err) => {
+          alert('Login failed after profile completion. Try logging in manually.');
+          console.error(err);
+        }
+      });
+
     } else {
       this.markAllAsTouched(this.patientForm);
     }

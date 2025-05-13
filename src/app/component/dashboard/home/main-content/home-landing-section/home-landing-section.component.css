@@ -22,7 +22,7 @@
 
 .glass-section {
   border-radius: 1.5rem;
-  color: white;
+  color: black;
   padding: 1rem;
 }
 
@@ -57,7 +57,7 @@
 
 .patient-images {
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .patient-images img {

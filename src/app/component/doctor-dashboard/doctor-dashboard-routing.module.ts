@@ -4,7 +4,11 @@ import { HomeComponent } from './home/home.component';
 import { AppointmentsComponent } from './home/appointments/appointments.component';
 import { ProfileComponent } from './home/profile/profile.component';
 
-const routes: Routes = [{
+const routes: Routes = [
+  {
+    path: "",component: HomeComponent
+  },
+  {
     path:'main-content', component: HomeComponent
   },
   {

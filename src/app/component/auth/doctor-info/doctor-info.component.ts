@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, Renderer2, ViewChild, ElementRef } fr
 import intlTelInput from 'intl-tel-input';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-doctor-info',
@@ -20,6 +21,7 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
       dob: ['', Validators.required],
       gender: ['', Validators.required],
       speciallity:['', Validators.required],
+      license: [null, Validators.required],
     });
   }
 
@@ -47,22 +49,26 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onLicenseChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.doctorForm.controls['license'].setValue(file);
+    }
+  }
+
   onSubmit() {
     if (this.doctorForm.valid) {
 
       // const formData = this.patientForm.value;
       // console.log('Patient Information Submitted:', formData);
 
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/doctor-dashboard/main-content']);
     } else {
       this.markAllAsTouched(this.doctorForm);
       return;
     }
   }
 
-  goBack() {
-    this.router.navigate(['/doctor-or-patient']);
-  }
 
   private markAllAsTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {

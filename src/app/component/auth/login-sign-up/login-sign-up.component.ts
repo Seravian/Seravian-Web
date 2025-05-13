@@ -1,6 +1,6 @@
 import { AuthResponse } from './../../../interfaces/auth-response';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, inject,ViewEncapsulation  } from '@angular/core';
 import {  OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -35,26 +35,35 @@ export class LoginsignupComponent  {
     this.isSignDivVisiable = true;
     this.statusMessage = ''; // Clear the status message when switching to Sign Up
   }
-
+  passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    return password && confirmPassword && password.value !== confirmPassword.value
+      ? { passwordMismatch: true }
+      : null;
+  }
   // auth = inject(Auth);
 
 
   private router = inject(Router)
 
   isSignDivVisiable: boolean  = true;
-
-  signUpObj: SignUpModel  = new SignUpModel();
-  loginObj: LoginModel  = new LoginModel();
-  userForm: FormGroup;
-  isFormSubmitted: boolean = false;
+  signUpForm: FormGroup;
+  loginForm: FormGroup;  isFormSubmitted: boolean = false;
   isLogin: boolean = true;
   statusMessage: string = "";
 
-  constructor(private authService: AuthService) {    this.userForm = new FormGroup({
-      email: new FormControl("",[Validators.required,Validators.pattern(StrongEmailRegx)]),
-      password: new FormControl("",[Validators.required,Validators.pattern(StrongPasswordRegx)])
-    })
-  }
+  constructor(private authService: AuthService) {   this.signUpForm = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
+    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+    confirmPassword: new FormControl("", [Validators.required])
+  }, { validators: this.passwordsMatchValidator }); // <-- form-level validator
+
+  this.loginForm = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.pattern(StrongEmailRegx)]),
+    password: new FormControl("", [Validators.required, Validators.pattern(StrongPasswordRegx)])
+  });
+}
 
   onRegister() {
     this.authService
@@ -63,34 +72,34 @@ export class LoginsignupComponent  {
     this.registerButtonText = "Sign Up";
 
 
-    if (this.userForm.valid) {
+    if (this.signUpForm.valid) {
       this.registerButtonText = "Processing...";
 
-      this.authService.register(this.userForm.value).subscribe({
+      this.authService.register(this.signUpForm.value).subscribe({
         next:(response)=>{
 
-          const profile = {
-            id: response.userId,
-            fullName: response.fullName,
-            email: response.email,
-            dateOfBirth: response.dateOfBirth,
-            gender: response.gender,
-            role: response.role,
-            isEmailVerified: response.isEmailVerified
-          };
+          // const profile = {
+          //   id: response.userId,
+          //   fullName: response.fullName,
+          //   email: response.email,
+          //   dateOfBirth: response.dateOfBirth,
+          //   gender: response.gender,
+          //   role: response.role,
+          //   isEmailVerified: response.isEmailVerified
+          // };
 
-          localStorage.setItem('profile', JSON.stringify(profile));
+          // localStorage.setItem('profile', JSON.stringify(profile));
 
-          const profileTokens = {
-            accessToken: response.tokens.accessToken,
-            refreshToken: response.tokens.refreshToken,
-            accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
-          }
+          // const profileTokens = {
+          //   accessToken: response.tokens.accessToken,
+          //   refreshToken: response.tokens.refreshToken,
+          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
+          // }
 
 
-          localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
-          console.log(response);
+
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
           this.router.navigate(['/verify-email']);
@@ -123,15 +132,20 @@ export class LoginsignupComponent  {
     this.isFormSubmitted = true;
     this.statusMessage = '';
 
-    if (this.userForm.controls['email'].valid && this.userForm.controls['password'].valid) {
-        const email = this.userForm.value.email;
-        const password = this.userForm.value.password;
-        console.log(this.userForm.value)
-    } else {
-        this.statusMessage = "Please complete all fields correctly.";
+    if (!this.loginForm.valid) {
+      this.statusMessage = "Please complete all fields correctly.";
+      return;
     }
-    this.authService.login(this.userForm.value).subscribe({
+
+    const email = this.loginForm.get('email')?.value;
+    this.authService.setTempEmail(email); // Store email in service for later use
+    const password = this.loginForm.get('password')?.value;
+    this.authService.setTempPass(password); // Store password in service for later use
+
+    this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
+        console.log(response);
+
 
         const profile = {
           id: response.userId,
@@ -140,16 +154,13 @@ export class LoginsignupComponent  {
           dateOfBirth: response.dateOfBirth,
           gender: response.gender,
           role: response.role,
-          isEmailVerified: response.isEmailVerified
+          isEmailVerified: response.isEmailVerified,
+          isProfileSetupComplete: response.isProfileSetupComplete
         };
+        console.log("hi",profile)
 
         localStorage.setItem('profile', JSON.stringify(profile));
 
-        // if (!response.tokens.accessToken || !response.tokens.refreshToken) {
-        //   this.statusMessage = 'Login response missing tokens.';
-        //   console.error('Missing access or refresh token in response:', response.tokens);
-        //   return;
-        // }
 
         const profileTokens = {
           accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
@@ -157,6 +168,7 @@ export class LoginsignupComponent  {
           accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
         }
 
+        console.log("encrypted tokens after signing in",profileTokens)
 
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 

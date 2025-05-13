@@ -1,3 +1,4 @@
+import { ChatSidebarComponent } from './component/chat_layout/chat-sidebar/chat-sidebar.component';
 import { SeravianBotComponent } from './component/seravian-bot/seravian-bot.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -10,10 +11,15 @@ import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.co
 import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
 import { AuthGuard } from './guard/auth_guards/auth.guard';
 import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
+import { ChatComponent } from './component/chat_layout/chat/chat.component';
 
 const routes: Routes = [{
   path : '',
   component:LoginsignupComponent,
+  },
+  {
+  path : 'chatbot',
+  component:ChatComponent, canActivate: [AuthGuard]
   },
   {
     path: 'auth',
@@ -32,6 +38,11 @@ const routes: Routes = [{
       .then(m => m.DoctorDashboardModule),
   },
   {
+    path: 'admin-dashboard',
+    loadChildren: () => import('./component/admin-dashboard/admin-dashboard.module')
+      .then(m => m.AdminDashboardModule),
+  },
+  {
     path: 'user-profile',
     loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
       .then(m => m.UserProfileModule), canActivate: [AuthGuard]
@@ -46,7 +57,7 @@ const routes: Routes = [{
     path: 'new-password', component: NewPasswordComponent
   },
   {
-    path: 'verify-email', component: VerifyEmailComponent, canActivate: [VerifyEmailGuard]
+    path: 'verify-email', component: VerifyEmailComponent,
   },
   {
     path: 'patient-info', component: PatientInfoComponent , canActivate: [VerifyEmailGuard]

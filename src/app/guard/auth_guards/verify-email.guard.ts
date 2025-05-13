@@ -54,12 +54,18 @@ export class VerifyEmailGuard implements CanActivate {
 
     const profile = JSON.parse(profileJson);
     const isEmailVerified = profile.isEmailVerified;
+    const isProfileSetupComplete = profile.isProfileSetupComplete;
 
-    if (isEmailVerified === false) {
+    if (isEmailVerified === false || isEmailVerified === undefined) {
       return true; // Allow access to /verify-email
     }
 
+    if (isProfileSetupComplete === false ) {
+      return true;
+    }
+
     // If already verified or malformed data, redirect
+    console.log('hi from verify email 2');
     this.router.navigate(['/']);
     return false;
   }

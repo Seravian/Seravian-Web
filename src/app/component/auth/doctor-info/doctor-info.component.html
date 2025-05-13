@@ -4,19 +4,6 @@
       <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
         <h1>Doctor Information</h1>
 
-        <span>Full Name</span>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter Your Full Name"
-          formControlName="fullName"
-        >
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['fullName'].invalid && (doctorForm.controls['fullName'].touched || doctorForm.controls['fullName'].dirty)">
-          <span>Full Name is required</span>
-        </div>
-
         <span>Phone Number</span>
           <input
             type="tel"
@@ -32,48 +19,6 @@
           <span>Please enter a valid phone number</span>
         </div>
 
-        <span>Date of Birth</span>
-        <input
-          type="date"
-          name="dob"
-          placeholder="Select Your DOB"
-          formControlName="dob"
-        >
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['dob'].invalid && (doctorForm.controls['dob'].touched || doctorForm.controls['dob'].dirty)">
-          <span>Date of Birth is required</span>
-        </div>
-
-        <span>Gender</span>
-        <div class="gender">
-          <label class="gender-option">
-            <input
-              type="radio"
-              style="height: 15px;"
-              name="gender"
-              value="male"
-              formControlName="gender"
-            >
-            Male
-          </label>
-          <label class="gender-option">
-            <input
-              type="radio"
-              style="height: 15px;"
-              name="gender"
-              value="female"
-              formControlName="gender"
-            >
-            Female
-          </label>
-        </div>
-        <div
-          class="text-danger"
-          *ngIf="doctorForm.controls['gender'].invalid && (doctorForm.controls['gender'].touched || doctorForm.controls['gender'].dirty)">
-          <span>Gender is required</span>
-        </div>
-
         <span>Speciallity</span>
         <input
           type="text"
@@ -86,9 +31,39 @@
           *ngIf="doctorForm.controls['speciallity'].invalid && (doctorForm.controls['speciallity'].touched || doctorForm.controls['speciallity'].dirty)">
           <span>Speciallity is required</span>
         </div>
+        <span>License</span>
+        <input
+          type="file"
+          name="license"
+          formControlName="license"
+          accept=".pdf,.jpg,.png,.jpeg"
+          (change)="onLicenseChange($event)"
+        />
+        <div
+          class="text-danger"
+          *ngIf="doctorForm.controls['license'].invalid && (doctorForm.controls['license'].touched || doctorForm.controls['license'].dirty)">
+          <span>License is required</span>
+        </div>
 
-        <button type="submit">Continue</button>
-        <button type="button" (click)="goBack()">Back</button>
+        <div class="time-range">
+          <mat-form-field appearance="outline">
+            <mat-label>Available From</mat-label>
+            <input matInput [ngxTimepicker]="fromPicker" formControlName="availableFrom" readonly>
+            <ngx-material-timepicker #fromPicker></ngx-material-timepicker>
+            <mat-icon matSuffix>schedule</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Available To</mat-label>
+            <input matInput [ngxTimepicker]="toPicker" formControlName="availableTo" readonly>
+            <ngx-material-timepicker #toPicker></ngx-material-timepicker>
+            <mat-icon matSuffix>schedule</mat-icon>
+          </mat-form-field>
+        </div>
+
+
+        <button type="submit">Submit</button>
+
       </form>
     </div>
   </div>

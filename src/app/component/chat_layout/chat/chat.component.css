@@ -1,0 +1,37 @@
+/* styles.css */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden; /* optional: clip rounded corners */
+}
+
+.chat-area {
+  flex-grow: 1;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: row; /* Keep it horizontal */
+  }
+
+  app-chat-sidebar {
+    position: relative;
+    width: auto;
+    height: 100vh;
+  }
+
+  .sidebar-open app-chat-sidebar .sidebar {
+    width: 16rem;
+  }
+
+  .sidebar-closed app-chat-sidebar .sidebar {
+    width: 4.5rem;
+    align-items: center;
+  }
+
+  .chat-area {
+    flex-grow: 1;
+    width: 100%;
+  }
+}

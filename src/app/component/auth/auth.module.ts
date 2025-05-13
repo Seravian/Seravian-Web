@@ -9,6 +9,11 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { PatientInfoComponent } from './patient-info/patient-info.component';
 import { DoctorInfoComponent } from './doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './doctor-or-patient/doctor-or-patient.component';
+import { WaitingLandingComponent } from './waiting-landing/waiting-landing.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 
 @NgModule({
@@ -18,12 +23,17 @@ import { DoctorOrPatientComponent } from './doctor-or-patient/doctor-or-patient.
     VerifyEmailComponent,
     PatientInfoComponent,
     DoctorInfoComponent,
-    DoctorOrPatientComponent
+    DoctorOrPatientComponent,
+    WaitingLandingComponent
   ],
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    NgxMaterialTimepickerModule,
   ]
 })
 export class AuthModule { }

@@ -13,7 +13,7 @@ import { of, EMPTY } from 'rxjs';
 import { ProfileRequest } from '../interfaces/profile-request';
 import { Tokens } from '../interfaces/tokens';
 import { Router } from '@angular/router';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
 
 
 
@@ -26,6 +26,8 @@ export class AuthService {
   APIUrl:string = environment.APIUrl;
   private tokenkey = 'token'
 
+
+
   constructor(private http: HttpClient) { }
 
     private router = inject(Router)
@@ -37,15 +39,6 @@ export class AuthService {
       map((response)=>{
 
         if(response.isEmailVerified){
-          // const encryptedAccessToken = this.EncryptToken(response.tokens.accessToken!);
-          // const encryptedRefreshToken = this.EncryptToken(response.tokens.refreshToken!);
-          // const profileTokens = {
-          //   accessToken: encryptedAccessToken,
-          //   refreshToken: encryptedRefreshToken,
-          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc,
-          // };
-
-          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
           console.log('email verified login is working');
           return response;
 
@@ -64,7 +57,7 @@ export class AuthService {
       })
     )
   }
-
+// ***************************************************************
   private tempRole: number | null = null;
 
   setTempRole(role: number) {
@@ -74,25 +67,44 @@ export class AuthService {
   getTempRole(): number | null {
     return this.tempRole;
   }
+// **********************************************************
+  private email: string | null = null;
 
-  // getUserDetail = () =>{
-  //   const token = this.getToken();
-  //   if(!token) return true;
-  //   const decodedToken : any = jwtDecode(token);
-  //   const userDetail = {
-  //     id: decodedToken.nameid,
-  //     fullname: decodedToken.name,
-  //     email: decodedToken.email,
-  //     roles: decodedToken.role || [],
-  //   }
-  //   return userDetail;
-  // }
+  setTempEmail(email: string | null) {
+    this.email = email;
+  }
+
+  getTempEmail(): string | null {
+    return this.email;
+  }
+// ***********************************************************
+
+  private pass: string | null = null;
+
+  setTempPass(pass: string | null) {
+    this.pass = pass;
+  }
+
+  getTempPass(): string | null {
+    return this.pass;
+  }
+// ************************************************************
+
+
 
   isLoggedIn =():boolean =>{
     const token = this.getToken() ;
     if(!token) return false ;
     return !this.isTokenExpired();
   };
+
+  private isSignalRTokenValid(): boolean {
+    const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
+    if (!expiryString) return true;
+    const expiry = new Date(expiryString).getTime();
+    const expiryWithBuffer = expiry - 60_000; // Add 1 min buffer
+    return expiryWithBuffer > Date.now();
+  }
 
   private isTokenExpired(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
@@ -171,9 +183,21 @@ export class AuthService {
       throw new Error('No refresh token found');
     }
 
-    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {
-      refreshToken: refreshToken
-    });
+    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {refreshToken: refreshToken})
+    .pipe(
+      map((response) => {
+        // Save new tokens
+        const encryptedAccessToken = this.EncryptToken(response.accessToken!);
+        const encryptedRefreshToken = this.EncryptToken(response.refreshToken!);
+        const profileTokens = {
+          accessToken: encryptedAccessToken,
+          refreshToken: encryptedRefreshToken,
+          accessTokenExpirationUtc: response.accessTokenExpirationUtc,
+        };
+        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+        return response;
+      })
+    );
   }
 
 
@@ -194,5 +218,33 @@ export class AuthService {
     }
   }
 
+  getTokenForSignalR(): string | null {
+    console.log('getTokenForSignalR called');
 
+    if (this.isSignalRTokenValid() === true) {
+      const Tokens = JSON.parse(localStorage.getItem('profileTokens') || '{}');
+      Tokens.accessToken = this.DecryptToken(Tokens.accessToken);
+      console.log('Access token is not expired:', Tokens);
+      return Tokens.accessToken ;
+    } else {
+      let token: string | null = null;
+      this.refreshTokens().subscribe({
+        next: (tokens) => {
+          console.log('Token refreshed successfully:', tokens);
+          token = tokens.accessToken || '';
+        },
+        error: (err) => {
+          console.error('error from getTokenForSignalR', err);
+        }
+      });
+      return token;
+    }
+  }
+
+
+}
+
+export interface tempPass {
+  email: string;
+  password: string;
 }
