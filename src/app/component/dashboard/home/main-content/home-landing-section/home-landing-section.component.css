@@ -57,7 +57,7 @@
 
 .patient-images {
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .patient-images img {

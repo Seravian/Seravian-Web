@@ -1,6 +1,6 @@
 /* Exeperience Difference Section */
 
-.dental-services {
+.mental-health-services {
   padding: 6rem 0;
   background-color: #eeeeff;
   display: flex;
@@ -10,7 +10,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.dental-title-wrapper {
+.mental-title-wrapper {
   width: 100%;
   max-width: calc(300px * 3 + 60px);
   margin-bottom: 30px;
