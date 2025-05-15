@@ -63,7 +63,7 @@ const routes: Routes = [{
     path: 'patient-info', component: PatientInfoComponent , canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'doctor-info', component: DoctorInfoComponent , canActivate: [VerifyEmailGuard]
+    path: 'doctor-info', component: DoctorInfoComponent ,
   },
   {
     path: 'doctor-or-patient', component: DoctorOrPatientComponent , canActivate: [VerifyEmailGuard]

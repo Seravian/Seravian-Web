@@ -22,6 +22,8 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
       gender: ['', Validators.required],
       speciallity:['', Validators.required],
       license: [null, Validators.required],
+      availableFrom: ['', ],  // Add the control here
+      availableTo: ['', ]
     });
   }
 
