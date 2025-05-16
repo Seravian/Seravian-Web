@@ -12,6 +12,7 @@ import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doc
 import { AuthGuard } from './guard/auth_guards/auth.guard';
 import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
 import { ChatComponent } from './component/chat_layout/chat/chat.component';
+import { VoiceModeComponent } from './component/voice-mode/voice-mode.component';
 
 const routes: Routes = [{
   path : '',
@@ -20,6 +21,9 @@ const routes: Routes = [{
   {
   path : 'chatbot',
   component:ChatComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'voice-mode', component: VoiceModeComponent , canActivate: [AuthGuard]
   },
   {
     path: 'auth',
@@ -46,9 +50,6 @@ const routes: Routes = [{
     path: 'user-profile',
     loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
       .then(m => m.UserProfileModule), canActivate: [AuthGuard]
-  },
-  {
-    path: 'seravianbot', component: SeravianBotComponent , canActivate: [AuthGuard]
   },
   {
     path: 'forget-password', component: ForgetPasswordComponent

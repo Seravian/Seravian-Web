@@ -6,6 +6,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { th } from 'intl-tel-input/i18n';
 import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -30,7 +31,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -246,6 +248,33 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   selectOption(option: string): void {
     console.log(`Selected option: ${option}`);
     this.isPopupVisible = false;
+  }
+
+  handleButtonClick(event: Event): void {
+
+    console.log('event triggered');
+
+    const button = (event.currentTarget as HTMLElement);
+    button.classList.add('hide-tooltip');
+
+    // Remove the class after a short delay to re-enable tooltip later
+    setTimeout(() => {
+      button.classList.remove('hide-tooltip');
+    }, 5000); // Adjust delay if needed
+  }
+
+
+  hasText(): boolean {
+    return this.userMessage.trim().length > 0;
+  }
+
+  activateVoiceMode(): void {
+    if(this.selectedChat){
+      console.log('Voice mode activated');
+      this.router.navigate(['/voice-mode']);
+    }else{
+      window.alert('please select a chat');
+    }
   }
 
   @HostListener('document:click', ['$event'])
