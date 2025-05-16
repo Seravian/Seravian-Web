@@ -9,6 +9,8 @@
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
 />
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <body>
   <div class="pop-window">
     <!-- chatBox Header part -->
@@ -91,8 +93,9 @@
           required
         ></textarea>
         <div class="chat-controls">
-          <button type="button" id="emoji-picker" class="material-symbols-rounded">
+          <button type="button" id="emoji-picker" class="material-symbols-rounded has-tooltip" (click)="handleButtonClick($event)">
             sentiment_satisfied
+            <span class="button-label">Emoji</span>
           </button>
 
           <div class="file-upload-cover">
@@ -101,10 +104,11 @@
             <button
               type="button"
               id="file-upload"
-              class="material-symbols-rounded"
-              (click)="togglePopup()"
+              class="material-symbols-rounded has-tooltip"
+              (click)="togglePopup(); handleButtonClick($event)"
             >
               attach_file
+              <span class="button-label">Attch</span>
             </button>
 
             <button type="button" id="file-cancel" class="material-symbols-rounded">
@@ -112,13 +116,35 @@
             </button>
           </div>
 
-          <button type="button" id="record-audio" class="material-symbols-rounded">
+          <button type="button" id="record-audio" class="material-symbols-rounded has-tooltip" (click)="handleButtonClick($event)">
             mic
+            <span class="button-label">Dictate</span>
           </button>
 
-          <button type="submit" id="send-msg" class="material-symbols-rounded">
-            arrow_upward
-          </button>
+            <!-- Voice Mode Button -->
+            <button
+              id ="voice-mode"
+              class="voice-button has-tooltip"
+              *ngIf="!hasText()"
+              (click)="activateVoiceMode(); handleButtonClick($event)"
+              aria-label="Voice Mode"
+            >
+              <!-- <span class="material-symbols-rounded">mic</span> -->
+               <i class="fa-solid fa-microphone-lines"></i>
+               <span class="button-label">Voice Mode</span>
+            </button>
+
+            <!-- Send Button -->
+            <button
+             type="submit"
+             id="send-msg"
+             *ngIf="hasText()"
+             class="material-symbols-rounded has-tooltip"
+             (click)="handleButtonClick($event)"
+             >
+              arrow_upward
+              <span class="button-label">Send</span>
+            </button>
         </div>
       </form>
 

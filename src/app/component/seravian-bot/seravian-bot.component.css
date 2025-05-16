@@ -53,9 +53,6 @@ body {
   align-items: center;
 }
 
- .form-ofchat .chat-controls #send-msg:hover {
-  background: #3d39ac;
-}
 
 
 .chat-bot-img {
@@ -369,6 +366,55 @@ body {
   background: #5350c4;
 }
 
+.form-ofchat .chat-controls #send-msg:hover {
+  background: #3d39ac;
+}
+
+/* Style the voice mode button (mic) */
+#voice-mode {
+  background: #5350c4;
+  color: #eee;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease-in-out;
+}
+
+#voice-mode:hover {
+  background: #3d39ac;
+}
+
+/* Tooltip styling for buttons */
+.chat-controls button {
+  position: relative;
+}
+
+/* Hidden by default */
+.chat-controls .button-label {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+
+.chat-controls .has-tooltip:hover:not(.hide-tooltip) .button-label {
+  opacity: 1;
+}
+
+
+
 /* *************************************************************************** */
 
 .popup-menu ul {
@@ -476,6 +522,7 @@ body.show-emoji-picker em-emoji-picker{
 
 
 
+
 /* here is the code of mediaquery */
 
 
@@ -522,7 +569,7 @@ body.show-emoji-picker em-emoji-picker{
   }
 
   .form-ofchat .message-field {
-    height: 42px;
+    /* height: 42px; */
     padding: 12px;
     font-size: 1rem;
 
@@ -535,8 +582,8 @@ body.show-emoji-picker em-emoji-picker{
   }
 
   .form-ofchat .chat-controls button {
-    height: 34px;
-    width: 34px;
+    /* height: 34px; */
+    /* width: 34px; */
     font-size: 1.1rem;
   }
 
@@ -549,74 +596,3 @@ body.show-emoji-picker em-emoji-picker{
 }
 
 
-/* ********************************************************************************************************* */
-
-
-/* .chat-sidebar {
-  width: 250px;
-  background-color: #f4f4f4;
-  padding: 1rem;
-  height: 100vh;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  overflow-y: auto;
-}
-
-.create-chat-btn {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.create-chat-btn:hover {
-  background-color: #0056b3;
-}
-
-.chat-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.chat-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  background: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
-.chat-name {
-  flex: 1;
-  cursor: pointer;
-}
-
-.edit-input {
-  flex: 1;
-  padding: 0.3rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.chat-actions button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  margin-left: 0.3rem;
-}
-
-.chat-actions i {
-  font-size: 14px;
-  color: #555;
-}
-
-.chat-actions button:hover i {
-  color: #000;
-}
- */

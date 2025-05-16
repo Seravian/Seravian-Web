@@ -1,0 +1,72 @@
+.voice-mode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  height: 100vh;
+  background-color: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.back-btn {
+  align-self: flex-start;
+  margin-bottom: 2rem;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.mic-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.pulse {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: red;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.transcript-box {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.placeholder {
+  color: #aaa;
+  font-style: italic;
+}
