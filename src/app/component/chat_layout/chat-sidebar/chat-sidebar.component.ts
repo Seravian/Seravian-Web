@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { ChatService } from '../../../services/chat.service';
 import { Chat } from '../../../interfaces/chat';
 import { ChatMessage } from '../../../interfaces/chat-message';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-sidebar',
@@ -17,7 +18,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   showConfirmModal = false;
   chatToDeleteId: string | null = null;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService , private router: Router) {}
 
 
 
@@ -151,6 +152,11 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
     } else {
       this.isSidebarOpen = true;
     }
+  }
+
+  exitFromChat():void{
+    console.log('exiting chat');
+    this.router.navigate(['/dashboard']);
   }
 
 
