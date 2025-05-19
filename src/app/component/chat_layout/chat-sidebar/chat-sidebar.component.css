@@ -23,7 +23,7 @@ body {
 
 .sidebar {
   /* background-color: #1a202c; */
-  background: linear-gradient(to bottom, #452fb8, #816df3);
+  background: linear-gradient(to bottom, #452fb8, #8872ff);
   color: white;
   transition: width 0.3s;
   display: flex;

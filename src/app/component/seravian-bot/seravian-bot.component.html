@@ -11,8 +11,8 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-<body>
-  <div class="pop-window">
+<body *ngIf="!isVoiceModeActivated()">
+  <div class="pop-window" >
     <!-- chatBox Header part -->
     <div class="header-part">
       <div class="header-info">
@@ -163,5 +163,26 @@
     </div>
   </div>
 
+
+
   <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </body>
+
+
+<div class="voiceMode" *ngIf="isVoiceModeActivated()">
+  <div class="voice-mode-container">
+    <button class="back-btn" (click)="deactivateVoiceMode()">⬅ Back to Chat</button>
+
+    <div class="mic-status">
+      <span class="pulse" *ngIf="isListening"></span>
+      <p>{{ isListening ? 'Listening...' : 'Processing...' }}</p>
+    </div>
+
+    <div class="transcript-box">
+      <p *ngIf="transcript; else waiting">🗣️ {{ transcript }}</p>
+      <ng-template #waiting>
+        <p class="placeholder">Say something...</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,9 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { ChatService } from '../../../services/chat.service';
 import { Chat } from '../../../interfaces/chat';
 import { ChatMessage } from '../../../interfaces/chat-message';
-import { Route, Router } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { VoiceService } from '../../../services/voice.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-chat-sidebar',
@@ -14,13 +16,18 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   mobileBreakpoint = 500;
   isSearchOpen = false;
   selectedChatId: string | null = null;
+  sessionChatId: string | null = null;
   dropdownVisible: string | null = null;
   showConfirmModal = false;
   chatToDeleteId: string | null = null;
 
-  constructor(private chatService: ChatService , private router: Router) {}
+  constructor(
+    private chatService: ChatService ,
+    private voiceService: VoiceService,
+    private router: Router
+  ) {}
 
-
+  private currentUrl: string = '';
 
   chats: Chat[] = [];
 
@@ -38,25 +45,53 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
         console.error('Failed to load chats:', err);
       }
     });
+
+    this.sessionChatId = sessionStorage.getItem('chatId');
+
+    // Track URL changes
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.currentUrl = event.urlAfterRedirects;
+      });
+
+    // Handle tab close or refresh
+    window.addEventListener('beforeunload', this.handleUnload);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+
+  }
+
+  private handleUnload = (event: BeforeUnloadEvent) => {
+    const isChatPage = window.location.pathname.includes('/chatbot');
+    if (!isChatPage) {
+      this.cleanupSession();
+    }
+  };
+
+  private handleVisibilityChange = () => {
+    const isChatPage = window.location.pathname.includes('/chatbot');
+    if (document.visibilityState === 'hidden' && !isChatPage) {
+      this.cleanupSession();
+    }
+  };
+
+
+  private cleanupSession(): void {
+    sessionStorage.removeItem('chatId');
+    this.sessionChatId = null;
+    console.log('Chat session cleaned up (route/tab close).');
   }
 
 
   selectChat(chatId: string) {
     this.selectedChatId = chatId;
+    this.sessionChatId = chatId; // <-- Add this line
     console.log('Selected chat ID:', chatId);
+    sessionStorage.setItem('chatId',chatId);
 
-    this.chatService.getChatMessages(chatId).subscribe({
-      next: (chatMessages:Chat) => {
-        const selectedChat = this.chats.find(chat => chat.id === chatId);
-        if (selectedChat) {
-          selectedChat.messages = chatMessages.messages??[];
-          this.chatService.setSelectedChat(selectedChat);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load chat messages:', err);
-      }
-    });
+    this.chatService.setChats();
+    this.chatService.setSelectedChat();
+
   }
 
 
@@ -156,7 +191,12 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
 
   exitFromChat():void{
     console.log('exiting chat');
+    this.cleanupSession();
     this.router.navigate(['/dashboard']);
+  }
+
+  isVoiceModeActivated():boolean{
+    return this.voiceService.getVoiceModeStatus();
   }
 
 
@@ -181,6 +221,9 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.checkWindowWidth.bind(this));
+    this.cleanupSession();
+    window.removeEventListener('beforeunload', this.handleUnload);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
 

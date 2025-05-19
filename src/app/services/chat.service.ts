@@ -29,13 +29,9 @@ export class ChatService {
     this.messagesSubject.next([...current, message]);
   }
 
-  // combine sidebar with messages
-  private selectedChatSource = new BehaviorSubject<any>(null);
-  selectedChat$ = this.selectedChatSource.asObservable();
 
-  setSelectedChat(chat: Chat) {
-    this.selectedChatSource.next(chat);
-  }
+  // combine sidebar with messages
+
 
   private missedMessagesSource = new BehaviorSubject<any[]>([]);
   missedMessages$ = this.missedMessagesSource.asObservable();
@@ -49,7 +45,8 @@ export class ChatService {
 }
 
 
-
+  private connectionEstablishedSource = new BehaviorSubject<boolean>(false);
+  public connectionEstablished$ = this.connectionEstablishedSource.asObservable();
 
   // ***********************************************************************************
 
@@ -114,7 +111,7 @@ export class ChatService {
         console.log('Last timestamp in chat service:', lastTimestamp);
 
         if (messages.length==0||lastMessage==null){
-          console.log('not today')
+          console.log('not today no last message')
         }else{
           this.syncMessages(selectedChat.id, lastTimestamp).subscribe({
             next:(missedMessages) => {
@@ -135,12 +132,16 @@ export class ChatService {
     this.hubConnection.start()
       .then(() => {
         console.log('Connection started');
+        this.connectionEstablishedSource.next(true); // Mark as connected
       })
       .catch(err => {
         console.error('Error while starting connection: ' + err)
         console.log('Retrying connection...');
-        this.hubConnection.start()
+        // this.hubConnection.start()
+        this.hubConnection.start().then(() => this.connectionEstablishedSource.next(true));
       });
+
+    this.setChats();
   }
 
   // ────────────────────────────────────────────────
@@ -204,7 +205,48 @@ export class ChatService {
       .pipe(map((response) => response));
   }
 
+// **********************************************************************************
 
+  private chats: Chat[] = [];
+
+
+  setChats():void{
+    this.getChats().subscribe({
+      next: (chats) => {
+        this.chats = chats;
+        // console.log('chats after setting',chats);
+        this.setSelectedChat();
+      },
+      error: (err) => {
+        console.error('Failed to load chats:', err);
+      }
+    });
+  }
+
+  private selectedChatSource = new BehaviorSubject<any>(null);
+  selectedChat$ = this.selectedChatSource.asObservable();
+
+  setSelectedChat() {
+    const chatId = sessionStorage.getItem('chatId');
+    // console.log('sessionStorage has now:',chatId);
+    // console.log('chatttts haaaaas nooooothing' , this.chats);
+    if (chatId) {
+      this.getChatMessages(chatId).subscribe({
+        next: (chatMessages:Chat) => {
+          const selectedChat = this.chats.find(chat => chat.id === chatId);
+          if (selectedChat) {
+            selectedChat.messages = chatMessages.messages??[];
+            this.selectedChatSource.next(selectedChat);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load chat messages:', err);
+        }
+      });
+    }else{
+      // console.log('choose a chat you S.O.B');
+    }
+  }
 
 
 }

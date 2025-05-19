@@ -11,6 +11,22 @@ export class VoiceService {
 
   public transcript$ = this.transcriptSubject.asObservable();
 
+  // ***************************************************************
+  private isVoiceModeActive: boolean = false;
+
+  activateVoiceModeService() {
+    this.isVoiceModeActive = true;
+  }
+
+  deactivateVoiceModeService() {
+    this.isVoiceModeActive = false;
+  }
+
+  getVoiceModeStatus(): boolean {
+    return this.isVoiceModeActive;
+  }
+// **********************************************************
+
   constructor(private zone: NgZone) {
     this.initRecognition();
   }

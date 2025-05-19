@@ -3,10 +3,11 @@ import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../interfaces/chat';
 import { ChatMessage } from '../../interfaces/chat-message';
 import { ChangeDetectorRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { filter, Subscription, take } from 'rxjs';
 import { th } from 'intl-tel-input/i18n';
 import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
 import { Router } from '@angular/router';
+import { VoiceService } from '../../services/voice.service';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -32,48 +33,47 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private voiceService: VoiceService
   ) {}
 
   ngOnInit(): void {
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
+    if (!chat) return;
 
-      if(this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id){ //first time selected or new chat selected
+    if (this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id) {
+      this.selectedChat = chat;
+      this.oldSelectedChat = chat;
 
-        this.selectedChat = chat;
-        this.oldSelectedChat = chat;
-
-        if (chat) {
+      // Wait for SignalR connection before joining
+      this.chatService.connectionEstablished$
+        .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
+        .subscribe(() => {
           this.chatService.joinChat(chat.id)
             .then(() => {
               console.log(`1 Joined chat ${chat.id}`);
 
-              // Get the last message from the selected chat
               if (chat.messages && chat.messages.length > 0) {
                 const lastMessage = chat.messages[chat.messages.length - 1];
                 this.chatService.addMessage(lastMessage);
                 console.log('added message:', lastMessage);
-              }else{
+              } else {
                 console.log('No messages in the selected chat yet.');
               }
 
+              this.cdr.detectChanges();
+              setTimeout(() => {
+                this.scrollToBottom();
+                this.messageInputRef.nativeElement.focus();
+              }, 50);
             })
             .catch(err => console.error('Failed to join chat', err));
-
-          this.cdr.detectChanges();
-          setTimeout(() => {
-            this.scrollToBottom();
-            this.messageInputRef.nativeElement.focus();
-          }, 50);
-
-        }
-
-      }else{
-        console.log('Same chat selected, no action taken.');
-      }
-
-    });
+        });
+    } else {
+      console.log('Same chat selected, no action taken.');
+    }
+  });
 
 
     // One-time missed messages sync
@@ -158,7 +158,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       }
     });
 
-
   }
 
   sendMessage(): void {
@@ -207,9 +206,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     this.chatService.setMissedMessages([]); // Clear missed messages on destroy
   }
 
-// **********************************************
-// ***************UI Features********************
-// **********************************************
+  // **********************************************
+  // ***************UI Features********************
+  // **********************************************
 
   scrollToBottom(): void {
     try {
@@ -252,7 +251,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   handleButtonClick(event: Event): void {
 
-    console.log('event triggered');
+    // console.log('event triggered');
 
     const button = (event.currentTarget as HTMLElement);
     button.classList.add('hide-tooltip');
@@ -271,10 +270,39 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   activateVoiceMode(): void {
     if(this.selectedChat){
       console.log('Voice mode activated');
-      this.router.navigate(['/voice-mode']);
+      this.voiceService.activateVoiceModeService();
+      // Voice Mode
+      this.voiceService.startListening();
+      this.isListening = true;
+
+      this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
+        if (text) {
+          this.transcript = text;
+          // this.downloadTranscript(text); // or send to backend
+          const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
+
+          // Optimistic UI update
+          this.unConfirmedMessages.push({
+            clientMessageId: messageClientId,
+            content: text,
+            timestampUtc: new Date()
+          });
+
+          this.chatService.sendClientRequest(text, messageClientId)
+            .catch(err => console.error('SignalR send failed', err));
+
+          this.isListening = false;
+        }
+      });
+
     }else{
       window.alert('please select a chat');
     }
+  }
+
+
+  isVoiceModeActivated():boolean{
+    return this.voiceService.getVoiceModeStatus();
   }
 
   @HostListener('document:click', ['$event'])
@@ -284,4 +312,48 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       this.isPopupVisible = false;
     }
   }
+
+  // *************************************************
+  // ************ًWHEN VOICE MODE ACTIVATED************
+  // *************************************************
+
+  isListening = false;
+  transcript: string = '';
+  private transcriptSub!: Subscription;
+
+
+  toggleVoiceMode() {
+    if (this.voiceService.isCurrentlyListening()) {
+      this.voiceService.stopListening();
+      this.isListening = false;
+    } else {
+      this.voiceService.startListening();
+      this.isListening = true;
+    }
+  }
+
+  private downloadTranscript(text: string) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'voice-transcript.txt';
+    anchor.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  deactivateVoiceMode(): void {
+    // if(this.selectedChat){
+      console.log('Voice mode deactivated');
+      this.isListening = false;
+      this.transcript = '';
+      this.voiceService.stopListening();
+      this.transcriptSub.unsubscribe();
+      this.voiceService.deactivateVoiceModeService();
+
+    // }else{
+    //   window.alert('please select a chat');
+    // }
+  }
+
 }
