@@ -5,11 +5,6 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class VoiceService {
-  private recognition: any;
-  private isListening = false;
-  public transcriptSubject = new BehaviorSubject<string | null>(null);
-
-  public transcript$ = this.transcriptSubject.asObservable();
 
   // ***************************************************************
   private isVoiceModeActive: boolean = false;
@@ -25,7 +20,23 @@ export class VoiceService {
   getVoiceModeStatus(): boolean {
     return this.isVoiceModeActive;
   }
-// **********************************************************
+  // ***************************************************************
+
+  private recognition: any;
+  private isListening = false;
+  public transcriptSubject = new BehaviorSubject<string | null>(null);
+
+  public transcript$ = this.transcriptSubject.asObservable();
+
+  // audio levels *****************************************************
+  public volumeLevelSubject = new BehaviorSubject<number>(0);
+  public volumeLevel$ = this.volumeLevelSubject.asObservable();
+
+  private audioContext: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
+  private microphone: MediaStreamAudioSourceNode | null = null;
+  private volumeInterval: any;
+  // ******************************************************************
 
   constructor(private zone: NgZone) {
     this.initRecognition();
@@ -71,19 +82,54 @@ export class VoiceService {
     if (!this.recognition) return;
 
     if (!this.isListening) {
-      this.recognition.start();
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        this.monitorVolume(stream);
+        this.recognition.start();
+        this.isListening = true;
+      });
       this.isListening = true;
     }
+
+
+
   }
 
   stopListening() {
     if (this.recognition && this.isListening) {
       this.recognition.stop();
       this.isListening = false;
+      clearInterval(this.volumeInterval);
+      this.volumeLevelSubject.next(0);
+      this.audioContext?.close();
     }
   }
 
   isCurrentlyListening(): boolean {
     return this.isListening;
   }
+
+  // audio levels *****************************************************
+
+  private monitorVolume(stream: MediaStream) {
+    this.audioContext = new AudioContext();
+    this.analyser = this.audioContext.createAnalyser();
+    this.microphone = this.audioContext.createMediaStreamSource(stream);
+    const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    this.microphone.connect(this.analyser);
+
+    this.volumeInterval = setInterval(() => {
+      this.analyser!.getByteFrequencyData(dataArray);
+      let values = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        values += dataArray[i];
+      }
+      const average = values / dataArray.length;
+      this.zone.run(() => {
+        this.volumeLevelSubject.next(average);
+      });
+    }, 100); // ~10fps for realism
+  }
+
+
+
 }

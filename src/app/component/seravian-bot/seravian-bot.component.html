@@ -168,15 +168,30 @@
   <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </body>
 
+<!-- ********************************************* -->
+ <!-- ***********Voice Mode Section************  -->
+<!-- ********************************************* -->
 
 <div class="voiceMode" *ngIf="isVoiceModeActivated()">
   <div class="voice-mode-container">
     <button class="back-btn" (click)="deactivateVoiceMode()">⬅ Back to Chat</button>
 
-    <div class="mic-status">
+    <!-- <div class="mic-status">
       <span class="pulse" *ngIf="isListening"></span>
       <p>{{ isListening ? 'Listening...' : 'Processing...' }}</p>
+    </div> -->
+
+    <div class="voice-visualizer">
+      <div
+        class="circle"
+        [ngStyle]="{
+          transform: 'scale(' + getScale() + ')'
+        }"
+      >
+        <img src="images/Voice-Wave.png" alt="Mic Icon" />
+      </div>
     </div>
+
 
     <div class="transcript-box">
       <p *ngIf="transcript; else waiting">🗣️ {{ transcript }}</p>

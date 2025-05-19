@@ -274,6 +274,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       console.log('Voice mode activated');
       this.voiceService.activateVoiceModeService();
       // Voice Mode
+      this.voiceService.volumeLevel$.subscribe(level => {
+        this.volumeLevel = level;
+      });
       this.voiceService.startListening();
       this.isListening = true;
 
@@ -322,6 +325,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   isListening = false;
   transcript: string = '';
+  volumeLevel = 0;
   private transcriptSub!: Subscription;
 
 
@@ -344,6 +348,14 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     anchor.click();
     window.URL.revokeObjectURL(url);
   }
+
+  getScale(): number {
+    const minScale = 1;
+    const maxScale = 2;
+    const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
+    return minScale + normalizedVolume * (maxScale - minScale);
+  }
+
 
   deactivateVoiceMode(): void {
     // if(this.selectedChat){
