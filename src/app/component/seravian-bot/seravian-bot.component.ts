@@ -350,6 +350,12 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       this.voiceService.stopListening();
       this.transcriptSub.unsubscribe();
       this.voiceService.deactivateVoiceModeService();
+      if (this.selectedChat) {
+        setTimeout(() => {
+          this.scrollToBottom();
+          this.messageInputRef.nativeElement.focus();
+        }, 50);
+      }
 
     // }else{
     //   window.alert('please select a chat');
