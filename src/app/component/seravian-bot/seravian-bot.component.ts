@@ -23,6 +23,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   userMessage: string = '';
   message: ChatMessage | null = null;
   unConfirmedMessages: UnConfirmedClientMessages[] = [];
+  selectedChatMessages: ChatMessage[] = [];
 
   private chatSubscription!: Subscription;
   private missedMessagesSubscription!: Subscription;
@@ -40,40 +41,40 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
-    if (!chat) return;
+      if (!chat) return;
 
-    if (this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id) {
-      this.selectedChat = chat;
-      this.oldSelectedChat = chat;
+      if (this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id) {
+        this.selectedChat = chat;
+        this.oldSelectedChat = chat;
 
-      // Wait for SignalR connection before joining
-      this.chatService.connectionEstablished$
-        .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
-        .subscribe(() => {
-          this.chatService.joinChat(chat.id)
-            .then(() => {
-              console.log(`1 Joined chat ${chat.id}`);
+        // Wait for SignalR connection before joining
+        this.chatService.connectionEstablished$
+          .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
+          .subscribe(() => {
+            this.chatService.joinChat(chat.id)
+              .then(() => {
+                console.log(`1 Joined chat ${chat.id}`);
 
-              if (chat.messages && chat.messages.length > 0) {
-                const lastMessage = chat.messages[chat.messages.length - 1];
-                this.chatService.addMessage(lastMessage);
-                console.log('added message:', lastMessage);
-              } else {
-                console.log('No messages in the selected chat yet.');
-              }
+                if (chat.messages && chat.messages.length > 0) {
+                  const lastMessage = chat.messages[chat.messages.length - 1];
+                  this.chatService.addMessage(lastMessage);
+                  console.log('added message:', lastMessage);
+                } else {
+                  console.log('No messages in the selected chat yet.');
+                }
 
-              this.cdr.detectChanges();
-              setTimeout(() => {
-                this.scrollToBottom();
-                this.messageInputRef.nativeElement.focus();
-              }, 50);
-            })
-            .catch(err => console.error('Failed to join chat', err));
-        });
-    } else {
-      console.log('Same chat selected, no action taken.');
-    }
-  });
+                this.cdr.detectChanges();
+                setTimeout(() => {
+                  this.scrollToBottom();
+                  this.messageInputRef.nativeElement.focus();
+                }, 50);
+              })
+              .catch(err => console.error('Failed to join chat', err));
+          });
+      } else {
+        console.log('Same chat selected, no action taken.');
+      }
+    });
 
 
     // One-time missed messages sync
@@ -148,6 +149,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             timestampUtc: data.timestampUtc,
             isAI: false
           });
+          console.log('confirmed message timestamp:', data.timestampUtc);
           setTimeout(() => {
             this.scrollToBottom();
             this.messageInputRef.nativeElement.focus();
@@ -291,6 +293,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           this.chatService.sendClientRequest(text, messageClientId)
             .catch(err => console.error('SignalR send failed', err));
 
+          this.voiceService.transcriptSubject.next(null); // Clear the transcript after sending
           this.isListening = false;
         }
       });

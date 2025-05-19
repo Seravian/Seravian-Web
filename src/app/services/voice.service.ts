@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 export class VoiceService {
   private recognition: any;
   private isListening = false;
-  private transcriptSubject = new BehaviorSubject<string | null>(null);
+  public transcriptSubject = new BehaviorSubject<string | null>(null);
 
   public transcript$ = this.transcriptSubject.asObservable();
 
