@@ -90,6 +90,8 @@ export class ChatService {
     this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
       console.log('Notification AI audio response ready:', data);
 
+      console.log('ID of the AI audio:', data.aiAudioId);
+
       this.downloadAIAudio(+data.aiAudioId).subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
@@ -238,7 +240,7 @@ export class ChatService {
   }
 
   downloadAIAudio(aIaudioId: number): Observable<Blob> {
-    const params = new HttpParams().set('AudioId', aIaudioId);
+    const params = new HttpParams().set('aIAudioId', aIaudioId);
     const url = `${this.ChatUrl}/voice-mode-download-ai-voice`;
 
     return this.http.get(url, { params, responseType: 'blob' });
