@@ -89,6 +89,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
     console.log('Selected chat ID:', chatId);
     sessionStorage.setItem('chatId',chatId);
 
+    this.chatService.addMessage(null);
     this.chatService.setChats();
     this.chatService.setSelectedChat();
 
@@ -159,6 +160,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
           if (this.selectedChatId === this.chatToDeleteId) this.selectedChatId = null;
           this.chatToDeleteId = null;
           this.showConfirmModal = false;
+          this.cleanupSession();
         },
         error: (err) => {
           console.error('Failed to delete chat:', err);

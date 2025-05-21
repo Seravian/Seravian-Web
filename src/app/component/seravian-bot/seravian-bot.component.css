@@ -360,6 +360,7 @@ body {
 .noChat{
   height: 700px;
   display: flex;
+  text-align: center;
   align-items: center;
   justify-content: center;
 }
@@ -715,6 +716,5 @@ body.show-emoji-picker em-emoji-picker{
   height: 100%;
   object-fit: cover;
 }
-
 
 

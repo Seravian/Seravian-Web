@@ -24,6 +24,7 @@ export class ChatService {
 
   // Helper to add messages
   addMessage(message: any) {
+    if (message == null) {console.log('selected chat changed, cleaning Messages');}
     console.log('Adding message:', message);
     const current = this.messagesSubject.value;
     this.messagesSubject.next([...current, message]);
@@ -65,7 +66,7 @@ export class ChatService {
       this.addMessage({
         id: data.id,
         content: data.message,
-        timestampUtc: data.timestampUtc,
+        timestampUtc: new Date(data.timestampUtc).toLocaleString(),
         isAI: false
       });
     });
@@ -76,7 +77,7 @@ export class ChatService {
       this.addMessage({
         id: data.id,
         content: data.message,
-        timestampUtc: data.timestampUtc,
+        timestampUtc: new Date(data.timestampUtc).toLocaleString(),
         isAI: true
       });
     });
@@ -84,6 +85,25 @@ export class ChatService {
 
     this.hubConnection.on('confirm-client-request', (data:ConfirmClientRequestDto) => {
       console.log('Confirmed client message', data);
+    });
+
+    this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
+      console.log('Notification AI audio response ready:', data);
+
+      this.downloadAIAudio(+data.aiAudioId).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ai-response-${data.aiAudioId}.wav`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Error downloading AI audio', err);
+        }
+      });
+
     });
 
 
@@ -161,6 +181,8 @@ export class ChatService {
     });
   }
 
+
+
   syncMessages(chatId: string, lastMessageTimestampUtc: string): Observable<any[]> {
     const params = new HttpParams()
       .set('chatId', chatId)
@@ -205,6 +227,25 @@ export class ChatService {
       .pipe(map((response) => response));
   }
 
+  uploadVoice(voiceFile: File, chatId: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('voiceFile', voiceFile);
+    formData.append('chatId', chatId);
+
+    return this.http.post<any>(`${this.ChatUrl}/voice-mode-upload-user-voice`, formData).pipe(
+      map((response) => response)
+    );
+  }
+
+  downloadAIAudio(aIaudioId: number): Observable<Blob> {
+    const params = new HttpParams().set('AudioId', aIaudioId);
+    const url = `${this.ChatUrl}/voice-mode-download-ai-voice`;
+
+    return this.http.get(url, { params, responseType: 'blob' });
+  }
+
+
+
 // **********************************************************************************
 
   private chats: Chat[] = [];
@@ -214,7 +255,6 @@ export class ChatService {
     this.getChats().subscribe({
       next: (chats) => {
         this.chats = chats;
-        // console.log('chats after setting',chats);
         this.setSelectedChat();
       },
       error: (err) => {
@@ -228,13 +268,13 @@ export class ChatService {
 
   setSelectedChat() {
     const chatId = sessionStorage.getItem('chatId');
-    // console.log('sessionStorage has now:',chatId);
-    // console.log('chatttts haaaaas nooooothing' , this.chats);
+
     if (chatId) {
       this.getChatMessages(chatId).subscribe({
         next: (chatMessages:Chat) => {
           const selectedChat = this.chats.find(chat => chat.id === chatId);
           if (selectedChat) {
+            console.log('Loged Messages:', chatMessages.messages??[]);
             selectedChat.messages = chatMessages.messages??[];
             this.selectedChatSource.next(selectedChat);
           }
@@ -244,7 +284,7 @@ export class ChatService {
         }
       });
     }else{
-      // console.log('choose a chat you S.O.B');
+      console.log('No chat selected yet to set selected chat');
     }
   }
 

@@ -24,6 +24,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   message: ChatMessage | null = null;
   unConfirmedMessages: UnConfirmedClientMessages[] = [];
   selectedChatMessages: ChatMessage[] = [];
+  sentMessageAtChat: Chat | null = null;
 
   private chatSubscription!: Subscription;
   private missedMessagesSubscription!: Subscription;
@@ -85,10 +86,12 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         console.log('Missed messages:', missedMessages);
         this.selectedChat.messages.push(...missedMessages.map((message: ChatMessage) => ({
           id: message.id,
-          isAI: false,
+          isAI: message.isAI,
           content: message.content,
           timestampUtc: message.timestampUtc
         })));
+        // this.selectedChat.messages.push(...missedMessages);
+        // console.log('missed messages',missedMessages);
 
         // Clear missed messages after syncing
         this.chatService.setMissedMessages([]);
@@ -138,9 +141,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
     // Listen to SignalR confirm-client-request
     this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
-      if (this.selectedChat) {
+      if (this.selectedChat && this.selectedChat.id === this.sentMessageAtChat?.id) {
         const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
-        console.log('Confirmed message:', confirmedMessage);
+        console.log('Unconfirmed message:', confirmedMessage);
         if (confirmedMessage) {
           // Optimistic UI update
           this.selectedChat.messages.push({
@@ -165,14 +168,17 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   sendMessage(): void {
     const message = this.userMessage.trim();
     if (message && this.selectedChat) {
+      this.sentMessageAtChat = this.selectedChat; // Store the chat where the message was sent
       const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
 
       // Optimistic UI update
       this.unConfirmedMessages.push({
         clientMessageId: messageClientId,
         content: message,
-        timestampUtc: new Date()
+        timestampUtc: new Date(Date.now())
       });
+
+      console.log('Unconfirmed messages timesatmp:', this.unConfirmedMessages[0].timestampUtc);
 
       this.chatService.sendClientRequest(message, messageClientId)
         .catch(err => console.error('SignalR send failed', err));
@@ -269,42 +275,19 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.userMessage.trim().length > 0;
   }
 
-  activateVoiceMode(): void {
-    if(this.selectedChat){
-      console.log('Voice mode activated');
-      this.voiceService.activateVoiceModeService();
-      // Voice Mode
-      this.voiceService.volumeLevel$.subscribe(level => {
-        this.volumeLevel = level;
-      });
-      this.voiceService.startListening();
-      this.isListening = true;
+  // activateVoiceMode(): void {
+  //   if (!this.selectedChat) return alert('Please select a chat');
 
-      this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
-        if (text) {
-          this.transcript = text;
-          // this.downloadTranscript(text); // or send to backend
-          const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
+  //   console.log('Voice mode activated');
+  //   this.voiceService.activateVoiceModeService();
 
-          // Optimistic UI update
-          this.unConfirmedMessages.push({
-            clientMessageId: messageClientId,
-            content: text,
-            timestampUtc: new Date()
-          });
+  //   this.voiceService.volumeLevel$.subscribe(level => {
+  //     this.volumeLevel = level;
+  //   });
 
-          this.chatService.sendClientRequest(text, messageClientId)
-            .catch(err => console.error('SignalR send failed', err));
-
-          this.voiceService.transcriptSubject.next(null); // Clear the transcript after sending
-          this.isListening = false;
-        }
-      });
-
-    }else{
-      window.alert('please select a chat');
-    }
-  }
+  //   // this.voiceService.startListening();
+  //   this.isListening = true;
+  // }
 
 
   isVoiceModeActivated():boolean{
@@ -325,8 +308,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   isListening = false;
   transcript: string = '';
-  volumeLevel = 0;
   private transcriptSub!: Subscription;
+  volumeLevel = 0;
 
 
   toggleVoiceMode() {
@@ -349,16 +332,45 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     window.URL.revokeObjectURL(url);
   }
 
-  getScale(): number {
-    const minScale = 1;
-    const maxScale = 2;
-    const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
-    return minScale + normalizedVolume * (maxScale - minScale);
+    activateVoiceMode(): void {
+    if(this.selectedChat){
+      console.log('Voice mode activated');
+      this.voiceService.activateVoiceModeService();
+      // Voice Mode
+      this.voiceService.startListening();
+      this.isListening = true;
+
+      this.voiceService.volumeLevel$.subscribe(level => {
+        this.volumeLevel = level;
+      });
+
+      this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
+        if (text) {
+          this.transcript = text;
+          // this.downloadTranscript(text); // or send to backend
+          // const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
+
+          // // Optimistic UI update
+          // this.unConfirmedMessages.push({
+          //   clientMessageId: messageClientId,
+          //   content: text,
+          //   timestampUtc: new Date()
+          // });
+
+          // this.chatService.sendClientRequest(text, messageClientId)
+          //   .catch(err => console.error('SignalR send failed', err));
+
+          // this.voiceService.transcriptSubject.next(null); // Clear the transcript after sending
+          this.isListening = false;
+        }
+      });
+
+    }else{
+      window.alert('please select a chat');
+    }
   }
 
-
   deactivateVoiceMode(): void {
-    // if(this.selectedChat){
       console.log('Voice mode deactivated');
       this.isListening = false;
       this.transcript = '';
@@ -372,9 +384,33 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         }, 50);
       }
 
-    // }else{
-    //   window.alert('please select a chat');
-    // }
   }
+
+
+  getScale(): number {
+    const minScale = 1;
+    const maxScale = 2;
+    const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
+    return minScale + normalizedVolume * (maxScale - minScale);
+  }
+
+  // deactivateVoiceMode(): void {
+  //   console.log('Voice mode deactivated');
+  //   this.isListening = false;
+  //   // this.voiceService.stopListening();
+  //   this.voiceService.deactivateVoiceModeService();
+  //   if (this.selectedChat) {
+  //     setTimeout(() => {
+  //       this.scrollToBottom();
+  //       this.messageInputRef.nativeElement.focus();
+  //     }, 50);
+  //   }
+  // }
+
+
+  // downloadTestAudio(): void {
+  //   this.voiceService.downloadRecordedAudio();
+  // }
+
 
 }
