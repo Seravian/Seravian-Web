@@ -1,0 +1,92 @@
+<div class="appointments-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <h2 class="title">Psychologist / Therapist Approval Requests</h2>
+
+    <div class="appointments-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Qualification</th>
+            <th>Experience</th>
+            <th>License</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of requests">
+            <td>{{ request.id + 1 }}</td>
+            <td>
+              <div class="patient-info">
+                <img [src]="request.avatar" [alt]="request.name" class="patient-avatar" />
+                <div class="patient-details">
+                  <span class="patient-name">{{ request.name }}</span>
+                  <span class="patient-age">{{ request.age }} yrs</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ request.qualification }}</td>
+            <td>{{ request.experience }} yrs</td>
+            <td>
+              <img
+                [src]="request.licenseImage"
+                alt="License"
+                class="license-image"
+                (click)="openLicenseImage(request.licenseImage)" />
+            </td>
+            <td>
+              <span class="status-badge"
+                [ngClass]="{
+                  'completed': request.status === 'Approved',
+                  'cancelled': request.status === 'Rejected',
+                  'pending': request.status === 'Pending'
+                }">
+                {{ request.status }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  *ngIf="request.status === 'Pending'"
+                  [ngClass]="{
+                    'btn': true,
+                    'approved': true
+                  }"
+                  (click)="approveRequest(request)"
+                  [disabled]="request.status !== 'Pending'"
+                >
+                  Approve
+                </button>
+
+                <button
+                  *ngIf="request.status === 'Pending'"
+                  [ngClass]="{
+                    'btn': true,
+                    'rejected': true
+                  }"
+                  (click)="rejectRequest(request)"
+                  [disabled]="request.status !== 'Pending'"
+                >
+                  Reject
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for License Image -->
+<div *ngIf="isModalOpen" class="modal" (click)="closeModal()">
+  <div class="modal-content">
+    <img [src]="selectedLicenseImage" alt="License" class="modal-image" />
+  </div>
+</div>
+
+<app-admin-footer></app-admin-footer>

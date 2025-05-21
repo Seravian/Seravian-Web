@@ -1,0 +1,98 @@
+<div class="parent">
+  <div class="container">
+    <div class="form-container">
+      <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
+        <h1>User Information</h1>
+
+        <span>Full Name</span>
+        <input
+          type="text"
+          name="fullName"
+          placeholder="Enter Your Full Name"
+          formControlName="fullName"
+        >
+        <div
+          class="text-danger"
+          *ngIf="patientForm.controls['fullName'].invalid && (patientForm.controls['fullName'].touched || patientForm.controls['fullName'].dirty)">
+          <span>Full Name is required</span>
+        </div>
+
+        <!-- <span>Phone Number</span>
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phone"
+            formControlName="phoneNumber"
+            placeholder="Enter Your Phone Number"
+            #phoneInput
+          />
+        <div
+          class="text-danger"
+          *ngIf="patientForm.controls['phoneNumber'].invalid && (patientForm.controls['phoneNumber'].touched || patientForm.controls['phoneNumber'].dirty)">
+          <span>Please enter a valid phone number</span>
+        </div> -->
+
+        <span>Date of Birth</span>
+        <input
+          type="date"
+          name="dob"
+          placeholder="Select Your DOB"
+          formControlName="dob"
+        >
+      <div class="text-danger"
+              *ngIf="patientForm.controls['dob'].invalid &&
+                      (patientForm.controls['dob'].touched || patientForm.controls['dob'].dirty)">
+            <span *ngIf="patientForm.controls['dob'].errors?.['required']">
+              Date of Birth is required
+            </span>
+            <span *ngIf="patientForm.controls['dob'].errors?.['futureDate']">
+              Date of Birth cannot be in the future
+            </span>
+    </div>
+
+
+        <span>Gender</span>
+        <div class="gender">
+          <label class="gender-option">
+            <input
+              type="radio"
+              style="height: 15px;"
+              name="gender"
+              [value]="0"
+              formControlName="gender"
+            >
+            Male
+          </label>
+          <label class="gender-option">
+            <input
+              type="radio"
+              style="height: 15px;"
+              name="gender"
+              [value]="1"
+              formControlName="gender"
+            >
+            Female
+          </label>
+        </div>
+        <div
+          class="text-danger"
+          *ngIf="patientForm.controls['gender'].invalid && (patientForm.controls['gender'].touched || patientForm.controls['gender'].dirty)">
+          <span>Gender is required</span>
+        </div>
+
+        <div>
+          <input type="checkbox" id="terms" name="terms" required>
+          <label for="terms">
+            I have read and agree to Seravian's
+            <a href="/terms-of-service" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
+            and
+            <a href="/privacy-policy" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit">Continue</button>
+        <button type="button" (click)="goBack()">Back</button>
+      </form>
+    </div>
+  </div>
+</div>

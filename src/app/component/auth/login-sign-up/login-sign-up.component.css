@@ -16,13 +16,11 @@
     justify-content: center;
     flex-direction: column;
     height: 100vh;
+    /* padding:0 10px; */
 }
 
-asl-google-signin-button{
-  color: #333;
-  font-size: 13px;
-  text-decoration: none;
-  margin: 15px 0 10px;
+a{
+  cursor: pointer;
 }
 
 .container{
@@ -45,6 +43,7 @@ asl-google-signin-button{
 
 .container span{
     font-size: 12px;
+    margin-bottom: 15px;
 }
 
 .container a{
@@ -99,6 +98,14 @@ asl-google-signin-button{
     top: 0;
     height: 100%;
     transition: all 0.6s ease-in-out;
+}
+.status-message{
+  color: red;
+  font-weight: bold;
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+  padding-left: 10px;
+  text-align: left;
 }
 
 .sign-in{
@@ -222,4 +229,30 @@ asl-google-signin-button{
 
 .container.active .toggle-right{
     transform: translateX(200%);
+}
+
+
+/* responsive design */
+
+/* @media (max-width: 1024px) {
+  .container {
+    width: 90%;
+    min-height: 500px;
+  }
+} */
+
+@media (max-width: 792px) {
+  .container {
+    width: 90%;
+    min-height: 550px;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    min-height: 650px;
+  }
+  h1{
+    font-size: 1.5rem;
+  }
 }

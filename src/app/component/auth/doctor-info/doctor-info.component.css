@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.parent {
+  background-color: #c9d6ff;
+  background: linear-gradient(to right, #c9d6ff, #7059f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+h1 {
+  margin: 8px 0;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+  width: 425px;
+  max-width: 100%;
+  min-height: 635px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container span {
+  font-size: 14px;
+  font-weight: bolder;
+  margin: 3px 0 10px;
+  align-self: start;
+  color: #2d333a;
+}
+
+.container input,
+.container .gender {
+  background-color: #eee;
+  border: none;
+  padding: 8px 15px;
+  font-size: 13px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+
+.container input:focus {
+  border: 2px solid #4e34cf;
+}
+
+.container button {
+  background-color: #4e34cf;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.container button[type="button"] {
+  background-color: #e0e0e0;
+  color: #333;
+  margin: 10px 0;
+}
+
+.container form {
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 30px;
+  height: 100%;
+  text-align: center;
+}
+/* Spacing for the form controls */
+.container form > * {
+  margin-bottom: 20px; /* Adds space between each form element */
+}
+
+.form-container {
+  position: relative;
+}
+
+form button {
+  align-self: center;
+}
+.time-range {
+  display: flex;
+  gap: 1rem; /* Space between the two fields */
+  flex-wrap: nowrap; /* Prevents wrapping on small screens */
+}
+
+.time-range mat-form-field {
+  flex: 1 1 220px; /* Ensures both fields take equal width */
+  min-width: 190px  ;}
+
+/* Ensures that the form fields do not wrap and always stay next to each other */
+.time-range {
+  display: flex;
+  gap: 8px; /* Adjust space between fields as needed */
+  flex-wrap: nowrap; /* Prevents wrapping of the fields */
+  justify-content: space-between;
+  margin-top: 25px;}
+.time-range .mat-mdc-text-field-wrapper {
+  width: 75% !important;
+}
+.mat-mdc-form-field-required-marker {
+  display: none !important;
+}
+.mat-form-field-required {
+  display: none !important;
+}
+.mat-mdc-form-field-infix {
+  flex: auto;
+  min-width: 0;
+  width: 180px;
+  position: relative;
+  box-sizing: border-box;
+  height: 40px;
+}
+
+@media (max-width: 600px) {
+  .time-range {
+    /* flex-direction: column; */
+    height: 56px;
+  }
+}
