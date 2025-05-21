@@ -29,6 +29,7 @@
     "intl-tel-input": "^25.2.1",
     "jwt-decode": "^4.0.0",
     "ngx-material-timepicker": "^13.1.1",
+    "recorder-js": "^1.0.7",
     "rxjs": "~7.8.0",
     "swiper": "^11.1.15",
     "tslib": "^2.3.0",

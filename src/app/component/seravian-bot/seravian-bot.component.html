@@ -11,8 +11,8 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-<body>
-  <div class="pop-window">
+<body *ngIf="!isVoiceModeActivated()">
+  <div class="pop-window" >
     <!-- chatBox Header part -->
     <div class="header-part">
       <div class="header-info">
@@ -38,7 +38,7 @@
         <div *ngFor="let message of messages; ">
 
           <!-- User message -->
-          <div *ngIf="!message.isAI" class="user-message">
+          <div *ngIf="(!message.isAI)" class="user-message">
             <div class="user-message-text message-text">
               {{ message.content }}
               <span class="custom-break"></span>
@@ -73,12 +73,14 @@
       </ng-container>
 
       <ng-template #noChatSelected>
-        <p>Please select a chat to view messages.</p>
+        <div class="noChat">
+          <p>Please select a chat to view messages 🤨!??</p>
+        </div>
       </ng-template>
     </div>
 
     <!-- Chat footer -->
-    <div class="chat-footer">
+    <div *ngIf="selectedChat" class="chat-footer">
 
       <form (ngSubmit)="sendMessage()" class="form-ofchat">
         <textarea
@@ -124,14 +126,14 @@
             <!-- Voice Mode Button -->
             <button
               id ="voice-mode"
-              class="voice-button has-tooltip"
+              class="voice-mode-svg has-tooltip"
               *ngIf="!hasText()"
               (click)="activateVoiceMode(); handleButtonClick($event)"
               aria-label="Voice Mode"
             >
               <!-- <span class="material-symbols-rounded">mic</span> -->
-               <i class="fa-solid fa-microphone-lines"></i>
-               <span class="button-label">Voice Mode</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="37.9" height="37.7" viewBox="1.9 1.9 30 30"><path fill="currentColor" d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14s14-6.268 14-14S23.732 2 16 2m-2.5 8a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V11a1 1 0 0 1 1-1m10 1v10a1 1 0 1 1-2 0V11a1 1 0 1 1 2 0M18 12.5a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1M10 14v4a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0"/></svg>
+              <span class="button-label">Voice Mode</span>
             </button>
 
             <!-- Send Button -->
@@ -161,5 +163,38 @@
     </div>
   </div>
 
+
+
   <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </body>
+
+<!-- ********************************************* -->
+ <!-- ***********Voice Mode Section************  -->
+<!-- ********************************************* -->
+
+<div class="voiceMode" *ngIf="isVoiceModeActivated()">
+  <div class="voice-mode-container">
+    <button class="back-btn" (click)="deactivateVoiceMode()">⬅ Back to Chat</button>
+
+
+    <div class="voice-visualizer">
+      <div
+        class="circle"
+        [ngStyle]="{
+          transform: 'scale(' + getScale() + ')'
+        }"
+      >
+        <img src="images/Voice-Wave.png" alt="Mic Icon" />
+      </div>
+    </div>
+
+
+    <div class="transcript-box">
+      <p *ngIf="transcript; else waiting">🗣️ {{ transcript }}</p>
+      <ng-template #waiting>
+        <p class="placeholder">Say something...</p>
+      </ng-template>
+
+    </div>
+  </div>
+</div>

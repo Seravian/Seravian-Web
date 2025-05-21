@@ -18,7 +18,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';  // Import this
 import { FormsModule } from '@angular/forms';  // Import FormsModule here
 import { ChatService } from './services/chat.service';
-import { VoiceModeComponent } from './component/voice-mode/voice-mode.component';
 
 
 @NgModule({
@@ -27,7 +26,6 @@ import { VoiceModeComponent } from './component/voice-mode/voice-mode.component'
     SeravianBotComponent,
     ChatSidebarComponent,
     ChatComponent,
-    VoiceModeComponent
   ],
   imports: [
     BrowserModule,

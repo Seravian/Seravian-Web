@@ -38,8 +38,8 @@ body {
   padding: 25px 22px;
   display: flex;
   gap: 20px;
-  margin-bottom: 82px;
-  height: 460px;
+  /* margin-bottom: 82px; */
+  height: 510px;
   overflow-y: auto;
   flex-direction: column;
   scrollbar-width: thin;
@@ -280,8 +280,6 @@ body {
 
 /* ****************************************************************************** */
 .chat-footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
   background: #fff;
   padding: 15px 22px 20px;
@@ -359,6 +357,20 @@ body {
 
 }
 
+.noChat{
+  height: 700px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.noChat p{
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .form-ofchat .chat-controls #send-msg {
 
   color: #fff;
@@ -372,17 +384,22 @@ body {
 
 /* Style the voice mode button (mic) */
 #voice-mode {
-  background: #5350c4;
-  color: #eee;
+  height: 35px;
+  width: 35px;
+  border: none;
+  font-size: 1.15rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: none;
+  border-radius: 50%;
+  transition: 0.2s ease;
+  background: #eee;
+  color: #5350c4;
+  cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
 
 #voice-mode:hover {
-  background: #3d39ac;
+  color: #3d39ac;
 }
 
 /* Tooltip styling for buttons */
@@ -529,10 +546,10 @@ body.show-emoji-picker em-emoji-picker{
 @media (max-width: 1024px) {
   .pop-window {
     width: 100%;
-    height: 100%; /* Full-screen height */
+    height: 100%;
     /* border-radius: 0; */
     margin: 0.5rem;
-    box-shadow: none;
+    /* box-shadow: none; */
   }
 
   .header-part {
@@ -551,8 +568,9 @@ body.show-emoji-picker em-emoji-picker{
 
   .chat-body {
     padding: 18px 15px;
-    height: calc(100vh - 160px); /* Adjusted to fit within full-screen */
-    margin-bottom: 75px;
+    /* height: calc(100vh - 160px);  */
+    /* height: 100%; */
+    /* margin-bottom: 75px; */
     gap: 16px;
   }
 
@@ -593,6 +611,110 @@ body.show-emoji-picker em-emoji-picker{
     transform: none;
     top: -300px;
   }
+}
+
+/* ************************************************ */
+/* ***************Voice Mode Styles**************** */
+/* ************************************************ */
+
+.voice-mode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  height: 100vh;
+  background: linear-gradient(to right, #8741b7, #47389b);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.back-btn {
+  align-self: flex-start;
+  margin-bottom: 2rem;
+  background-color: #47389b;
+  color: #fff;
+  border: 1px solid #352979;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.mic-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.pulse {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: red;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.transcript-box {
+  background-color: #bc57ff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.placeholder {
+  color: #ffffff;
+  font-style: italic;
+}
+
+.voice-visualizer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
+
+.circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: #e3e3ff;
+  box-shadow: 0 0 30px rgba(117, 42, 115, 0.5);
+  transition: transform 0.1s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 
