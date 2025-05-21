@@ -8,6 +8,7 @@ import { th } from 'intl-tel-input/i18n';
 import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
 import { Router } from '@angular/router';
 import { VoiceService } from '../../services/voice.service';
+import { MessageType } from '../../interfaces/message-type.enum';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -25,6 +26,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   unConfirmedMessages: UnConfirmedClientMessages[] = [];
   selectedChatMessages: ChatMessage[] = [];
   sentMessageAtChat: Chat | null = null;
+  MessageType = MessageType;
 
   private chatSubscription!: Subscription;
   private missedMessagesSubscription!: Subscription;
@@ -88,7 +90,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           id: message.id,
           isAI: message.isAI,
           content: message.content,
-          timestampUtc: message.timestampUtc
+          timestampUtc: message.timestampUtc,
+          messageType: message.messageType
         })));
         // this.selectedChat.messages.push(...missedMessages);
         // console.log('missed messages',missedMessages);
@@ -113,7 +116,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           id: data.id,
           isAI: false,
           content: data.message,
-          timestampUtc: data.timestampUtc
+          timestampUtc: data.timestampUtc,
+          messageType: data.messageType
         });
         setTimeout(() => {
           this.scrollToBottom();
@@ -129,7 +133,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           id: data.id,
           isAI: true,
           content: data.message,
-          timestampUtc: data.timestampUtc
+          timestampUtc: data.timestampUtc,
+          messageType: data.messageType
         });
         setTimeout(() => {
           this.scrollToBottom();
@@ -150,7 +155,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             id: data.messageId,
             content: confirmedMessage.content,
             timestampUtc: data.timestampUtc,
-            isAI: false
+            isAI: false,
+            messageType: data.messageType
           });
           console.log('confirmed message timestamp:', data.timestampUtc);
           setTimeout(() => {

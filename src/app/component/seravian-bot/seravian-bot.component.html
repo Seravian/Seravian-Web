@@ -38,7 +38,7 @@
         <div *ngFor="let message of messages; ">
 
           <!-- User message -->
-          <div *ngIf="!message.isAI" class="user-message">
+          <div *ngIf="(!message.isAI)" class="user-message">
             <div class="user-message-text message-text">
               {{ message.content }}
               <span class="custom-break"></span>

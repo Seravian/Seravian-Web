@@ -1,3 +1,4 @@
+import { MessageType } from '../interfaces/message-type.enum';
 
 import { Chat } from './../interfaces/chat';
 import { Injectable } from '@angular/core';
@@ -67,7 +68,8 @@ export class ChatService {
         id: data.id,
         content: data.message,
         timestampUtc: new Date(data.timestampUtc).toLocaleString(),
-        isAI: false
+        isAI: false,
+        messageType: data.messageType
       });
     });
 
@@ -78,7 +80,8 @@ export class ChatService {
         id: data.id,
         content: data.message,
         timestampUtc: new Date(data.timestampUtc).toLocaleString(),
-        isAI: true
+        isAI: true,
+        messageType: data.messageType
       });
     });
 
