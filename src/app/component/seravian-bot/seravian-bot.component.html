@@ -80,7 +80,7 @@
     </div>
 
     <!-- Chat footer -->
-    <div *ngIf="!isSelectecChatDeleted()" class="chat-footer">
+    <div *ngIf="selectedChat&&!isSelectecChatDeleted()" class="chat-footer">
 
       <form (ngSubmit)="sendMessage()" class="form-ofchat">
         <textarea
