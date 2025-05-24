@@ -84,14 +84,16 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
 
 
   selectChat(chatId: string) {
+    this.chatService.unDeleteChatFlag();
+
     this.selectedChatId = chatId;
     this.sessionChatId = chatId; // <-- Add this line
     console.log('Selected chat ID:', chatId);
     sessionStorage.setItem('chatId',chatId);
 
-    this.chatService.addMessage(null);
+    // this.chatService.addMessage(null);
     this.chatService.setChats();
-    this.chatService.setSelectedChat();
+    // this.chatService.setSelectedChat();
 
   }
 
@@ -161,6 +163,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
           this.chatToDeleteId = null;
           this.showConfirmModal = false;
           this.cleanupSession();
+          this.chatService.deleteChatFlag();
         },
         error: (err) => {
           console.error('Failed to delete chat:', err);
