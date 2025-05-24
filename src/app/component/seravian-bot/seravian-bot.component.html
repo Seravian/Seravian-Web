@@ -34,7 +34,7 @@
 
     <!-- Chat body messages -->
     <div class="chat-body" #chatBody>
-      <ng-container *ngIf="selectedChat; else noChatSelected">
+      <ng-container *ngIf="selectedChat||!isSelectecChatDeleted()">
         <div *ngFor="let message of messages; ">
 
           <!-- User message -->
@@ -72,15 +72,15 @@
         </div>
       </ng-container>
 
-      <ng-template #noChatSelected>
+      <ng-container *ngIf="!selectedChat||isSelectecChatDeleted()">
         <div class="noChat">
           <p>Please select a chat to view messages 🤨!??</p>
         </div>
-      </ng-template>
+      </ng-container>
     </div>
 
     <!-- Chat footer -->
-    <div *ngIf="selectedChat" class="chat-footer">
+    <div *ngIf="!isSelectecChatDeleted()" class="chat-footer">
 
       <form (ngSubmit)="sendMessage()" class="form-ofchat">
         <textarea

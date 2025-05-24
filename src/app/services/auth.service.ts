@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { LoginRequest } from '../interfaces/login-request';
-import { map, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { AuthResponse } from '../interfaces/auth-response';
 // import jwt_decode, { jwtDecode } from 'jwt-decode';
 import { jwtDecode } from 'jwt-decode';
@@ -98,13 +98,13 @@ export class AuthService {
     return !this.isTokenExpired();
   };
 
-  private isSignalRTokenValid(): boolean {
-    const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
-    if (!expiryString) return true;
-    const expiry = new Date(expiryString).getTime();
-    const expiryWithBuffer = expiry - 60_000; // Add 1 min buffer
-    return expiryWithBuffer > Date.now();
-  }
+  // private isSignalRTokenValid(): boolean {
+  //   const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
+  //   if (!expiryString) return true;
+  //   const expiry = new Date(expiryString).getTime();
+  //   const expiryWithBuffer = expiry - 60_000; // Add 1 min buffer
+  //   return expiryWithBuffer > Date.now();
+  // }
 
   private isTokenExpired(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
@@ -218,33 +218,36 @@ export class AuthService {
     }
   }
 
-  getTokenForSignalR(): string | null {
+  // getTokenForSignalR(): string | null {
+  //   console.log('getTokenForSignalR called');
+
+  //   let token: string | null = null;
+  //   this.refreshTokens().subscribe({
+  //     next: (tokens) => {
+  //       console.log('Token refreshed successfully:', tokens);
+  //       token = tokens.accessToken || '';
+  //     },
+  //     error: (err) => {
+  //       console.error('error from getTokenForSignalR', err);
+  //     }
+  //   });
+  //   return token;
+  // }
+
+  async getTokenForSignalR(): Promise<string> {
     console.log('getTokenForSignalR called');
 
-    if (this.isSignalRTokenValid() === true) {
-      const Tokens = JSON.parse(localStorage.getItem('profileTokens') || '{}');
-      Tokens.accessToken = this.DecryptToken(Tokens.accessToken);
-      console.log('Access token is not expired:', Tokens);
-      return Tokens.accessToken ;
-    } else {
-      let token: string | null = null;
-      this.refreshTokens().subscribe({
-        next: (tokens) => {
-          console.log('Token refreshed successfully:', tokens);
-          token = tokens.accessToken || '';
-        },
-        error: (err) => {
-          console.error('error from getTokenForSignalR', err);
-        }
-      });
-      return token;
+    try {
+      const tokens = await firstValueFrom(this.refreshTokens()); // Convert Observable to Promise
+      console.log('Token refreshed successfully:', tokens);
+      return tokens.accessToken || '';
+    } catch (error) {
+      console.error('Error from getTokenForSignalR', error);
+      return '';
     }
   }
 
 
+
 }
 
-export interface tempPass {
-  email: string;
-  password: string;
-}

@@ -1,9 +1,9 @@
 import { MessageType } from './message-type.enum';
 export interface ChatMessage {
   clientMessageId?: string | null;
-  id?: number | null;
+  id: number ;
   content: string | null;
-  timestampUtc: Date;
+  timestampUtc: string;
   isAI: boolean;
   messageType?: MessageType;
 }

@@ -1,5 +1,6 @@
 export interface ConfirmClientRequestDto {
-  timestampUtc : Date;
+  chatId: string;
+  timestampUtc : string;
   messageId : number;
   clientMessageId : string;
 }

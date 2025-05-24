@@ -198,6 +198,7 @@ import { ChatService } from './chat.service';
 export class VoiceService {
   private isVoiceModeActive: boolean = false;
   private isListening = false;
+  private mediaStream: MediaStream | null = null;
   private recognition: any;
   private audioChunks: Blob[] = [];
   private mediaRecorder!: MediaRecorder;
@@ -207,6 +208,9 @@ export class VoiceService {
   private volumeInterval: any;
   private hasSpeech = false;
   private speechRecognitionStarted = false;
+  private silenceInterval: any = null;
+  private silenceAudioContext: AudioContext | null = null;
+
 
   public transcriptSubject = new BehaviorSubject<string | null>(null);
   public transcript$ = this.transcriptSubject.asObservable();
@@ -270,6 +274,7 @@ export class VoiceService {
     if (this.isListening) return;
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      this.mediaStream = stream; // ✅ store it
       this.isListening = true;
       this.hasSpeech = false;
       this.speechRecognitionStarted = false;
@@ -290,9 +295,27 @@ export class VoiceService {
       this.mediaRecorder.stop(); // triggers onstop
     }
 
+    // ✅ Stop the silence interval and audio context
+    if (this.silenceInterval) {
+      clearInterval(this.silenceInterval);
+      this.silenceInterval = null;
+    }
+
+    if (this.silenceAudioContext) {
+      this.silenceAudioContext.close();
+      this.silenceAudioContext = null;
+    }
+
+    // Stop the microphone stream
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(track => track.stop()); // ✅ stops the mic
+      this.mediaStream = null;
+    }
+
     clearInterval(this.volumeInterval);
     this.volumeLevelSubject.next(0);
     this.audioContext?.close();
+    this.audioContext = null;
 
     this.isListening = false;
   }
@@ -324,14 +347,14 @@ export class VoiceService {
     let silenceTimer: any = null;
     let userStartedSpeaking = false;
 
-    const audioContext = new AudioContext();
-    const analyser = audioContext.createAnalyser();
-    const source = audioContext.createMediaStreamSource(stream);
+    this.silenceAudioContext = new AudioContext();
+    const analyser = this.silenceAudioContext.createAnalyser();
+    const source = this.silenceAudioContext.createMediaStreamSource(stream);
     analyser.fftSize = 2048;
     const dataArray = new Uint8Array(analyser.frequencyBinCount);
     source.connect(analyser);
 
-    const interval = setInterval(() => {
+    this.silenceInterval = setInterval(() => {
       analyser.getByteFrequencyData(dataArray);
       const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
       console.log('Average volume level:', avg);
@@ -352,8 +375,6 @@ export class VoiceService {
       } else if (userStartedSpeaking) {
         if (!silenceTimer) {
           silenceTimer = setTimeout(() => {
-            clearInterval(interval);
-            audioContext.close();
             this.stopListening(); // triggers onstop
           }, silenceDelay);
         }
@@ -404,14 +425,4 @@ export class VoiceService {
   }
 
 
-  public downloadRecordedAudio(blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recorded-voice.wav';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
 }
