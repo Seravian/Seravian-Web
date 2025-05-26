@@ -103,6 +103,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     // Listen to SignalR receive-client-request
     this.chatService['hubConnection'].on('receive-client-request', (data: any) => {
 
+      console.log('is it same chat ? :', this.selectedChat?.id === data.chatId);
+
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
         const currentMessages = this.chatService['messagesSubject'].value;

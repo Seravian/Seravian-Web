@@ -84,7 +84,6 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
 
 
   selectChat(chatId: string) {
-    this.chatService.unDeleteChatFlag();
 
     this.selectedChatId = chatId;
     this.sessionChatId = chatId; // <-- Add this line
@@ -94,7 +93,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
     // this.chatService.addMessage(null);
     this.chatService.setChats();
     // this.chatService.setSelectedChat();
-
+    this.chatService.unDeleteChatFlag();
   }
 
 
@@ -114,6 +113,11 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
       next: (chat) => {
         this.chats.unshift({ ...chat, isEditing: false, messages: [] });
         this.selectedChatId = chat.id;
+        this.sessionChatId = chat.id; // <-- Add this line
+        console.log('Selected chat ID:', chat.id);
+        sessionStorage.setItem('chatId',chat.id);
+        this.chatService.setChats();
+        this.chatService.unDeleteChatFlag();
       },
       error: (err) => {
         console.error('Failed to create chat:', err);

@@ -94,26 +94,26 @@ export class ChatService {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
-      console.log('Notification AI audio response ready:', data);
+    // this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
+    //   console.log('Notification AI audio response ready:', data);
 
-      console.log('ID of the AI audio:', data.aiAudioId);
+    //   console.log('ID of the AI audio:', data.aiAudioId);
 
-      this.downloadAIAudio(+data.aiAudioId).subscribe({
-        next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `ai-response-${data.aiAudioId}.wav`;
-          a.click();
-          window.URL.revokeObjectURL(url);
-        },
-        error: (err) => {
-          console.error('Error downloading AI audio', err);
-        }
-      });
+    //   this.downloadAIAudio(+data.aiAudioId).subscribe({
+    //     next: (blob) => {
+    //       const url = window.URL.createObjectURL(blob);
+    //       const a = document.createElement('a');
+    //       a.href = url;
+    //       a.download = `ai-response-${data.aiAudioId}.wav`;
+    //       a.click();
+    //       window.URL.revokeObjectURL(url);
+    //     },
+    //     error: (err) => {
+    //       console.error('Error downloading AI audio', err);
+    //     }
+    //   });
 
-    });
+    // });
 
 
     this.hubConnection.onreconnected(async(connectionId) => {
@@ -155,19 +155,21 @@ export class ChatService {
             const lastMissedMessageType = lastMissedMessage?.messageType;
 
             if (this.voiceService.getVoiceModeStatus()&& lastMissedMessage && lastMissedMessageType === this.messageType.VoiceModeText) {
-              this.downloadAIAudio(lastMissedMessage.id).subscribe({
-                next: (blob) => {
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `ai-response-${lastMissedMessage.id}.wav`;
-                  a.click();
-                  window.URL.revokeObjectURL(url);
-                },
-                error: (err) => {
-                  console.error('Error downloading AI audio', err);
-                }
-              });
+              // this.downloadAIAudio(lastMissedMessage.id).subscribe({
+              //   next: (blob) => {
+              //     const url = window.URL.createObjectURL(blob);
+              //     const a = document.createElement('a');
+              //     a.href = url;
+              //     a.download = `ai-response-${lastMissedMessage.id}.wav`;
+              //     a.click();
+              //     window.URL.revokeObjectURL(url);
+              //   },
+              //   error: (err) => {
+              //     console.error('Error downloading AI audio', err);
+              //   }
+              // });
+              console.log('Playing AI audio from onreconnected');
+              this.voiceService.playAiAudio(lastMissedMessage.id);
             }
 
           },
