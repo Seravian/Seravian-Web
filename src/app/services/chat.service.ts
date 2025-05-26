@@ -168,6 +168,7 @@ export class ChatService {
               //     console.error('Error downloading AI audio', err);
               //   }
               // });
+              console.log('Playing AI audio from onreconnected');
               this.voiceService.playAiAudio(lastMissedMessage.id);
             }
 
