@@ -273,7 +273,11 @@ export class VoiceService {
   startListening() {
     if (this.isListening) return;
 
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    navigator.mediaDevices.getUserMedia({ audio: {
+      echoCancellation:true,
+      noiseSuppression: true, // helps reduce background noise
+      autoGainControl: true // helps normalize volume levels
+    } }).then(stream => {
       this.mediaStream = stream; // ✅ store it
       this.isListening = true;
       this.hasSpeech = false;
@@ -289,10 +293,12 @@ export class VoiceService {
 
     if (this.recognition && this.speechRecognitionStarted) {
       this.recognition.stop();
+      console.log('Speech recognition stopped.');
     }
 
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop(); // triggers onstop
+      console.log('MediaRecorder stopped.');
     }
 
     // ✅ Stop the silence interval and audio context
@@ -331,10 +337,13 @@ export class VoiceService {
         console.log('Recording stopped — no speech detected. Skipping upload.');
         return;
       }
-
-      const audioBlob = new Blob(this.audioChunks);
-      this.sendAudioToBackend(audioBlob);
-      // this.downloadRecordedAudio(audioBlob);
+      console.log('isVoiceModeActive:', this.isVoiceModeActive);
+      if (this.isVoiceModeActive) {
+        const audioBlob = new Blob(this.audioChunks);
+        console.log('going to send audio to backend...');
+        this.sendAudioToBackend(audioBlob);
+        // this.downloadRecordedAudio(audioBlob);
+      }
     };
 
     this.mediaRecorder.start();

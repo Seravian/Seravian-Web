@@ -34,7 +34,7 @@
 
     <!-- Chat body messages -->
     <div class="chat-body" #chatBody>
-      <ng-container *ngIf="selectedChat||!isSelectecChatDeleted()">
+      <ng-container *ngIf="selectedChat&&!isSelectecChatDeleted()">
         <div *ngFor="let message of messages; ">
 
           <!-- User message -->
