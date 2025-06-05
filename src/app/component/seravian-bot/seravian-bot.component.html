@@ -246,6 +246,7 @@
           ></path>
         </svg>
       <span *ngIf="isAiProcessing()" >AI is generating a response, please wait...</span>
+      <span *ngIf="!isAiProcessing()" >Start Speaking with AI</span>
     </div>
 
     <div class="voice-mode-controls">
