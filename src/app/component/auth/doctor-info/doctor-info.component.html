@@ -4,7 +4,7 @@
       <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
         <h1>Doctor Information</h1>
 
-        <span>Phone Number</span>
+        <!-- <span>Phone Number</span>
           <input
             type="tel"
             id="phoneNumber"
@@ -17,7 +17,7 @@
           class="text-danger"
           *ngIf="doctorForm.controls['phoneNumber'].invalid && (doctorForm.controls['phoneNumber'].touched || doctorForm.controls['phoneNumber'].dirty)">
           <span>Please enter a valid phone number</span>
-        </div>
+        </div> -->
 
         <span>Speciallity</span>
         <input

@@ -757,7 +757,7 @@ body.show-emoji-picker em-emoji-picker{
   gap: 2rem;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .circle-button,
@@ -832,22 +832,23 @@ body.show-emoji-picker em-emoji-picker{
 
 /* ************************************************************** */
 .ai-processing-message {
-  position: absolute;
-  bottom: 12.5rem;
+  /* position: absolute;
+  bottom: 12.5rem; */
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   color: #e9c9fe;
   font-size: 1.8rem;
-  /* margin-bottom: 1rem; */
+  margin-bottom: 3rem;
   font-weight: 600;
   animation: pulse 2s infinite;
 }
 
-.ai-processing-message i {
+/* .ai-processing-message i {
   font-size: 18px;
-}
+} */
 
 /* Optional: pulsing effect to draw attention */
 @keyframes pulse {
