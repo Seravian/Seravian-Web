@@ -83,8 +83,8 @@
 
 #user-photo {
   cursor: pointer;
-  width: 55px;
-  height: 55px;
+  width: 63px;
+  height: 63px;
   border-radius: 50%;
   border: 2px solid #4E34CF;
   object-fit: cover;

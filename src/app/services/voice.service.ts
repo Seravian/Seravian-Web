@@ -1,289 +1,6 @@
 
-// import { Injectable, NgZone } from '@angular/core';
-// import { BehaviorSubject, Subscription } from 'rxjs';
-// import { ChatService } from './chat.service';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class VoiceService {
-//   private isVoiceModeActive: boolean = false;
-//   private isListening = false;
-//   private mediaStream: MediaStream | null = null;
-//   // private recognition: any;
-//   private audioChunks: Blob[] = [];
-//   private mediaRecorder!: MediaRecorder;
-//   private audioContext: AudioContext | null = null;
-//   private analyser: AnalyserNode | null = null;
-//   private microphone: MediaStreamAudioSourceNode | null = null;
-//   private volumeInterval: any;
-//   // private hasSpeech = false;
-//   // private speechRecognitionStarted = false;
-//   private silenceInterval: any = null;
-//   private silenceAudioContext: AudioContext | null = null;
-
-
-//   public transcriptSubject = new BehaviorSubject<string | null>(null);
-//   public transcript$ = this.transcriptSubject.asObservable();
-
-//   public volumeLevelSubject = new BehaviorSubject<number>(0);
-//   public volumeLevel$ = this.volumeLevelSubject.asObservable();
-
-//   constructor(private zone: NgZone,private chatservice : ChatService) {
-//     // this.initRecognition();
-//   }
-
-//   // ==============================
-//   activateVoiceModeService() {
-//     this.isVoiceModeActive = true;
-//   }
-
-//   deactivateVoiceModeService() {
-//     this.isVoiceModeActive = false;
-//   }
-
-//   getVoiceModeStatus(): boolean {
-//     return this.isVoiceModeActive;
-//   }
-
-//   isCurrentlyListening(): boolean {
-//     return this.isListening;
-//   }
-
-//   // ==============================
-//   // private initRecognition() {
-//   //   const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-//   //   if (!SpeechRecognition) {
-//   //     console.warn('SpeechRecognition is not supported in this browser.');
-//   //     return;
-//   //   }
-
-//   //   this.recognition = new SpeechRecognition();
-//   //   this.recognition.lang = 'en-US';
-//   //   this.recognition.continuous = true;
-//   //   this.recognition.interimResults = false;
-
-//   //   this.recognition.onresult = (event: any) => {
-//   //     const transcript = event.results[0][0].transcript.trim();
-//   //     if (transcript.length > 0) {
-//   //       this.hasSpeech = true;
-//   //       this.zone.run(() => this.transcriptSubject.next(transcript));
-//   //     }
-//   //   };
-
-//   //   this.recognition.onerror = (event: any) => {
-//   //     console.error('Speech recognition error:', event.error);
-//   //   };
-
-//   //   this.recognition.onend = () => {
-//   //     this.speechRecognitionStarted = false;
-//   //   };
-//   // }
-
-//   startListening() {
-//     if (this.isListening) return;
-
-//     navigator.mediaDevices.getUserMedia({ audio: {
-//       echoCancellation:true,
-//       noiseSuppression: true, // helps reduce background noise
-//       autoGainControl: true // helps normalize volume levels
-//     } }).then(stream => {
-//       this.mediaStream = stream; // ✅ store it
-//       this.isListening = true;
-//       // this.hasSpeech = false;
-//       // this.speechRecognitionStarted = false;
-//       this.monitorVolume(stream); // for circle animation only
-//       this.startRecording(stream); // real recording
-//       this.detectSilenceDuringRecording(stream); // silence logic + speechRecognition
-//     });
-//   }
-
-//   stopListening() {
-//     if (!this.isListening) return;
-
-//     // if (this.recognition && this.speechRecognitionStarted) {
-//     //   this.recognition.stop();
-//     //   console.log('Speech recognition stopped.');
-//     // }
-
-//     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-//       this.mediaRecorder.stop(); // triggers onstop
-//       console.log('MediaRecorder stopped.');
-//     }
-
-//     // ✅ Stop the silence interval and audio context
-//     if (this.silenceInterval) {
-//       clearInterval(this.silenceInterval);
-//       this.silenceInterval = null;
-//     }
-
-//     if (this.silenceAudioContext) {
-//       this.silenceAudioContext.close();
-//       this.silenceAudioContext = null;
-//     }
-
-//     // Stop the microphone stream
-//     if (this.mediaStream) {
-//       this.mediaStream.getTracks().forEach(track => track.stop()); // ✅ stops the mic
-//       this.mediaStream = null;
-//     }
-
-//     clearInterval(this.volumeInterval);
-//     this.volumeLevelSubject.next(0);
-//     this.audioContext?.close();
-//     this.audioContext = null;
-
-//     this.isListening = false;
-//   }
-
-//   private startRecording(stream: MediaStream) {
-//     this.audioChunks = [];
-//     this.mediaRecorder = new MediaRecorder(stream);
-
-//     this.mediaRecorder.ondataavailable = (e) => this.audioChunks.push(e.data);
-
-//     this.mediaRecorder.onstop = () => {
-//       // if (!this.hasSpeech) {
-//       //   console.log('Recording stopped — no speech detected. Skipping upload.');
-//       //   return;
-//       // }
-//       if (this.isVoiceModeActive) {
-//         const audioBlob = new Blob(this.audioChunks);
-//         console.log('going to send audio to backend...');
-//         this.sendAudioToBackend(audioBlob);
-//         // this.downloadRecordedAudio(audioBlob);
-//         this.audioChunks = []; // Clear chunks after sending
-//         this.audioChunks.pop(); // Remove the last empty chunk if any
-//       }
-//     };
-
-//     this.mediaRecorder.start();
-//   }
-
-
-//   private detectSilenceDuringRecording(stream: MediaStream) {
-//     const silenceThreshold = 20;
-//     const silenceDelay = 2000;
-
-//     let silenceTimer: any = null;
-//     let userStartedSpeaking = false;
-
-//     this.silenceAudioContext = new AudioContext();
-//     const analyser = this.silenceAudioContext.createAnalyser();
-//     const source = this.silenceAudioContext.createMediaStreamSource(stream);
-//     analyser.fftSize = 2048;
-//     const dataArray = new Uint8Array(analyser.frequencyBinCount);
-//     source.connect(analyser);
-
-//     this.silenceInterval = setInterval(() => {
-//       analyser.getByteFrequencyData(dataArray);
-//       const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
-//       console.log('Average volume level:', avg);
-
-//       if (avg > silenceThreshold) {
-//         if (!userStartedSpeaking) {
-//           userStartedSpeaking = true;
-//           // if (this.recognition && !this.speechRecognitionStarted) {
-//           //   this.recognition.start();
-//           //   this.speechRecognitionStarted = true;
-//           // }
-//         }
-
-//         if (silenceTimer) {
-//           clearTimeout(silenceTimer);
-//           silenceTimer = null;
-//         }
-//       } else if (userStartedSpeaking) {
-//         if (!silenceTimer) {
-//           silenceTimer = setTimeout(() => {
-//             this.stopListening(); // triggers onstop
-//           }, silenceDelay);
-//         }
-//       }
-//     }, 100);
-//   }
-
-//   private monitorVolume(stream: MediaStream) {
-//     this.audioContext = new AudioContext();
-//     this.analyser = this.audioContext.createAnalyser();
-//     this.microphone = this.audioContext.createMediaStreamSource(stream);
-//     const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-//     this.microphone.connect(this.analyser);
-
-//     this.volumeInterval = setInterval(() => {
-//       this.analyser!.getByteFrequencyData(dataArray);
-//       let values = 0;
-//       for (let i = 0; i < dataArray.length; i++) {
-//         values += dataArray[i];
-//       }
-//       const average = values / dataArray.length;
-//       this.zone.run(() => {
-//         this.volumeLevelSubject.next(average);
-//       });
-//     }, 100);
-//   }
-
-
-//   private chatSubscription?: Subscription;
-
-//   private sendAudioToBackend(blob: Blob) {
-//     // Clean up previous subscription
-//     this.chatSubscription?.unsubscribe();
-
-//     this.chatSubscription = this.chatservice.selectedChat$.subscribe(chat => {
-//       if (!chat?.id) {console.log('select chat to send audio'); return;}
-
-//       const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-
-//       this.chatservice.uploadVoice(file, chat.id).subscribe({
-//         next: (res) => {
-//           console.log('Voice uploaded successfully:', res);
-//         },
-//         error: (err) => {
-//           console.error('Error uploading voice:', err);
-//         }
-//       });
-//     });
-//     this.chatSubscription?.unsubscribe();
-//   }
-
-//   // downloadRecordedAudio(blob: Blob) {
-//   //   // Clean up previous subscription
-//   //   this.chatSubscription?.unsubscribe();
-
-//   //   console.log('isVoiceModeActive:', this.isVoiceModeActive);
-//   //   if(this.isVoiceModeActive) {
-//   //     this.chatSubscription = this.chatservice.selectedChat$.subscribe(chat => {
-//   //       if (!chat?.id) {console.log('select chat to send audio'); return;}
-
-//   //       if (!blob) {
-//   //         console.warn('No blob provided for download.');
-//   //         return;
-//   //       }
-
-//   //       console.log('blob:', blob);
-
-//   //       const url = URL.createObjectURL(blob);
-//   //       const a = document.createElement('a');
-//   //       a.href = url;
-//   //       a.download = 'recorded-voice.webm';
-//   //       document.body.appendChild(a);
-//   //       a.click();
-
-//   //       // Clean up
-//   //       document.body.removeChild(a);
-//   //       URL.revokeObjectURL(url);
-//   //     });
-//   //     this.chatSubscription?.unsubscribe();
-//   //   }
-//   // }
-
-// }
-
-
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, firstValueFrom } from 'rxjs';
 import { ChatService } from './chat.service';
 
 @Injectable({
@@ -301,27 +18,36 @@ export class VoiceService {
   private volumeInterval: any;
   private silenceInterval: any = null;
   private silenceAudioContext: AudioContext | null = null;
-  // private isAllowedToSendVoice = false;
 
+  private isMicOpen: boolean = false;
+  private isAiProcessing: boolean = false;
 
-  public transcriptSubject = new BehaviorSubject<string | null>(null);
-  public transcript$ = this.transcriptSubject.asObservable();
+  private aiAudioContext: AudioContext | null = null;
+  private aiAudioSource: AudioBufferSourceNode | null = null;
+  private aiUserStream: MediaStream | null = null;
+  private playbackInterruptInterval: any = null;
+
+  // private chatSubscription?: Subscription;
+
+  // public transcriptSubject = new BehaviorSubject<string | null>(null);
+  // public transcript$ = this.transcriptSubject.asObservable();
 
   public volumeLevelSubject = new BehaviorSubject<number>(0);
   public volumeLevel$ = this.volumeLevelSubject.asObservable();
 
   constructor(private zone: NgZone,private chatservice : ChatService) {
-    this.chatservice['hubConnection'].on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
 
+    this.chatservice['hubConnection'].on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
+      console.log('Received AI audio response notification:', data);
       this.playAiAudio(+data.aiAudioId);
-      
     });
 
   }
 
   playAiAudio(aiAudioId: number) {
     if (this.isVoiceModeActive) {
-      // this.isAllowedToSendVoice = true;
+      this.isMicOpen = true;
+      this.isAiProcessing = false;
       this.isListening = false;
       this.startListening();
 
@@ -354,23 +80,113 @@ export class VoiceService {
     return this.isVoiceModeActive;
   }
 
+  // ==============================
 
-  startListening() {
+  async activateMicService() {
+    // if (!this.mediaStream) {
+    //   console.log('Mic Not Allowed.');
+    //   return;
+    // }
+    const aiStatus = await this.isAiProcessingStatus();
+    if (aiStatus) {
+      this.isMicOpen = false;
+      this.isAiProcessing = true;
+      console.log('AI is still processing, please wait.');
+      return;
+    }
+    this.isMicOpen = true;
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach(track => track.enabled = true);
+      console.log('Microphone unmuted.');
+    }
+    if(this.aiUserStream) {
+      console.log('Resuming AI user stream...............................................');
+      this.aiUserStream.getTracks().forEach(track => track.enabled = true); // Resume AI user stream if it exists
+    }
+  }
+
+  deactivateMicService() {
+    this.isMicOpen = false;
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach(track => track.enabled = false);
+      console.log('Microphone muted.');
+    }
+    if(this.aiUserStream) {
+      console.log('Stopping AI user stream...............................................');
+      this.aiUserStream.getTracks().forEach(track => track.enabled = false); // Stop AI user stream if it exists
+      console.log('AI Microphone muted.');
+    }
+  }
+
+
+  getMicStatus(): boolean {
+    return this.isMicOpen;
+  }
+
+  // ==============================
+
+  activateAiProcessingService() {
+    this.isAiProcessing = true;
+  }
+
+  deactivateAiProcessingService() {
+    this.isAiProcessing = false;
+  }
+
+  getAiProcessingStatus(): boolean {
+    return this.isAiProcessing;
+  }
+
+  // ==============================
+
+  async isAiProcessingStatus(): Promise<boolean> {
+    try {
+      const chat = await firstValueFrom(this.chatservice.selectedChat$);
+      const status = await firstValueFrom(this.chatservice.isAiProcessing(chat.id));
+      return status;
+    } catch (error) {
+      console.error('Error fetching status:', error);
+      return false;
+    }
+  }
+
+  // ==============================
+
+
+   async startListening() {
     console.log('startListening() called, isListening:', this.isListening);
     if (this.isListening) return;
 
-    navigator.mediaDevices.getUserMedia({ audio: {
-      echoCancellation:true,
-      noiseSuppression: true, // helps reduce background noise
-      autoGainControl: true // helps normalize volume levels
-    } }).then(stream => {
+    const aiStatus = await this.isAiProcessingStatus();
+    if (aiStatus) {
+      this.isMicOpen = false;
+      this.isAiProcessing = true;
+      console.log('AI is still processing, please wait.');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
       console.log('MediaStream obtained:', stream);
-      this.mediaStream = stream; // ✅ store it
+      this.mediaStream = stream;
+      this.activateMicService(); // ✅ Activate mic service
       this.isListening = true;
-      this.monitorVolume(stream); // for circle animation only
-      this.startRecording(stream); // real recording
-      this.detectSilenceDuringRecording(stream); // silence logic + speechRecognition
-    });
+      this.monitorVolume(stream);
+      this.startRecording(stream);
+      this.detectSilenceDuringRecording(stream);
+
+    } catch (err: any) {
+      console.log('Microphone access denied or error obtaining media stream:', err);
+      // alert('Microphone access is required to use voice features. Please enable mic permissions in your browser settings.');
+      this.isMicOpen = false;
+    }
   }
 
   stopListening() {
@@ -404,6 +220,11 @@ export class VoiceService {
     this.audioContext = null;
 
     this.isListening = false;
+
+
+    this.stopPlayback(); // Stop any AI audio playback if active
+    this.cleanupAudio(); // Clean up AI audio context and streams
+
   }
 
 
@@ -430,7 +251,7 @@ export class VoiceService {
 
 
   private detectSilenceDuringRecording(stream: MediaStream) {
-    const silenceThreshold = 20;
+    const silenceThreshold = 30;
     const silenceDelay = 2000;
 
     let silenceTimer: any = null;
@@ -460,6 +281,8 @@ export class VoiceService {
       } else if (userStartedSpeaking) {
         if (!silenceTimer) {
           silenceTimer = setTimeout(() => {
+            this.isMicOpen = false;
+            this.isAiProcessing = true;
             this.stopListening(); // triggers onstop
           }, silenceDelay);
         }
@@ -488,27 +311,25 @@ export class VoiceService {
   }
 
 
-  private chatSubscription?: Subscription;
+  private async sendAudioToBackend(blob: Blob) {
 
-  private sendAudioToBackend(blob: Blob) {
-    // Clean up previous subscription
-    this.chatSubscription?.unsubscribe();
+    const chat = await firstValueFrom(this.chatservice.selectedChat$);
+    const aiStatus = await this.isAiProcessingStatus();
+    if (aiStatus) {
+      console.log('AI is still processing, please wait.');
+      return;
+    }
 
-    this.chatSubscription = this.chatservice.selectedChat$.subscribe(chat => {
-      if (!chat?.id) {console.log('select chat to send audio'); return;}
+    const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
 
-      const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-
-      this.chatservice.uploadVoice(file, chat.id).subscribe({
-        next: (res) => {
-          console.log('Voice uploaded successfully:', res);
-        },
-        error: (err) => {
-          console.error('Error uploading voice:', err);
-        }
-      });
+    this.chatservice.uploadVoice(file, chat.id).subscribe({
+      next: (res) => {
+        console.log('Voice uploaded successfully:', res);
+      },
+      error: (err) => {
+        console.error('Error uploading voice:', err);
+      }
     });
-    this.chatSubscription?.unsubscribe();
   }
 
 
@@ -553,127 +374,88 @@ export class VoiceService {
     }
   }
 
-  // private async playWavWithAudioContext(wavBlob: Blob): Promise<void> {
-  //   const arrayBuffer = await wavBlob.arrayBuffer();
-
-  //   const audioContext = new AudioContext();
-  //   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  //   const source = audioContext.createBufferSource();
-  //   source.buffer = audioBuffer;
-  //   source.connect(audioContext.destination);
-  //   source.start();
-
-  //   return new Promise((resolve) => {
-  //     source.onended = () => {
-  //       audioContext.close();
-  //       resolve();
-  //     };
-  //   });
-  // }
-
-
-  // private monitorUserInterruptDuringPlayback(stream: MediaStream, source: AudioBufferSourceNode) {
-  //   const context = new AudioContext();
-  //   const analyser = context.createAnalyser();
-  //   const micSource = context.createMediaStreamSource(stream);
-  //   analyser.fftSize = 2048;
-  //   const dataArray = new Uint8Array(analyser.frequencyBinCount);
-  //   micSource.connect(analyser);
-
-  //   const threshold = 20;
-  //   const interval = setInterval(() => {
-  //     analyser.getByteFrequencyData(dataArray);
-  //     const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
-  //     if (avg > threshold) {
-  //       source.stop();
-  //       clearInterval(interval);
-  //       context.close();
-  //       console.log('Playback interrupted due to user speaking');
-  //     }
-  //   }, 100);
-  // }
-
-  // private async playWithInterruptDetection(wavBlob: Blob): Promise<void> {
-  //   const audioContext = new AudioContext();
-  //   const analyser = audioContext.createAnalyser();
-  //   analyser.fftSize = 2048;
-  //   const threshold = 20;
-
-  //   const userStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //   const micSource = audioContext.createMediaStreamSource(userStream);
-  //   micSource.connect(analyser);
-
-  //   const arrayBuffer = await wavBlob.arrayBuffer();
-  //   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  //   const source = audioContext.createBufferSource();
-  //   source.buffer = audioBuffer;
-  //   source.connect(audioContext.destination);
-  //   source.start();
-
-  //   return new Promise((resolve) => {
-  //     const dataArray = new Uint8Array(analyser.frequencyBinCount);
-  //     const interval = setInterval(() => {
-  //       analyser.getByteFrequencyData(dataArray);
-  //       const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
-  //       if (avg > threshold) {
-  //         console.log('User speaking — interrupting playback');
-  //         source.stop();
-  //       }
-  //     }, 100);
-
-  //     source.onended = () => {
-  //       clearInterval(interval);
-  //       userStream.getTracks().forEach(track => track.stop());
-  //       audioContext.close();
-  //       resolve();
-  //     };
-  //   });
-  // }
-
   private async playWithInterruptDetection(wavBlob: Blob): Promise<void> {
-    const audioContext = new AudioContext();
-    await audioContext.resume(); // Ensures playback works on Safari/mobile
+    this.aiAudioContext = new AudioContext();
+    await this.aiAudioContext.resume(); // Ensures playback works on Safari/mobile
 
-    const analyser = audioContext.createAnalyser();
+    const analyser = this.aiAudioContext.createAnalyser();
     analyser.fftSize = 2048;
-    const threshold = 20;
+    const threshold = 30;
 
     try {
-      const userStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const micSource = audioContext.createMediaStreamSource(userStream);
+      this.aiUserStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+      const micSource = this.aiAudioContext.createMediaStreamSource(this.aiUserStream);
       micSource.connect(analyser);
 
       const arrayBuffer = await wavBlob.arrayBuffer();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      const source = audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(audioContext.destination);
-      source.start();
+      const audioBuffer = await this.aiAudioContext.decodeAudioData(arrayBuffer);
+      this.aiAudioSource = this.aiAudioContext.createBufferSource();
+      this.aiAudioSource.buffer = audioBuffer;
+      this.aiAudioSource.connect(this.aiAudioContext.destination);
+      this.aiAudioSource.start();
 
       return new Promise((resolve) => {
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        const interval = setInterval(() => {
+        this.playbackInterruptInterval = setInterval(() => {
           analyser.getByteFrequencyData(dataArray);
           const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
           if (avg > threshold) {
             console.log('User speaking — interrupting playback');
-            source.stop();
+            this.stopPlayback();
           }
         }, 100);
 
-        source.onended = () => {
-          clearInterval(interval);
-          userStream.getTracks().forEach(track => track.stop());
-          audioContext.close();
+        this.aiAudioSource!.onended = () => {
+          this.cleanupAudio();
           resolve();
         };
+
       });
-    } catch (err) {
+    }catch (err) {
       console.error("Failed to access microphone or play audio:", err);
-      audioContext.close();
+      this.cleanupAudio();
       return;
     }
   }
+
+
+  public stopPlayback(): void {
+    if (this.aiAudioSource) {
+      try {
+        this.aiAudioSource.stop();
+      } catch (e) {
+        console.warn('Playback already stopped:', e);
+      }
+    }
+  }
+
+
+  public cleanupAudio(): void {
+    if (this.playbackInterruptInterval) {
+      clearInterval(this.playbackInterruptInterval);
+      this.playbackInterruptInterval = null;
+    }
+
+    if (this.aiUserStream) {
+      this.aiUserStream.getTracks().forEach(track => track.stop());
+      this.aiUserStream = null;
+    }
+
+    if (this.aiAudioContext) {
+      this.aiAudioContext.close();
+      this.aiAudioContext = null;
+    }
+
+    this.aiAudioSource = null;
+  }
+
+
 
 
 

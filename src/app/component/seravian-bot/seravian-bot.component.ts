@@ -353,9 +353,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.chatService.isChatDeletedFlag();
   }
 
-  isVoiceModeActivated():boolean{
-    return this.voiceService.getVoiceModeStatus();
-  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -371,7 +368,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   isListening = false;
   transcript: string = '';
-  private transcriptSub!: Subscription;
+  // private transcriptSub!: Subscription;
   volumeLevel = 0;
 
 
@@ -387,12 +384,14 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         this.volumeLevel = level;
       });
 
-      this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
-        if (text) {
-          this.transcript = text;
-          this.isListening = false;
-        }
-      });
+      // this.openMic();
+
+      // this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
+      //   if (text) {
+      //     this.transcript = text;
+      //     this.isListening = false;
+      //   }
+      // });
 
     }else{
       window.alert('please select a chat');
@@ -404,8 +403,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       this.isListening = false;
       this.transcript = '';
       this.voiceService.stopListening();
-      this.transcriptSub.unsubscribe();
+      // this.transcriptSub.unsubscribe();
       this.voiceService.deactivateVoiceModeService();
+      this.closeMic();
       if (this.selectedChat) {
         setTimeout(() => {
           this.scrollToBottom();
@@ -415,10 +415,30 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   }
 
+  openMic(): void {
+    this.voiceService.activateMicService();
+  }
+
+  closeMic(): void {
+    this.voiceService.deactivateMicService();
+  }
+
+  isVoiceModeActivated():boolean{
+    return this.voiceService.getVoiceModeStatus();
+  }
+
+  isMicOpen(): boolean {
+    console.log('Mic status:', this.voiceService.getMicStatus());
+    return this.voiceService.getMicStatus();
+  }
+
+  isAiProcessing(): boolean {
+    return this.voiceService.getAiProcessingStatus();
+  }
 
   getScale(): number {
-    const minScale = 1;
-    const maxScale = 2;
+    const minScale = 1.3;
+    const maxScale = 2.1;
     const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
     return minScale + normalizedVolume * (maxScale - minScale);
   }
