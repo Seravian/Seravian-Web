@@ -436,6 +436,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.voiceService.getAiProcessingStatus();
   }
 
+  hasUserStartedSpeaking(): boolean {
+    return this.voiceService.getUserSpeakingStatus();
+  }
+
   getScale(): number {
     const minScale = 1.3;
     const maxScale = 2.1;

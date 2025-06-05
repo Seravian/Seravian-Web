@@ -21,6 +21,7 @@ export class VoiceService {
 
   private isMicOpen: boolean = false;
   private isAiProcessing: boolean = false;
+  private userStartedSpeaking = false;
 
   private aiAudioContext: AudioContext | null = null;
   private aiAudioSource: AudioBufferSourceNode | null = null;
@@ -121,6 +122,10 @@ export class VoiceService {
 
   getMicStatus(): boolean {
     return this.isMicOpen;
+  }
+
+  getUserSpeakingStatus(): boolean {
+    return this.userStartedSpeaking;
   }
 
   // ==============================
@@ -255,7 +260,6 @@ export class VoiceService {
     const silenceDelay = 2000;
 
     let silenceTimer: any = null;
-    let userStartedSpeaking = false;
 
     this.silenceAudioContext = new AudioContext();
     const analyser = this.silenceAudioContext.createAnalyser();
@@ -270,19 +274,20 @@ export class VoiceService {
       console.log('Average volume level:', avg);
 
       if (avg > silenceThreshold) {
-        if (!userStartedSpeaking) {
-          userStartedSpeaking = true;
+        if (!this.userStartedSpeaking) {
+          this.userStartedSpeaking = true;
         }
 
         if (silenceTimer) {
           clearTimeout(silenceTimer);
           silenceTimer = null;
         }
-      } else if (userStartedSpeaking) {
+      } else if (this.userStartedSpeaking) {
         if (!silenceTimer) {
           silenceTimer = setTimeout(() => {
             this.isMicOpen = false;
             this.isAiProcessing = true;
+            this.userStartedSpeaking = false;
             this.stopListening(); // triggers onstop
           }, silenceDelay);
         }
