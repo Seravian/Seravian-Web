@@ -6,7 +6,7 @@
   <title>Sidebar Example</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
 </head>
-<body [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen">
+<body *ngIf="!isVoiceModeActivated()" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen">
   <div class="container">
     <aside class="sidebar" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen">
       <!-- Top Section -->
@@ -39,7 +39,7 @@
       <nav class="chat-list">
         <ul>
           <li *ngFor="let chat of chats">
-            <div class="chat-item" [class.selected]="selectedChatId === chat.id" (click)="selectChat(chat.id)">
+            <div class="chat-item" [class.selected]="selectedChatId === chat.id || sessionChatId === chat.id" (click)="selectChat(chat.id)">
               <div class="chat-content">
                 <span class="material-symbols-rounded">chat</span>
 
@@ -72,8 +72,8 @@
 
       <!-- Footer -->
       <footer class="sidebar-footer">
-        <button class="footer-button">
-          <span class="material-symbols-rounded">logout</span>
+        <button class="footer-button" (click)="exitFromChat()">
+          <span id="logout" class="material-symbols-rounded">logout</span>
           <span *ngIf="isSidebarOpen">Exit</span>
         </button>
       </footer>

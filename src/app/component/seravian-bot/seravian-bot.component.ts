@@ -3,10 +3,12 @@ import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../interfaces/chat';
 import { ChatMessage } from '../../interfaces/chat-message';
 import { ChangeDetectorRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { filter, Subscription, take } from 'rxjs';
 import { th } from 'intl-tel-input/i18n';
 import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
 import { Router } from '@angular/router';
+import { VoiceService } from '../../services/voice.service';
+import { MessageType } from '../../interfaces/message-type.enum';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -20,11 +22,15 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   selectedChat: Chat | null = null;
   oldSelectedChat: Chat | null = null;
   userMessage: string = '';
-  message: ChatMessage | null = null;
+  // message: ChatMessage | null = null;
   unConfirmedMessages: UnConfirmedClientMessages[] = [];
+  // selectedChatMessages: ChatMessage[] = [];
+  MessageType = MessageType;
+  isAllowedToSendMessage:boolean = true;
 
   private chatSubscription!: Subscription;
   private missedMessagesSubscription!: Subscription;
+  private mesaageSubscription!: Subscription;
 
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
@@ -32,47 +38,38 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private voiceService: VoiceService
   ) {}
 
   ngOnInit(): void {
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
+      console.log('Selected chat:', chat);
+      if (!chat) return;
 
-      if(this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id){ //first time selected or new chat selected
-
+      if (this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id) {
         this.selectedChat = chat;
         this.oldSelectedChat = chat;
 
-        if (chat) {
-          this.chatService.joinChat(chat.id)
-            .then(() => {
-              console.log(`1 Joined chat ${chat.id}`);
-
-              // Get the last message from the selected chat
-              if (chat.messages && chat.messages.length > 0) {
-                const lastMessage = chat.messages[chat.messages.length - 1];
-                this.chatService.addMessage(lastMessage);
-                console.log('added message:', lastMessage);
-              }else{
-                console.log('No messages in the selected chat yet.');
-              }
-
-            })
-            .catch(err => console.error('Failed to join chat', err));
-
-          this.cdr.detectChanges();
-          setTimeout(() => {
-            this.scrollToBottom();
-            this.messageInputRef.nativeElement.focus();
-          }, 50);
-
-        }
-
-      }else{
+        // Wait for SignalR connection before joining
+        this.chatService.connectionEstablished$
+          .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
+          .subscribe(() => {
+            this.chatService.joinChat(chat.id)
+              .then(async () => {
+                console.log(`1 Joined chat ${chat.id}`);
+                await this.checkAiProcessingStatus();
+                this.cdr.detectChanges();
+                setTimeout(() => {
+                  this.scrollToBottom();
+                  this.messageInputRef.nativeElement.focus();
+                }, 50);
+              })
+              .catch(err => console.error('Failed to join chat', err));
+          });
+      } else {
         console.log('Same chat selected, no action taken.');
       }
-
     });
 
 
@@ -84,10 +81,15 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         console.log('Missed messages:', missedMessages);
         this.selectedChat.messages.push(...missedMessages.map((message: ChatMessage) => ({
           id: message.id,
-          isAI: false,
+          isAI: message.isAI,
           content: message.content,
-          timestampUtc: message.timestampUtc
+          timestampUtc: message.timestampUtc,
+          messageType: message.messageType
         })));
+
+        if(missedMessages[length - 1].isAI === true){
+          this.voiceService.deactivateAiProcessingService();
+        }
 
         // Clear missed messages after syncing
         this.chatService.setMissedMessages([]);
@@ -98,83 +100,185 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           this.messageInputRef.nativeElement.focus();
         }, 50);
       }else{
+        console.log('No missed messages to sync.');
       }
     });
 
 
     // Listen to SignalR receive-client-request
     this.chatService['hubConnection'].on('receive-client-request', (data: any) => {
-      if (this.selectedChat) {
-        this.selectedChat.messages.push({
-          id: data.id,
-          isAI: false,
-          content: data.message,
-          timestampUtc: data.timestampUtc
-        });
-        setTimeout(() => {
-          this.scrollToBottom();
-          this.messageInputRef.nativeElement.focus();
-        }, 50);
+
+      console.log('is it same chat ? :', this.selectedChat?.id === data.chatId);
+
+      if (this.selectedChat && this.selectedChat.id === data.chatId) {
+
+        const currentMessages = this.chatService['messagesSubject'].value;
+        const exists = currentMessages.some(msg => msg?.id === data.id);
+
+        if (!exists) {
+          this.selectedChat.messages.push({
+            id: data.id,
+            isAI: false,
+            content: data.message,
+            timestampUtc: data.timestampUtc,
+            messageType: data.messageType
+          });
+
+          console.log('Received other user message', data);
+
+          this.chatService.addMessage({
+            id: data.id,
+            isAI: false,
+            content: data.message,
+            timestampUtc: data.timestampUtc,
+            messageType: data.messageType,
+          });
+        }
+
+        if (!this.voiceService.getVoiceModeStatus()) {
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+        }
       }
     });
 
     // Listen to SignalR receive-ai-response
-    this.chatService['hubConnection'].on('receive-ai-response', (data: any) => {
-      if (this.selectedChat) {
-        this.selectedChat.messages.push({
-          id: data.id,
-          isAI: true,
-          content: data.message,
-          timestampUtc: data.timestampUtc
-        });
-        setTimeout(() => {
-          this.scrollToBottom();
-          this.messageInputRef.nativeElement.focus();
-        }, 50);
+    this.chatService['hubConnection'].on('receive-ai-response', async (data: any) => {
+
+      if (this.selectedChat && this.selectedChat.id === data.chatId) {
+
+        this.isAllowedToSendMessage = true;
+
+        const currentMessages = this.chatService['messagesSubject'].value;
+        const exists = currentMessages.some(msg => msg?.id === data.id);
+
+        if (!exists) {
+
+          await this.checkAiProcessingStatus();
+          // await new Promise(res => setTimeout(res, 500));
+
+          this.selectedChat.messages.push({
+            id: data.id,
+            isAI: true,
+            content: data.message,
+            timestampUtc: data.timestampUtc,
+            messageType: data.messageType
+          });
+
+          console.log('AI response message', data);
+
+          this.chatService.addMessage({
+            id: data.id,
+            isAI: true,
+            content: data.message,
+            timestampUtc: data.timestampUtc,
+            messageType: data.messageType,
+          });
+
+          // this.voiceService.deactivateAiProcessingService(); // Deactivate AI processing after response
+
+        }
+
+        if (!this.voiceService.getVoiceModeStatus()) {
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+        }
       }
     });
 
 
     // Listen to SignalR confirm-client-request
-    this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
-      if (this.selectedChat) {
+    this.chatService['hubConnection'].on('confirm-client-request', async (data: any) => {
+
+      if (this.selectedChat && this.selectedChat.id === data.chatId) {
+
         const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
-        console.log('Confirmed message:', confirmedMessage);
+        console.log('Unconfirmed message:', confirmedMessage);
         if (confirmedMessage) {
-          // Optimistic UI update
-          this.selectedChat.messages.push({
-            id: data.messageId,
-            content: confirmedMessage.content,
-            timestampUtc: data.timestampUtc,
-            isAI: false
-          });
-          setTimeout(() => {
-            this.scrollToBottom();
-            this.messageInputRef.nativeElement.focus();
-          }, 50);
+          this.unConfirmedMessages = []; // Clear unconfirmed messages after confirmation
+
+          const currentMessages = this.chatService['messagesSubject'].value;
+          const exists = currentMessages.some(msg => msg?.id === data.messageId);
+
+          if (!exists) {
+            this.selectedChat.messages.push({
+              id: data.messageId,
+              content: confirmedMessage.content,
+              timestampUtc: data.timestampUtc,
+              isAI: false,
+              messageType: MessageType.Text
+            });
+            console.log('confirmed message', data);
+
+            this.chatService.addMessage({
+              id: data.messageId,
+              content: confirmedMessage.content,
+              timestampUtc: data.timestampUtc.toString(),
+              isAI: false,
+              messageType: MessageType.Text
+            });
+
+          }
+
+          if (!this.voiceService.getVoiceModeStatus()) {
+            setTimeout(() => {
+              this.scrollToBottom();
+              this.messageInputRef.nativeElement.focus();
+            }, 50);
+          }
+
+          await new Promise(res => setTimeout(res, 1000));
+          await this.checkAiProcessingStatus();
+
+          if (!this.voiceService.getVoiceModeStatus()) {
+            setTimeout(() => {
+              this.scrollToBottom();
+              this.messageInputRef.nativeElement.focus();
+            }, 50);
+          }
 
           console.log('chat messages',this.selectedChat.messages);
         }
       }
     });
 
+    this.chatService['hubConnection'].on('notify-ai-audio-response-ready', (data: any) => {
+      console.log('AI finished responding for chat', data.chatId);
+      this.isAllowedToSendMessage = true;
+    });
 
   }
 
   sendMessage(): void {
     const message = this.userMessage.trim();
+
     if (message && this.selectedChat) {
+
       const messageClientId = this.generateGuid(); // <-- generate .NET-compatible Guid
 
       // Optimistic UI update
       this.unConfirmedMessages.push({
         clientMessageId: messageClientId,
         content: message,
-        timestampUtc: new Date()
+        timestampUtc: new Date(Date.now())
       });
 
+      console.log('Unconfirmed messages timesatmp:', this.unConfirmedMessages[0].timestampUtc);
+
       this.chatService.sendClientRequest(message, messageClientId)
-        .catch(err => console.error('SignalR send failed', err));
+        .then(notAllowed => {
+          this.isAllowedToSendMessage = notAllowed;
+          console.log('am i allowed to send again ? :', this.isAllowedToSendMessage);
+
+          // Use isSuccessful here (but only inside this .then block)
+        })
+        .catch(error => {
+          console.error('Failed to send request', error);
+        });
 
 
       this.userMessage = '';
@@ -207,9 +311,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     this.chatService.setMissedMessages([]); // Clear missed messages on destroy
   }
 
-// **********************************************
-// ***************UI Features********************
-// **********************************************
+  // **********************************************
+  // ***************UI Features********************
+  // **********************************************
 
   scrollToBottom(): void {
     try {
@@ -252,7 +356,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   handleButtonClick(event: Event): void {
 
-    console.log('event triggered');
+    // console.log('event triggered');
 
     const button = (event.currentTarget as HTMLElement);
     button.classList.add('hide-tooltip');
@@ -268,14 +372,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.userMessage.trim().length > 0;
   }
 
-  activateVoiceMode(): void {
-    if(this.selectedChat){
-      console.log('Voice mode activated');
-      this.router.navigate(['/voice-mode']);
-    }else{
-      window.alert('please select a chat');
-    }
+  isSelectecChatDeleted(): boolean {
+    return this.chatService.isChatDeletedFlag();
   }
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -284,4 +384,104 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       this.isPopupVisible = false;
     }
   }
+
+  // *************************************************
+  // ************ًWHEN VOICE MODE ACTIVATED************
+  // *************************************************
+
+  isListening = false;
+  transcript: string = '';
+  // private transcriptSub!: Subscription;
+  volumeLevel = 0;
+
+
+    activateVoiceMode(): void {
+    if(this.selectedChat){
+      console.log('Voice mode activated');
+      this.voiceService.activateVoiceModeService();
+      // Voice Mode
+      this.voiceService.startListening();
+      this.isListening = true;
+
+      this.voiceService.volumeLevel$.subscribe(level => {
+        this.volumeLevel = level;
+      });
+
+      // this.openMic();
+
+      // this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
+      //   if (text) {
+      //     this.transcript = text;
+      //     this.isListening = false;
+      //   }
+      // });
+
+    }else{
+      window.alert('please select a chat');
+    }
+  }
+
+  deactivateVoiceMode(): void {
+      console.log('Voice mode deactivated');
+      this.isListening = false;
+      this.transcript = '';
+      this.voiceService.stopListening();
+      // this.transcriptSub.unsubscribe();
+      this.voiceService.deactivateVoiceModeService();
+      this.closeMic();
+      if (this.selectedChat) {
+        setTimeout(() => {
+          this.scrollToBottom();
+          this.messageInputRef.nativeElement.focus();
+        }, 50);
+      }
+
+  }
+
+  openMic(): void {
+    this.voiceService.activateMicService();
+  }
+
+  closeMic(): void {
+    this.voiceService.deactivateMicService();
+  }
+
+  isVoiceModeActivated():boolean{
+    return this.voiceService.getVoiceModeStatus();
+  }
+
+  isMicOpen(): boolean {
+    console.log('Mic status:', this.voiceService.getMicStatus());
+    return this.voiceService.getMicStatus();
+  }
+
+  isAiProcessing(): boolean {
+    return this.voiceService.getAiProcessingStatus();
+  }
+
+  isProcessing = false;
+
+  async checkAiProcessingStatus() {
+    await this.voiceService.getGeneralaiProcessingStatus().then(status => {
+      this.isProcessing = status;
+    });
+  }
+
+
+  hasUserStartedSpeaking(): boolean {
+    return this.voiceService.getUserSpeakingStatus();
+  }
+
+  hasAiStartedSpeaking(): boolean {
+    return this.voiceService.getAiSpeakingStatus();
+  }
+
+  getScale(): number {
+    const minScale = 1.3;
+    const maxScale = 2.1;
+    const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
+    return minScale + normalizedVolume * (maxScale - minScale);
+  }
+
+
 }

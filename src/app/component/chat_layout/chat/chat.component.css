@@ -15,11 +15,11 @@
     flex-direction: row; /* Keep it horizontal */
   }
 
-  app-chat-sidebar {
+  /* app-chat-sidebar {
     position: relative;
     width: auto;
     height: 100vh;
-  }
+  } */
 
   .sidebar-open app-chat-sidebar .sidebar {
     width: 16rem;

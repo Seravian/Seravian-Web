@@ -11,8 +11,8 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-<body>
-  <div class="pop-window">
+<body *ngIf="!isVoiceModeActivated()">
+  <div class="pop-window" >
     <!-- chatBox Header part -->
     <div class="header-part">
       <div class="header-info">
@@ -34,11 +34,11 @@
 
     <!-- Chat body messages -->
     <div class="chat-body" #chatBody>
-      <ng-container *ngIf="selectedChat; else noChatSelected">
+      <ng-container *ngIf="selectedChat&&!isSelectecChatDeleted()">
         <div *ngFor="let message of messages; ">
 
           <!-- User message -->
-          <div *ngIf="!message.isAI" class="user-message">
+          <div *ngIf="(!message.isAI)&&(message.messageType===MessageType.Text)" class="user-message">
             <div class="user-message-text message-text">
               {{ message.content }}
               <span class="custom-break"></span>
@@ -48,8 +48,20 @@
             </div>
           </div>
 
+          <!-- User message (Voice Mode) -->
+          <div *ngIf="(!message.isAI)&&(message.messageType===MessageType.VoiceModeText)" class="user-message">
+            <div class="user-message-text message-text voice-mode-message">
+              {{ message.content }}
+              <span class="custom-break"></span>
+              <div class="inline-timestamp user voice">
+                <i class="fas fa-microphone"style="margin-right: 4px;"></i>
+                {{ message.timestampUtc | date:'MMMM d, y  h:mm:ss a'}}
+              </div>
+            </div>
+          </div>
+
           <!-- Bot message -->
-          <div *ngIf="message.isAI" class="bot-message">
+          <div *ngIf="(message.isAI)&&(message.messageType===MessageType.Text)" class="bot-message">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="50"
@@ -69,16 +81,65 @@
               </div>
             </div>
           </div>
+
+          <!-- Bot message (Voice Mode) -->
+          <div *ngIf="(message.isAI)&&(message.messageType===MessageType.VoiceModeText)" class="bot-message">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="50"
+              height="50"
+              viewBox="0 0 1024 1024"
+              class="chat-bot-img"
+            >
+              <path
+                d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"
+              ></path>
+            </svg>
+            <div class="bot-message-text message-text voice-mode-message">
+              {{ message.content }}
+              <span class="custom-break"></span>
+              <div class="inline-timestamp bot">
+                <i class="fas fa-microphone"style="margin-right: 4px;"></i>
+                {{ message.timestampUtc | date:'MMMM d, y  h:mm:ss a' }}
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        <!-- Bot message thinking indicator -->
+        <div *ngIf="isProcessing" class="bot-message thinking">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="50"
+            height="50"
+            viewBox="0 0 1024 1024"
+            class="chat-bot-img"
+          >
+            <path
+              d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"
+            ></path>
+          </svg>
+          <div class="user-message-text message-text">
+            <span class="thinking-indicator">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </span>
+          </div>
+        </div>
+
       </ng-container>
 
-      <ng-template #noChatSelected>
-        <p>Please select a chat to view messages.</p>
-      </ng-template>
+      <ng-container *ngIf="!selectedChat||isSelectecChatDeleted()">
+        <div class="noChat">
+          <p>Please select a chat to view messages 🤨!??</p>
+        </div>
+      </ng-container>
     </div>
 
     <!-- Chat footer -->
-    <div class="chat-footer">
+    <div *ngIf="selectedChat&&!isSelectecChatDeleted()" class="chat-footer">
 
       <form (ngSubmit)="sendMessage()" class="form-ofchat">
         <textarea
@@ -124,14 +185,14 @@
             <!-- Voice Mode Button -->
             <button
               id ="voice-mode"
-              class="voice-button has-tooltip"
+              class="voice-mode-svg has-tooltip"
               *ngIf="!hasText()"
               (click)="activateVoiceMode(); handleButtonClick($event)"
               aria-label="Voice Mode"
             >
               <!-- <span class="material-symbols-rounded">mic</span> -->
-               <i class="fa-solid fa-microphone-lines"></i>
-               <span class="button-label">Voice Mode</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="37.9" height="37.7" viewBox="1.9 1.9 30 30"><path fill="currentColor" d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14s14-6.268 14-14S23.732 2 16 2m-2.5 8a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V11a1 1 0 0 1 1-1m10 1v10a1 1 0 1 1-2 0V11a1 1 0 1 1 2 0M18 12.5a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1M10 14v4a1 1 0 1 1-2 0v-4a1 1 0 1 1 2 0"/></svg>
+              <span class="button-label">Voice Mode</span>
             </button>
 
             <!-- Send Button -->
@@ -161,5 +222,85 @@
     </div>
   </div>
 
+
+
   <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </body>
+
+<!-- ********************************************* -->
+ <!-- ***********Voice Mode Section************  -->
+<!-- ********************************************* -->
+
+<div class="voiceMode" *ngIf="isVoiceModeActivated()">
+  <div class="voice-mode-container">
+    <!-- <button class="back-btn" (click)="deactivateVoiceMode()">⬅ Back to Chat</button> -->
+
+
+    <div class="voice-visualizer">
+      <div
+        class="circle"
+        [ngStyle]="{
+          transform: 'scale(' + getScale() + ')'
+        }"
+      >
+        <img src="images/Voice-Wave.png" alt="Mic Icon" />
+      </div>
+    </div>
+
+    <!-- <div class="transcript-box">
+      <p *ngIf="transcript; else waiting">🗣️ {{ transcript }}</p>
+      <ng-template #waiting>
+        <p class="placeholder">Say something...</p>
+      </ng-template>
+    </div> -->
+
+    <!-- AI Processing Notification -->
+    <div class="ai-processing-message" >
+      <!-- <i class="fas fa-robot"></i> -->
+       <svg *ngIf="isAiProcessing()"
+          xmlns="http://www.w3.org/2000/svg"
+          width="100"
+          height="100"
+          viewBox="0 0 1024 1024"
+          class="chat-bot-img"
+        >
+          <path
+            d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"
+          ></path>
+        </svg>
+      <span *ngIf="isAiProcessing()" >AI is generating a response, please wait...</span>
+      <span *ngIf="!isAiProcessing()&&isMicOpen()&&!hasUserStartedSpeaking()&&!hasAiStartedSpeaking()" >Start Speaking with AI Assistant</span>
+    </div>
+
+    <div class="voice-mode-controls">
+      <!-- Mic Control -->
+      <div class="mic-control">
+        <!-- Mic Open (Recording...) -->
+        <div class="circle-button tooltip" *ngIf="isMicOpen()">
+          <button class="mic-button" (click)="closeMic()">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <span class="tooltip-text">Mic is open</span>
+        </div>
+
+        <!-- Mic Closed (AI is generating...) -->
+        <div class="circle-button tooltip red" *ngIf="!isMicOpen()">
+          <button class="mic-button" (click)="openMic()">
+            <i class="fas fa-microphone-slash"></i>
+          </button>
+          <span class="tooltip-text">Mic is closed</span>
+        </div>
+      </div>
+
+      <!-- End Voice Mode -->
+      <div class="end-voice-mode tooltip">
+        <button class="end-button" (click)="deactivateVoiceMode()">
+          <i class="fas fa-times"></i>
+        </button>
+        <span class="tooltip-text">End Voice Mode</span>
+      </div>
+    </div>
+
+
+  </div>
+</div>
