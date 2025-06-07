@@ -6,10 +6,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
-import { environment } from '../../environments/environment.development';
-import { ConfirmClientRequestDto } from '../interfaces/confirm-client-request-dto';
+import { environment } from '../../environments/environment';
+// import { ConfirmClientRequestDto } from '../interfaces/confirm-client-request-dto';
 import { ChatMessage } from '../interfaces/chat-message';
 import { VoiceService } from './voice.service';
+// import {
+//   // IsProcessingRequestDto,
+//   IsProcessingResponseDto
+// } from '../interfaces/is-ai-processing-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +21,8 @@ import { VoiceService } from './voice.service';
 export class ChatService {
 
 
-  HubUrl: string = environment.HubUrl;
-  ChatUrl: string = environment.ChatUrl;
+  ChatUrl: string = environment.apiUrl + 'chat';
+  HubUrl: string = environment.apiUrl + 'hubs/chat';
 
   private voiceServiceInstance?: VoiceService;
   private messageType = MessageType;
@@ -253,7 +257,7 @@ export class ChatService {
     return this.http.delete<void>(`${this.ChatUrl}/delete`, {
       body: { id: chatId },
     });
-  };
+  }
 
 
   getChats(): Observable<any[]> {
@@ -285,6 +289,15 @@ export class ChatService {
 
     return this.http.get(url, { params, responseType: 'blob' });
   }
+
+
+  isAiProcessing(chatId: string): Observable<boolean> {
+    const params = new HttpParams().set('chatId', chatId);
+    return this.http
+      .get<{ isProcessing: boolean }>(`${this.ChatUrl}/is-processing`, { params })
+      .pipe(map(response => response.isProcessing));
+  }
+
 
 
 

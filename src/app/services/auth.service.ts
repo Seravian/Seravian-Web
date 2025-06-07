@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { LoginRequest } from '../interfaces/login-request';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { AuthResponse } from '../interfaces/auth-response';
@@ -23,7 +23,7 @@ import CryptoJS from 'crypto-js';
 
 export class AuthService {
 
-  APIUrl:string = environment.APIUrl;
+  APIUrl:string = environment.apiUrl + 'auth';
   private tokenkey = 'token'
 
 
@@ -32,7 +32,6 @@ export class AuthService {
 
     private router = inject(Router)
 
-  baseServerUrl= "https://seravian.runasp.net/auth/";
 
   login(data:LoginRequest):Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.APIUrl}/login`,data).pipe(

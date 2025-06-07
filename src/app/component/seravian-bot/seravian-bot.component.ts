@@ -38,7 +38,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private cdr: ChangeDetectorRef,
-    private router: Router,
     private voiceService: VoiceService
   ) {}
 
@@ -57,8 +56,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
           .subscribe(() => {
             this.chatService.joinChat(chat.id)
-              .then(() => {
+              .then(async () => {
                 console.log(`1 Joined chat ${chat.id}`);
+                await this.checkAiProcessingStatus();
                 this.cdr.detectChanges();
                 setTimeout(() => {
                   this.scrollToBottom();
@@ -87,6 +87,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           messageType: message.messageType
         })));
 
+        if(missedMessages[length - 1].isAI === true){
+          this.voiceService.deactivateAiProcessingService();
+        }
+
         // Clear missed messages after syncing
         this.chatService.setMissedMessages([]);
         console.log('Missed messages synced and cleared.');
@@ -96,6 +100,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           this.messageInputRef.nativeElement.focus();
         }, 50);
       }else{
+        console.log('No missed messages to sync.');
       }
     });
 
@@ -140,7 +145,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     });
 
     // Listen to SignalR receive-ai-response
-    this.chatService['hubConnection'].on('receive-ai-response', (data: any) => {
+    this.chatService['hubConnection'].on('receive-ai-response', async (data: any) => {
 
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
@@ -150,6 +155,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         const exists = currentMessages.some(msg => msg?.id === data.id);
 
         if (!exists) {
+
+          await this.checkAiProcessingStatus();
+          // await new Promise(res => setTimeout(res, 500));
+
           this.selectedChat.messages.push({
             id: data.id,
             isAI: true,
@@ -167,6 +176,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             timestampUtc: data.timestampUtc,
             messageType: data.messageType,
           });
+
+          // this.voiceService.deactivateAiProcessingService(); // Deactivate AI processing after response
+
         }
 
         if (!this.voiceService.getVoiceModeStatus()) {
@@ -180,7 +192,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
 
     // Listen to SignalR confirm-client-request
-    this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
+    this.chatService['hubConnection'].on('confirm-client-request', async (data: any) => {
 
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
@@ -209,7 +221,18 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
               isAI: false,
               messageType: MessageType.Text
             });
+
           }
+
+          if (!this.voiceService.getVoiceModeStatus()) {
+            setTimeout(() => {
+              this.scrollToBottom();
+              this.messageInputRef.nativeElement.focus();
+            }, 50);
+          }
+
+          await new Promise(res => setTimeout(res, 1000));
+          await this.checkAiProcessingStatus();
 
           if (!this.voiceService.getVoiceModeStatus()) {
             setTimeout(() => {
@@ -353,9 +376,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.chatService.isChatDeletedFlag();
   }
 
-  isVoiceModeActivated():boolean{
-    return this.voiceService.getVoiceModeStatus();
-  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -371,7 +391,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   isListening = false;
   transcript: string = '';
-  private transcriptSub!: Subscription;
+  // private transcriptSub!: Subscription;
   volumeLevel = 0;
 
 
@@ -387,12 +407,14 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         this.volumeLevel = level;
       });
 
-      this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
-        if (text) {
-          this.transcript = text;
-          this.isListening = false;
-        }
-      });
+      // this.openMic();
+
+      // this.transcriptSub = this.voiceService.transcript$.subscribe(text => {
+      //   if (text) {
+      //     this.transcript = text;
+      //     this.isListening = false;
+      //   }
+      // });
 
     }else{
       window.alert('please select a chat');
@@ -404,8 +426,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
       this.isListening = false;
       this.transcript = '';
       this.voiceService.stopListening();
-      this.transcriptSub.unsubscribe();
+      // this.transcriptSub.unsubscribe();
       this.voiceService.deactivateVoiceModeService();
+      this.closeMic();
       if (this.selectedChat) {
         setTimeout(() => {
           this.scrollToBottom();
@@ -415,10 +438,47 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
   }
 
+  openMic(): void {
+    this.voiceService.activateMicService();
+  }
+
+  closeMic(): void {
+    this.voiceService.deactivateMicService();
+  }
+
+  isVoiceModeActivated():boolean{
+    return this.voiceService.getVoiceModeStatus();
+  }
+
+  isMicOpen(): boolean {
+    console.log('Mic status:', this.voiceService.getMicStatus());
+    return this.voiceService.getMicStatus();
+  }
+
+  isAiProcessing(): boolean {
+    return this.voiceService.getAiProcessingStatus();
+  }
+
+  isProcessing = false;
+
+  async checkAiProcessingStatus() {
+    await this.voiceService.getGeneralaiProcessingStatus().then(status => {
+      this.isProcessing = status;
+    });
+  }
+
+
+  hasUserStartedSpeaking(): boolean {
+    return this.voiceService.getUserSpeakingStatus();
+  }
+
+  hasAiStartedSpeaking(): boolean {
+    return this.voiceService.getAiSpeakingStatus();
+  }
 
   getScale(): number {
-    const minScale = 1;
-    const maxScale = 2;
+    const minScale = 1.3;
+    const maxScale = 2.1;
     const normalizedVolume = Math.min(this.volumeLevel / 100, 1); // Normalize to 0-1
     return minScale + normalizedVolume * (maxScale - minScale);
   }
