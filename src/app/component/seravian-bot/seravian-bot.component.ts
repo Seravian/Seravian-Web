@@ -38,7 +38,6 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private cdr: ChangeDetectorRef,
-    private router: Router,
     private voiceService: VoiceService
   ) {}
 
@@ -59,6 +58,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             this.chatService.joinChat(chat.id)
               .then(() => {
                 console.log(`1 Joined chat ${chat.id}`);
+                this.checkAiProcessingStatus();
                 this.cdr.detectChanges();
                 setTimeout(() => {
                   this.scrollToBottom();
@@ -87,6 +87,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           messageType: message.messageType
         })));
 
+        if(missedMessages[length - 1].isAI === true){
+          this.voiceService.deactivateAiProcessingService();
+        }
+
         // Clear missed messages after syncing
         this.chatService.setMissedMessages([]);
         console.log('Missed messages synced and cleared.');
@@ -96,6 +100,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           this.messageInputRef.nativeElement.focus();
         }, 50);
       }else{
+        console.log('No missed messages to sync.');
       }
     });
 
@@ -140,7 +145,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     });
 
     // Listen to SignalR receive-ai-response
-    this.chatService['hubConnection'].on('receive-ai-response', (data: any) => {
+    this.chatService['hubConnection'].on('receive-ai-response', async (data: any) => {
 
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
@@ -150,6 +155,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         const exists = currentMessages.some(msg => msg?.id === data.id);
 
         if (!exists) {
+
+          await this.checkAiProcessingStatus();
+          // await new Promise(res => setTimeout(res, 500));
+
           this.selectedChat.messages.push({
             id: data.id,
             isAI: true,
@@ -167,6 +176,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             timestampUtc: data.timestampUtc,
             messageType: data.messageType,
           });
+
+          // this.voiceService.deactivateAiProcessingService(); // Deactivate AI processing after response
+
         }
 
         if (!this.voiceService.getVoiceModeStatus()) {
@@ -180,7 +192,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
 
     // Listen to SignalR confirm-client-request
-    this.chatService['hubConnection'].on('confirm-client-request', (data: any) => {
+    this.chatService['hubConnection'].on('confirm-client-request', async (data: any) => {
 
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
@@ -209,6 +221,10 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
               isAI: false,
               messageType: MessageType.Text
             });
+
+            await new Promise(res => setTimeout(res, 1000));
+            // this.voiceService.activateAiProcessingService(); // Activate AI processing after confirmation
+            this.checkAiProcessingStatus();
           }
 
           if (!this.voiceService.getVoiceModeStatus()) {
@@ -436,8 +452,21 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.voiceService.getAiProcessingStatus();
   }
 
+  isProcessing = false;
+
+  async checkAiProcessingStatus() {
+    await this.voiceService.getGeneralaiProcessingStatus().then(status => {
+      this.isProcessing = status;
+    });
+  }
+
+
   hasUserStartedSpeaking(): boolean {
     return this.voiceService.getUserSpeakingStatus();
+  }
+
+  hasAiStartedSpeaking(): boolean {
+    return this.voiceService.getAiSpeakingStatus();
   }
 
   getScale(): number {

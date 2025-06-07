@@ -22,6 +22,7 @@ export class VoiceService {
   private isMicOpen: boolean = false;
   private isAiProcessing: boolean = false;
   private userStartedSpeaking = false;
+  private aiStartedSpeaking = false;
 
   private aiAudioContext: AudioContext | null = null;
   private aiAudioSource: AudioBufferSourceNode | null = null;
@@ -49,6 +50,7 @@ export class VoiceService {
     if (this.isVoiceModeActive) {
       this.isMicOpen = true;
       this.isAiProcessing = false;
+      this.aiStartedSpeaking = true;
       this.isListening = false;
       this.startListening();
 
@@ -128,6 +130,10 @@ export class VoiceService {
     return this.userStartedSpeaking;
   }
 
+  getAiSpeakingStatus(): boolean {
+    return this.aiStartedSpeaking;
+  }
+
   // ==============================
 
   activateAiProcessingService() {
@@ -141,6 +147,17 @@ export class VoiceService {
   getAiProcessingStatus(): boolean {
     return this.isAiProcessing;
   }
+
+  async getGeneralaiProcessingStatus(): Promise<boolean> {
+    const aiStatus = await this.isAiProcessingStatus();
+    if (aiStatus) {
+      this.isMicOpen = false;
+      this.isAiProcessing = true;
+      console.log('AI is still processing, please wait.');
+    }
+    return aiStatus;
+  }
+
 
   // ==============================
 
@@ -434,6 +451,7 @@ export class VoiceService {
     if (this.aiAudioSource) {
       try {
         this.aiAudioSource.stop();
+        this.aiStartedSpeaking = false;
       } catch (e) {
         console.warn('Playback already stopped:', e);
       }
