@@ -56,9 +56,9 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           .pipe(filter(isConnected => isConnected), take(1)) // wait for the first `true`
           .subscribe(() => {
             this.chatService.joinChat(chat.id)
-              .then(() => {
+              .then(async () => {
                 console.log(`1 Joined chat ${chat.id}`);
-                this.checkAiProcessingStatus();
+                await this.checkAiProcessingStatus();
                 this.cdr.detectChanges();
                 setTimeout(() => {
                   this.scrollToBottom();
@@ -222,10 +222,17 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
               messageType: MessageType.Text
             });
 
-            await new Promise(res => setTimeout(res, 1000));
-            // this.voiceService.activateAiProcessingService(); // Activate AI processing after confirmation
-            this.checkAiProcessingStatus();
           }
+
+          if (!this.voiceService.getVoiceModeStatus()) {
+            setTimeout(() => {
+              this.scrollToBottom();
+              this.messageInputRef.nativeElement.focus();
+            }, 50);
+          }
+
+          await new Promise(res => setTimeout(res, 1000));
+          await this.checkAiProcessingStatus();
 
           if (!this.voiceService.getVoiceModeStatus()) {
             setTimeout(() => {
