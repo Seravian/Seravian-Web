@@ -1,4 +1,4 @@
 export const environment = {
-  production:false,
-  apiUrl:'https://seravian.runasp.net/'
+  production: false,
+  apiUrl: process.env['NG_APP_BASE_URL']
 };
