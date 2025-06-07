@@ -6,8 +6,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
-import { environment } from '../../environments/environment.development';
-import { ConfirmClientRequestDto } from '../interfaces/confirm-client-request-dto';
+import { environment } from '../../environments/environment';
+// import { ConfirmClientRequestDto } from '../interfaces/confirm-client-request-dto';
 import { ChatMessage } from '../interfaces/chat-message';
 import { VoiceService } from './voice.service';
 // import {
@@ -21,8 +21,8 @@ import { VoiceService } from './voice.service';
 export class ChatService {
 
 
-  HubUrl: string = environment.HubUrl;
-  ChatUrl: string = environment.ChatUrl;
+  ChatUrl: string = environment.apiUrl + 'chat';
+  HubUrl: string = environment.apiUrl + 'hubs/chat';
 
   private voiceServiceInstance?: VoiceService;
   private messageType = MessageType;

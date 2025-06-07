@@ -1,5 +1,7 @@
 # Seravian
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/2eea896a-4152-4776-b44d-61866244adee/deploy-status)](https://app.netlify.com/projects/seravian/deploys)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.0.
 
 ## Development server
