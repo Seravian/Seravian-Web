@@ -50,7 +50,7 @@ a{
     color: #333;
     font-size: 13px;
     text-decoration: none;
-    margin: 15px 0 10px;
+    margin: 1rem 0 0rem;
 }
 
 .container button{
@@ -65,6 +65,14 @@ a{
     text-transform: uppercase;
     margin: 10px;
     cursor: pointer;
+}
+
+.container #signup{
+  margin-top: 2rem;
+}
+
+.container #signin{
+  margin-top: 1.5rem;
 }
 
 .container button.hidden{
@@ -99,6 +107,11 @@ a{
     height: 100%;
     transition: all 0.6s ease-in-out;
 }
+
+.form-container h1{
+    margin-bottom: 3rem;
+}
+
 .status-message{
   color: red;
   font-weight: bold;

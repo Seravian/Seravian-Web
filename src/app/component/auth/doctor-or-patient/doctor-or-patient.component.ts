@@ -26,12 +26,12 @@ export class DoctorOrPatientComponent {
 
       this.authService.setTempRole(roleNumber);
 
-    if (roleNumber === 0) {
-      this.router.navigate(['/patient-info']);
-    } else {
-      this.router.navigate(['/doctor-info']);
+      // if (roleNumber === 0) {
+      this.router.navigate(['/user-info']);
+      // } else {
+        // this.router.navigate(['/doctor-info']);
+      // }
     }
   }
-}
 
 }

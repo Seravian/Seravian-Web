@@ -78,28 +78,6 @@ export class LoginsignupComponent  {
       this.authService.register(this.signUpForm.value).subscribe({
         next:(response)=>{
 
-          // const profile = {
-          //   id: response.userId,
-          //   fullName: response.fullName,
-          //   email: response.email,
-          //   dateOfBirth: response.dateOfBirth,
-          //   gender: response.gender,
-          //   role: response.role,
-          //   isEmailVerified: response.isEmailVerified
-          // };
-
-          // localStorage.setItem('profile', JSON.stringify(profile));
-
-          // const profileTokens = {
-          //   accessToken: response.tokens.accessToken,
-          //   refreshToken: response.tokens.refreshToken,
-          //   accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
-          // }
-
-
-          // localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-
-
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
           this.router.navigate(['/verify-email']);
@@ -144,23 +122,15 @@ export class LoginsignupComponent  {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        console.log(response);
 
+        console.log("response after login",response);
 
         const profile = {
           id: response.userId,
-          fullName: response.fullName,
-          email: response.email,
-          dateOfBirth: response.dateOfBirth,
-          gender: response.gender,
-          role: response.role,
-          isEmailVerified: response.isEmailVerified,
-          isProfileSetupComplete: response.isProfileSetupComplete
+          role: response.isProfileSetupComplete,
         };
-        console.log("hi",profile)
 
         localStorage.setItem('profile', JSON.stringify(profile));
-
 
         const profileTokens = {
           accessToken: this.authService.EncryptToken(response.tokens.accessToken!),
@@ -168,19 +138,66 @@ export class LoginsignupComponent  {
           accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
         }
 
-        console.log("encrypted tokens after signing in",profileTokens)
+        console.log("encrypted tokens after completing profile",profileTokens)
 
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
-        console.log('Login successful:', response);
-        if(!response.isEmailVerified){
-          this.router.navigate(['verify-email']);
-        }
-        else if (!response.isProfileSetupComplete) {
+        if (!response.isProfileSetupComplete) {
           this.router.navigate(['doctor-or-patient']);
-        } else {
-          this.router.navigate(['dashboard']);
-        } // Or wherever you want to redirect
+        }else if (response.role === 0) {
+
+          const patientProfile = {
+            id: response.userId,
+            fullName: response.fullName,
+            email: response.email,
+            dateOfBirth: response.dateOfBirth,
+            gender: response.gender,
+            role: response.role,
+            isEmailVerified: response.isEmailVerified,
+            isProfileSetupComplete: response.isProfileSetupComplete
+          };
+          console.log("patient profile data",patientProfile)
+
+          localStorage.setItem('profile', JSON.stringify(patientProfile));
+
+          if(!response.isEmailVerified){
+            this.router.navigate(['verify-email']);
+
+          }else {
+            this.router.navigate(['dashboard']);
+          }
+
+        }else if (response.role === 1) {
+
+          const doctorProfile = {
+            id: response.userId,
+            fullName: response.fullName,
+            email: response.email,
+            dateOfBirth: response.dateOfBirth,
+            gender: response.gender,
+            role: response.role,
+            isDoctorVerified: response.isDoctorVerified,
+            isEmailVerified: response.isEmailVerified,
+            isProfileSetupComplete: response.isProfileSetupComplete
+          };
+          console.log("doctor profile data",doctorProfile)
+
+          localStorage.setItem('profile', JSON.stringify(doctorProfile));
+
+          if(!response.isEmailVerified){
+            console.log("isEmailVerified :",response.isEmailVerified)
+            this.router.navigate(['verify-email']);
+
+          }else if (!response.isDoctorVerified) {
+            console.log("isDoctorVerified :",response.isDoctorVerified)
+            this.router.navigate(['doctor-verification']);
+
+          }else {
+            this.router.navigate(['doctor-dashboard']);
+            }
+
+        }
+
       },
       error: (error) => {
         if (error.error?.errors) {

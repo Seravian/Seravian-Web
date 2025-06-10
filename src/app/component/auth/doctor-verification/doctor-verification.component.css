@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.parent {
+  background-color: #c9d6ff;
+  background: linear-gradient(to right, #c9d6ff, #7059f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-container {
+  position: relative;
+}
+
+
+.requests-container {
+  min-height: 80vh;
+  background-color: #f8f9fe;
+}
+
+.main-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-content .add-request {
+  background-color: #4e34cf;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 3rem;
+  cursor: pointer;
+}
+
+.main-content .add-request:hover {
+  background-color: #3b28a6;
+  border-color: #3b28a6;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 3rem;
+}
+
+.requests-table {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  min-height: 345px;
+  max-height: 345px;
+}
+
+.table-wrapper {
+  max-height: 345px;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #4e34cf;
+  position: sticky;
+  top: 0;
+  background-color: #4e34cf;
+  z-index: 2;
+}
+
+th {
+  padding: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  color: #eee;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+
+}
+
+td {
+  padding: 1rem 1.5rem;
+  font-size: 0.95rem;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  text-align: center;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.Approved {
+  background-color: #e0fbea;
+  color: #059669;
+}
+
+.status-badge.Pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.Rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.Deleted {
+  background-color: #dc2626;
+  color: #fee2e2;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.view-btn:hover {
+  background-color: #4e34cf;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
+.icon-button:hover i {
+  color: #fff;
+}
+
+.view-btn:hover::after,
+.delete-btn:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -20px;
+  background-color: #1e293b;
+  color: #fff;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.9;
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+.view-btn i {
+  color: #4e34cf;
+}
+
+.delete-btn i {
+  color: #dc2626;
+}
+
+
+
+/* @media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  table {
+    min-width: 600px;
+  }
+} */
+
+

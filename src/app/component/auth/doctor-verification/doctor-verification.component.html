@@ -1,0 +1,52 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+<div class="parent">
+  <div class="container">
+    <div class="form-container">
+      <div class="requests-container">
+        <div class="main-content">
+          <h2 class="title">Doctor Verification Requests</h2>
+          <div class="requests-table">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Request Id</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let request of requests">
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.requestedAtUtc | date:'medium' }}</td>
+                    <td>
+                      <span class="status-badge" [ngClass]="getStatusName(request.status)">
+                        {{ getStatusName(request.status) }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="icon-button view-btn" title="View">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="icon-button delete-btn" title="Delete">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <button class="add-request" type="">Add Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

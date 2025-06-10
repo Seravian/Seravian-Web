@@ -4,16 +4,14 @@ import { environment } from '../../environments/environment';
 import { LoginRequest } from '../interfaces/login-request';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { AuthResponse } from '../interfaces/auth-response';
-// import jwt_decode, { jwtDecode } from 'jwt-decode';
-import { jwtDecode } from 'jwt-decode';
-import { da, fa, faCountryTranslations } from 'intl-tel-input/i18n';
 import { RegisterRequest } from '../interfaces/register-request';
 import { catchError, tap } from 'rxjs/operators';
-import { of, EMPTY } from 'rxjs';
+import { EMPTY } from 'rxjs';
 import { ProfileRequest } from '../interfaces/profile-request';
 import { Tokens } from '../interfaces/tokens';
 import { Router } from '@angular/router';
 import CryptoJS from 'crypto-js';
+import { DoctorVerificationRequestResponseDto } from '../interfaces/doctor-verification-request-response-dto';
 
 
 
@@ -23,18 +21,19 @@ import CryptoJS from 'crypto-js';
 
 export class AuthService {
 
-  APIUrl:string = environment.apiUrl + 'auth';
-  private tokenkey = 'token'
-
-
+  AuthUrl:string = environment.apiUrl + 'auth';
+  DocAuthUrl:string = environment.apiUrl + 'doctor';
 
   constructor(private http: HttpClient) { }
 
     private router = inject(Router)
 
+  // *************************************************
+  // ************General Auth Endpoints***************
+  // *************************************************
 
   login(data:LoginRequest):Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.APIUrl}/login`,data).pipe(
+    return this.http.post<AuthResponse>(`${this.AuthUrl}/login`,data).pipe(
       map((response)=>{
 
         if(response.isEmailVerified){
@@ -50,12 +49,33 @@ export class AuthService {
   }
 
   register(data:RegisterRequest):Observable<AuthResponse>{
-    return this.http.post<AuthResponse>(`${this.APIUrl}/register`,data).pipe(
+    return this.http.post<AuthResponse>(`${this.AuthUrl}/register`,data).pipe(
       map((response)=>{
           return response;
       })
     )
   }
+
+  completeProfile(data: ProfileRequest): Observable<any> {
+    return this.http.post(`${this.AuthUrl}/complete-profile-setup`, data).pipe(
+      tap(() => console.log('Profile info submitted')),
+      catchError((error) => {
+        console.error('Error submitting profile info:', error);
+        return EMPTY;
+      })
+    );
+  }
+
+// *************************************************
+// ************Doctor Auth Endpoints****************
+// *************************************************
+
+  getDoctorVerificationRequests(): Observable<DoctorVerificationRequestResponseDto[]> {
+    return this.http.get<DoctorVerificationRequestResponseDto[]>(`${this.DocAuthUrl}/get-doctor-verification-requests`).pipe(
+      map((response) => response)
+    );
+  }
+
 // ***************************************************************
   private tempRole: number | null = null;
 
@@ -97,14 +117,6 @@ export class AuthService {
     return !this.isTokenExpired();
   };
 
-  // private isSignalRTokenValid(): boolean {
-  //   const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
-  //   if (!expiryString) return true;
-  //   const expiry = new Date(expiryString).getTime();
-  //   const expiryWithBuffer = expiry - 60_000; // Add 1 min buffer
-  //   return expiryWithBuffer > Date.now();
-  // }
-
   private isTokenExpired(): boolean {
     const expiryString = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessTokenExpirationUtc;
     if (!expiryString) return true;
@@ -117,7 +129,7 @@ export class AuthService {
     const refreshToken = this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
 
     if (refreshToken) {
-      this.http.post(`${this.APIUrl}/logout`, { refreshToken })
+      this.http.post(`${this.AuthUrl}/logout`, { refreshToken })
         .subscribe({
           next: () => {
             console.log('Logout request sent successfully.');
@@ -147,7 +159,7 @@ export class AuthService {
   OtpVerfiy(data: [string, string]): Observable<AuthResponse> {
     const [email, otpCode] = data;
 
-    return this.http.post<AuthResponse>(`${this.APIUrl}/verify-otp`, { email, otpCode }).pipe(
+    return this.http.post<AuthResponse>(`${this.AuthUrl}/verify-otp`, { email, otpCode }).pipe(
       map((response) => {
         console.log('OTP verification successful.');
         return response;
@@ -157,22 +169,14 @@ export class AuthService {
   ResendOtpVerfiy(data: [string]): Observable<AuthResponse> {
     const [email] = data;
 
-    return this.http.post<AuthResponse>(`${this.APIUrl}/resend-otp`, { email }).pipe(
+    return this.http.post<AuthResponse>(`${this.AuthUrl}/resend-otp`, { email }).pipe(
       map((response) => {
         return response;
       })
     );
   }
 
-  completeProfile(data: ProfileRequest): Observable<any> {
-    return this.http.post(`${this.APIUrl}/complete-profile-setup`, data).pipe(
-      tap(() => console.log('Profile info submitted')),
-      catchError((error) => {
-        console.error('Error submitting profile info:', error);
-        return EMPTY;
-      })
-    );
-  }
+
 
 
   refreshTokens(): Observable<Tokens> {
@@ -182,7 +186,7 @@ export class AuthService {
       throw new Error('No refresh token found');
     }
 
-    return this.http.post<Tokens>(`${this.APIUrl}/refresh-token`, {refreshToken: refreshToken})
+    return this.http.post<Tokens>(`${this.AuthUrl}/refresh-token`, {refreshToken: refreshToken})
     .pipe(
       map((response) => {
         // Save new tokens
@@ -216,22 +220,6 @@ export class AuthService {
       return null;
     }
   }
-
-  // getTokenForSignalR(): string | null {
-  //   console.log('getTokenForSignalR called');
-
-  //   let token: string | null = null;
-  //   this.refreshTokens().subscribe({
-  //     next: (tokens) => {
-  //       console.log('Token refreshed successfully:', tokens);
-  //       token = tokens.accessToken || '';
-  //     },
-  //     error: (err) => {
-  //       console.error('error from getTokenForSignalR', err);
-  //     }
-  //   });
-  //   return token;
-  // }
 
   async getTokenForSignalR(): Promise<string> {
     console.log('getTokenForSignalR called');

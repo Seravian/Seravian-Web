@@ -98,28 +98,6 @@ export class ChatService {
       .withAutomaticReconnect()
       .build();
 
-    // this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
-    //   console.log('Notification AI audio response ready:', data);
-
-    //   console.log('ID of the AI audio:', data.aiAudioId);
-
-    //   this.downloadAIAudio(+data.aiAudioId).subscribe({
-    //     next: (blob) => {
-    //       const url = window.URL.createObjectURL(blob);
-    //       const a = document.createElement('a');
-    //       a.href = url;
-    //       a.download = `ai-response-${data.aiAudioId}.wav`;
-    //       a.click();
-    //       window.URL.revokeObjectURL(url);
-    //     },
-    //     error: (err) => {
-    //       console.error('Error downloading AI audio', err);
-    //     }
-    //   });
-
-    // });
-
-
     this.hubConnection.onreconnected(async(connectionId) => {
       console.log('Reconnected to SignalR server');
       const selectedChat = this.selectedChatSource.value;
@@ -159,19 +137,6 @@ export class ChatService {
             const lastMissedMessageType = lastMissedMessage?.messageType;
 
             if (this.voiceService.getVoiceModeStatus()&& lastMissedMessage && lastMissedMessageType === this.messageType.VoiceModeText) {
-              // this.downloadAIAudio(lastMissedMessage.id).subscribe({
-              //   next: (blob) => {
-              //     const url = window.URL.createObjectURL(blob);
-              //     const a = document.createElement('a');
-              //     a.href = url;
-              //     a.download = `ai-response-${lastMissedMessage.id}.wav`;
-              //     a.click();
-              //     window.URL.revokeObjectURL(url);
-              //   },
-              //   error: (err) => {
-              //     console.error('Error downloading AI audio', err);
-              //   }
-              // });
               console.log('Playing AI audio from onreconnected');
               this.voiceService.playAiAudio(lastMissedMessage.id);
             }
@@ -193,7 +158,6 @@ export class ChatService {
       .catch(err => {
         console.error('Error while starting connection: ' + err)
         console.log('Retrying connection...');
-        // this.hubConnection.start()
         this.hubConnection.start().then(() => this.connectionEstablishedSource.next(true));
       });
 
@@ -329,7 +293,12 @@ export class ChatService {
         next: (chatMessages:Chat) => {
           const selectedChat = this.chats.find(chat => chat.id === chatId);
           if (selectedChat) {
-            selectedChat.messages = chatMessages.messages??[];
+            selectedChat.messages = chatMessages.messages.map(item=>({
+              ...item,
+              timestampUtc: new Date(item.timestampUtc.endsWith('Z') || item.timestampUtc.includes('+')
+              ? item.timestampUtc
+              : item.timestampUtc + 'Z').toLocaleString()
+            }))??[];
             console.log('chat Messages in chat service:', selectedChat.messages);
             this.selectedChatSource.next(selectedChat);
 

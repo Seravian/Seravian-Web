@@ -6,7 +6,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { ForgetPasswordComponent } from './forget-password/forget-password.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
-import { PatientInfoComponent } from './patient-info/patient-info.component';
+import { UserInfoComponent } from './user-info/user-info.component';
 import { DoctorInfoComponent } from './doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './doctor-or-patient/doctor-or-patient.component';
 import { WaitingLandingComponent } from './waiting-landing/waiting-landing.component';
@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { DoctorVerificationComponent } from './doctor-verification/doctor-verification.component';
 
 
 @NgModule({
@@ -21,10 +22,12 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     ForgetPasswordComponent,
     NewPasswordComponent,
     VerifyEmailComponent,
-    PatientInfoComponent,
+
+    UserInfoComponent,
     DoctorInfoComponent,
     DoctorOrPatientComponent,
-    WaitingLandingComponent
+    WaitingLandingComponent,
+    DoctorVerificationComponent
   ],
   imports: [
     ReactiveFormsModule,

@@ -4,17 +4,17 @@
       <div class="form-container sign-up" >
           <form [formGroup]="signUpForm">
               <h1>Create Account</h1>
-              <div class="social-icons">
+              <!-- <div class="social-icons"> -->
                 <!-- <button type="button" (click)="handleGoogleSignIn()" class="custom-google-signin">hi</button> -->
-                <a class="icon" type="button" title="Visit Google" ><!--(click)="onSignInWithGoogle()" -->
-                  <i class="fa-brands fa-google-plus-g"></i>
-                </a>
+                <!-- <a class="icon" type="button" title="Visit Google" >(click)="onSignInWithGoogle()" -->
+                  <!-- <i class="fa-brands fa-google-plus-g"></i> -->
+                <!-- </a> -->
                  <!-- <a class="icon"><asl-google-signin-button></asl-google-signin-button></a> -->
-                <a type="button" class="icon" title= "Facebook"><!-- (click)="onSignInWithFacebook()" --><i class="fa-brands fa-facebook"></i></a>
-                  <a type="button" class="icon" title="Github" ><!--(click)="onSignInWithGithub()" --> <i class="fa-brands fa-github"></i></a>
-                  <a href="#" class="icon" title="Linkedin">  <i class="fa-brands fa-linkedin-in"></i></a>
-              </div>
-              <span>or use your email for registeration</span>
+                <!-- <a type="button" class="icon" title= "Facebook">(click)="onSignInWithFacebook()"<i class="fa-brands fa-facebook"></i></a> -->
+                  <!-- <a type="button" class="icon" title="Github" >(click)="onSignInWithGithub()" <i class="fa-brands fa-github"></i></a> -->
+                  <!-- <a href="#" class="icon" title="Linkedin">  <i class="fa-brands fa-linkedin-in"></i></a> -->
+              <!-- </div> -->
+              <!-- <span>or use your email for registeration</span> -->
               <!-- <input type="text" name="name" [(ngModel)]="signUpObj.name" placeholder="Name" formControlName="name">
               <div class="text-danger" *ngIf="userForm.controls['name'].invalid && (isFormSubmitted || userForm.controls['name'].touched || userForm.controls['name'].dirty)">
                   <span *ngIf="userForm.controls['name'].errors?.['required']">This is required</span>
@@ -51,13 +51,13 @@
       <div class="form-container sign-in" >
           <form [formGroup]="loginForm" >
               <h1>Sign In</h1>
-              <div class="social-icons">
-                  <a  class="icon" title="Visit Google"> <!--(click)="onSignInWithGoogle()"--> <i class="fa-brands fa-google-plus-g"></i></a>
-                  <a  class="icon" title= "Facebook"> <!--(click)="onSignInWithFacebook()"--> <i class="fa-brands fa-facebook"></i></a>
-                  <a  type="button" class="icon" title="Github"><!-- (click)="onSignInWithGithub()" --><i class="fa-brands fa-github"></i></a>
-                  <a href="#" class="icon" title="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
-              </div>
-              <span>or use your email password</span>
+              <!-- <div class="social-icons"> -->
+                  <!-- <a  class="icon" title="Visit Google"> (click)="onSignInWithGoogle()" <i class="fa-brands fa-google-plus-g"></i></a> -->
+                  <!-- <a  class="icon" title= "Facebook"> (click)="onSignInWithFacebook()" <i class="fa-brands fa-facebook"></i></a> -->
+                  <!-- <a  type="button" class="icon" title="Github">(click)="onSignInWithGithub()"<i class="fa-brands fa-github"></i></a> -->
+                  <!-- <a href="#" class="icon" title="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a> -->
+              <!-- </div> -->
+              <!-- <span>or use your email password</span> -->
               <span class="status-message" *ngIf="statusMessage">{{ statusMessage }}</span>
               <input type="email" name="email"  placeholder="Email" formControlName="email">
               <div class="text-danger" *ngIf="loginForm.controls['email'].invalid && (isFormSubmitted || loginForm.controls['email'].touched || loginForm.controls['email'].dirty)">
@@ -70,7 +70,7 @@
                 <span *ngIf="loginForm.controls['password'].errors?.['pattern']">Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character</span>
             </div>
               <a type="button" (click)="Forget()">→ Forget Your Password? ←</a>
-              <button type="button" (click)="onLogin()">Sign In</button>
+              <button type="button" id="signin" (click)="onLogin()">Sign In</button>
           </form>
       </div>
       <div class="toggle-container">

@@ -23,12 +23,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // const isPublicRequest = req.url.includes('/auth/register');
-  // if (isPublicRequest) {
-  //   return next(req); // Bypass token logic
-  // }
-
-
   const token = authService.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken);
   let newRequest = req;
 
@@ -45,7 +39,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((error) => {
-      // if(error.status === 400) {
+      // if(error.status === 401) {
       //   alert("looks like you are not logged in, please login again");
       //   router.navigate(['/']);
       //   return throwError(() => error);
@@ -53,6 +47,12 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (error.status === 401) {
         //  If token expired, try refreshing it
+        const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
+        if (!refreshToken) {
+          console.error('Refresh token not found');
+          alert("timeout, please login again");
+          router.navigate(['/']);
+        }
         return authService.refreshTokens().pipe(
           switchMap((tokens) => {
             //  Retry original request with new access token
