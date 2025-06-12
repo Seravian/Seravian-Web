@@ -189,7 +189,6 @@ export class ChatService {
   }
 
 
-
   syncMessages(chatId: string, lastMessageId: number | null): Observable<any[]> {
     let params = new HttpParams().set('chatId', chatId);
 
@@ -218,10 +217,10 @@ export class ChatService {
   }
 
   deleteChat(chatId: string): Observable<void> {
-    return this.http.delete<void>(`${this.ChatUrl}/delete`, {
-      body: { id: chatId },
-    });
+    const params = new HttpParams().set('id', chatId);
+    return this.http.delete<void>(`${this.ChatUrl}/delete`, { params });
   }
+
 
 
   getChats(): Observable<any[]> {

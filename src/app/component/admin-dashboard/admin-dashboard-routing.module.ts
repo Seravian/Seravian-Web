@@ -12,7 +12,7 @@ const routes: Routes = [
     path:'main-content', component: HomeComponent
   },
   {
-    path: 'appointments', component: AppointmentsComponent
+    path: 'doctor-requests', component: AppointmentsComponent
   },
   {
     path: 'profile', component: ProfileComponent

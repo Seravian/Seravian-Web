@@ -14,65 +14,69 @@ import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
 import { ChatComponent } from './component/chat_layout/chat/chat.component';
 import { WaitingLandingComponent } from './component/auth/waiting-landing/waiting-landing.component';
 import { DoctorVerificationComponent } from './component/auth/doctor-verification/doctor-verification.component';
+import { SendVerificationRequestComponent } from './component/auth/send-verification-request/send-verification-request.component';
 
 const routes: Routes = [{
-  path: '',
-  component: LoginsignupComponent,
-},
-{
-  path: 'chatbot',
-  component: ChatComponent, canActivate: [AuthGuard]
-},
-{
-  path: 'auth',
-  loadChildren: () => import('./component/auth/auth.module')
-    .then(m => m.AuthModule)
-},
-{
-  path: 'dashboard',
-  loadChildren: () => import('./component/dashboard/dashboard.module')
-    .then(m => m.DashboardModule),
-  canActivate: [AuthGuard]
-},
-{
-  path: 'doctor-dashboard',
-  loadChildren: () => import('./component/doctor-dashboard/doctor-dashboard.module')
-    .then(m => m.DoctorDashboardModule),
-},
-{
-  path: 'admin-dashboard',
-  loadChildren: () => import('./component/admin-dashboard/admin-dashboard.module')
-    .then(m => m.AdminDashboardModule),
-},
-{
-  path: 'user-profile',
-  loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
-    .then(m => m.UserProfileModule), canActivate: [AuthGuard]
-},
-{
-  path: 'forget-password', component: ForgetPasswordComponent
-},
-{
-  path: 'new-password', component: NewPasswordComponent
-},
-{
-  path: 'verify-email', component: VerifyEmailComponent,
-},
-{
-  path: 'user-info', component: UserInfoComponent, canActivate: [VerifyEmailGuard]
-},
-{
-  path: 'doctor-verification', component: DoctorVerificationComponent, canActivate: [AuthGuard]
-},
-{
-  path: 'doctor-info', component: DoctorInfoComponent,
-},
-{
-  path: 'doctor-or-patient', component: DoctorOrPatientComponent, canActivate: [VerifyEmailGuard]
-},
-{
-  path: 'waiting-landing', component: WaitingLandingComponent
-}
+    path: '',
+    component: LoginsignupComponent,
+  },
+  {
+    path: 'chatbot',
+    component: ChatComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./component/auth/auth.module')
+      .then(m => m.AuthModule)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./component/dashboard/dashboard.module')
+      .then(m => m.DashboardModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'doctor-dashboard',
+    loadChildren: () => import('./component/doctor-dashboard/doctor-dashboard.module')
+      .then(m => m.DoctorDashboardModule),
+  },
+  {
+    path: 'admin-dashboard',
+    loadChildren: () => import('./component/admin-dashboard/admin-dashboard.module')
+      .then(m => m.AdminDashboardModule),
+  },
+  {
+    path: 'user-profile',
+    loadChildren: () => import('./component/dashboard/home/user-profile/user-profile.module')
+      .then(m => m.UserProfileModule), canActivate: [AuthGuard]
+  },
+  {
+    path: 'forget-password', component: ForgetPasswordComponent
+  },
+  {
+    path: 'new-password', component: NewPasswordComponent
+  },
+  {
+    path: 'verify-email', component: VerifyEmailComponent,
+  },
+  {
+    path: 'user-info', component: UserInfoComponent, canActivate: [VerifyEmailGuard]
+  },
+  {
+    path: 'doctor-verification', component: DoctorVerificationComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'send-request', component: SendVerificationRequestComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'doctor-info', component: DoctorInfoComponent,
+  },
+  {
+    path: 'doctor-or-patient', component: DoctorOrPatientComponent, canActivate: [VerifyEmailGuard]
+  },
+  {
+    path: 'waiting-landing', component: WaitingLandingComponent
+  }
 ]
 
 @NgModule({

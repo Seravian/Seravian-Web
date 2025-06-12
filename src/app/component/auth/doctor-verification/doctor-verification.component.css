@@ -19,6 +19,7 @@
 
 .container {
   background-color: #fff;
+  max-width: 100%;
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
   position: relative;
@@ -26,6 +27,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin: 1rem;
 }
 
 .form-container {
@@ -35,6 +37,9 @@
 
 .requests-container {
   min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #f8f9fe;
 }
 
@@ -43,6 +48,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .main-content .add-request {
@@ -59,9 +65,18 @@
   cursor: pointer;
 }
 
+.main-content .add-request[disabled] {
+  background-color: #b2bec3;
+  cursor: not-allowed;
+}
+
+.main-content .add-request[disabled]:hover {
+  background-color: #b2bec3;
+  cursor: not-allowed;
+}
+
 .main-content .add-request:hover {
   background-color: #3b28a6;
-  border-color: #3b28a6;
 }
 
 .title {
@@ -120,6 +135,10 @@ td {
 
 tbody tr:hover {
   background-color: #f9fafb;
+}
+
+.rrid{
+  display: none;
 }
 
 .status-badge {
@@ -185,9 +204,14 @@ tbody tr:hover {
   color: #fff;
 }
 
-.view-btn:hover::after,
-.delete-btn:hover::after {
-  content: attr(title);
+.view-btn span,
+.delete-btn span{
+  display: none;
+}
+
+.view-btn:hover span,
+.delete-btn:hover span{
+  display: inline-block;
   position: absolute;
   top: -20px;
   background-color: #1e293b;
@@ -210,16 +234,118 @@ tbody tr:hover {
   color: #dc2626;
 }
 
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-box {
+  position: relative;
+  background-color: #352390;
+  color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 27rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+.modal-message {
+  font-size: 1rem;
+  color: #e6ebf1;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancel-button,
+.delete-button {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: unset;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #e7e6f0;
+  color: #4e34cf;
+}
+
+.delete-button {
+  background-color: #be3030;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #f64848;
+}
 
 
-/* @media (max-width: 768px) {
+
+@media (max-width: 577px) {
   .title {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
   }
 
-  table {
-    min-width: 600px;
+  .time{
+    display: none;
   }
-} */
+
+}
+
+@media (max-width: 450px) {
+
+  .rid{
+    display: none;
+  }
+
+  .rrid{
+    display: block;
+  }
+
+  .main-content{
+    padding: 1rem;
+  }
+
+  .main-content .add-request{
+    margin-top: 2rem;
+  }
+
+  .title {
+    margin-bottom: 2rem;
+  }
+
+}
+
+@media (max-width: 360px) {
+
+  .rrid,.tdid{
+    display: none;
+  }
+
+}
 
 

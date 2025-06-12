@@ -1,31 +1,35 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 <div class="dashboard-container">
   <app-sidebar></app-sidebar>
   <!-- Main Content -->
   <div class="main-content">
     <div class="top-bar">
       <div class="project-logo"> <h1>Seravian</h1> </div>
-      <div class="logout-button">Logout</div>
+      <button class="logout-button" (click)="signOut()">Logout</button>
     </div>
 
     <!-- Stats Cards -->
     <div class="stats-container">
       <div class="stat-card">
         <div class="stat-icon earnings">
-          <i class="fas fa-dollar-sign"></i>
+          <i class="fa-solid fa-sliders"></i>
         </div>
         <div class="stat-info">
-          <h3 class="stat-value">${{earnings}}</h3>
-          <p class="stat-label">Earnings</p>
+          <h3 class="stat-value">{{totalRequests}}</h3>
+          <p class="stat-label">Total Requests</p>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-icon appointments">
-          <i class="fas fa-calendar-check"></i>
+          <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
         <div class="stat-info">
-          <h3 class="stat-value">{{appointments}}</h3>
-          <p class="stat-label">Appointments</p>
+          <h3 class="stat-value">{{pendingRequests}}</h3>
+          <p class="stat-label">Pending</p>
         </div>
       </div>
 
@@ -34,34 +38,33 @@
           <i class="fas fa-user-friends"></i>
         </div>
         <div class="stat-info">
-          <h3 class="stat-value">{{patients}}</h3>
-          <p class="stat-label">Patients</p>
+          <h3 class="stat-value">{{doctors}}</h3>
+          <p class="stat-label">Doctors</p>
         </div>
       </div>
     </div>
 
-    <!-- Latest Bookings -->
-    <div class="bookings-container">
+    <!-- Latest Requests -->
+    <div class="requests-container">
       <h2 class="section-title">
-        <i class="fas fa-calendar-alt"></i>
-        Latest Bookings
+        <i class="fa-solid fa-list-check"></i>
+        Latest Doctor Requests
       </h2>
 
-      <div class="bookings-list">
-        <div *ngFor="let booking of latestBookings" class="booking-item">
-          <div class="booking-info">
-            <img [src]="booking.avatar" [alt]="booking.name" class="patient-avatar">
-            <div class="booking-details">
-              <h4>{{booking.name}}</h4>
-              <p>Booking on {{booking.date | date}}</p>
+      <div class="requests-list">
+        <div *ngFor="let request of verificationRequests" class="request-item">
+          <div class="request-info">
+            <img [src]="request.doctorImageUrl" [alt]="request.doctorFullName" class="patient-avatar">
+            <div class="request-details">
+              <h4>{{request.doctorFullName}}</h4>
+              <p>Requested At {{request.requestedAtUtc}}</p>
             </div>
           </div>
-          <div class="booking-status" [ngClass]="booking.status.toLowerCase()">
-            {{booking.status}}
+          <div class="request-status" [ngClass]="getStatusName(request.status)">
+            {{getStatusName(request.status)}}
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-

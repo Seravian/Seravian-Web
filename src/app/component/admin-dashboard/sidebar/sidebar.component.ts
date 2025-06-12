@@ -8,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class SidebarComponent {
 
+
+  getAdminName():string{
+    const adminProfile:string = JSON.parse(localStorage.getItem('profile') || '{}').fullName;
+    return adminProfile;
+  }
+
 }

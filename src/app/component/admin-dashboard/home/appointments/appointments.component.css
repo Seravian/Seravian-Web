@@ -53,6 +53,12 @@ td {
   text-align: center;
 }
 
+.appointments-table .image-and-name{
+  min-width: 180px;
+  max-width: 180px;
+  text-align: left;
+}
+
 tr:hover {
   background-color: #f9fafb;
 }
@@ -60,8 +66,8 @@ tr:hover {
 .patient-info {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  /* gap: 1rem; */
+  justify-content: left;
+  gap: 1rem;
 }
 
 .patient-avatar {

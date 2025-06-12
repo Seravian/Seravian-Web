@@ -39,6 +39,7 @@
             ],
             "styles": [
               "node_modules/swiper/swiper-bundle.min.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css",
               "node_modules/intl-tel-input/build/css/intlTelInput.css",
               "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -117,7 +118,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": [],
             "builderMode": "browser"

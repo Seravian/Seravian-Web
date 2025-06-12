@@ -27,12 +27,12 @@ export class LoginsignupComponent  {
   registerButtonText: string = "Sign Up";
   errorMessage: string = '';
   toggleSignIn() {
-    this.isSignDivVisiable = false;
+    this.isSignUpDivVisiable = false;
     this.statusMessage = ''; // Clear the status message when switching to Sign In
   }
 
   toggleSignUp() {
-    this.isSignDivVisiable = true;
+    this.isSignUpDivVisiable = true;
     this.statusMessage = ''; // Clear the status message when switching to Sign Up
   }
   passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -47,7 +47,7 @@ export class LoginsignupComponent  {
 
   private router = inject(Router)
 
-  isSignDivVisiable: boolean  = true;
+  isSignUpDivVisiable: boolean  = false;
   signUpForm: FormGroup;
   loginForm: FormGroup;  isFormSubmitted: boolean = false;
   isLogin: boolean = true;
@@ -194,7 +194,30 @@ export class LoginsignupComponent  {
 
           }else {
             this.router.navigate(['doctor-dashboard']);
-            }
+          }
+
+        }else if (response.role === 2) {
+
+          const patientProfile = {
+            id: response.userId,
+            fullName: response.fullName,
+            email: response.email,
+            dateOfBirth: response.dateOfBirth,
+            gender: response.gender,
+            role: response.role,
+            isEmailVerified: response.isEmailVerified,
+            isProfileSetupComplete: response.isProfileSetupComplete
+          };
+          console.log("patient profile data",patientProfile)
+
+          localStorage.setItem('profile', JSON.stringify(patientProfile));
+
+          if(!response.isEmailVerified){
+            this.router.navigate(['verify-email']);
+
+          }else {
+            this.router.navigate(['admin-dashboard/main-content']);
+          }
 
         }
 

@@ -20,7 +20,7 @@
         <tbody>
           <tr *ngFor="let request of requests">
             <td>{{ request.id + 1 }}</td>
-            <td>
+            <td class="image-and-name">
               <div class="patient-info">
                 <img [src]="request.avatar" [alt]="request.name" class="patient-avatar" />
                 <div class="patient-details">

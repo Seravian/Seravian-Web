@@ -15,6 +15,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { DoctorVerificationComponent } from './doctor-verification/doctor-verification.component';
+import { SendVerificationRequestComponent } from './send-verification-request/send-verification-request.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
+
 
 
 @NgModule({
@@ -27,7 +34,8 @@ import { DoctorVerificationComponent } from './doctor-verification/doctor-verifi
     DoctorInfoComponent,
     DoctorOrPatientComponent,
     WaitingLandingComponent,
-    DoctorVerificationComponent
+    DoctorVerificationComponent,
+    SendVerificationRequestComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -35,7 +43,10 @@ import { DoctorVerificationComponent } from './doctor-verification/doctor-verifi
     AuthRoutingModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatIconModule,
+    MatOptionModule,
+    BrowserAnimationsModule,
     NgxMaterialTimepickerModule,
   ]
 })

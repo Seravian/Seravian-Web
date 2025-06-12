@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { LoginRequest } from '../interfaces/login-request';
@@ -12,6 +12,8 @@ import { Tokens } from '../interfaces/tokens';
 import { Router } from '@angular/router';
 import CryptoJS from 'crypto-js';
 import { DoctorVerificationRequestResponseDto } from '../interfaces/doctor-verification-request-response-dto';
+import { SendVerificationRequestRequestDto } from '../interfaces/send-verification-request-request-dto';
+import { AdminDoctorVerificationRequestResponseDto } from '../interfaces/admin-doctor-verification-request-response-dto';
 
 
 
@@ -23,6 +25,7 @@ export class AuthService {
 
   AuthUrl:string = environment.apiUrl + 'auth';
   DocAuthUrl:string = environment.apiUrl + 'doctor';
+  AdminAuthUrl:string = environment.apiUrl + 'admin';
 
   constructor(private http: HttpClient) { }
 
@@ -66,9 +69,24 @@ export class AuthService {
     );
   }
 
-// *************************************************
-// ************Doctor Auth Endpoints****************
-// *************************************************
+  // *************************************************
+  // ************Doctor Auth Endpoints****************
+  // *************************************************
+
+  sendDoctorVerificationRequest(data: any): Observable<any> {
+    return this.http.post(`${this.DocAuthUrl}/send-doctor-verification-request`, data).pipe(
+      tap(() => console.log('Doctor verification request sent')),
+      catchError((error) => {
+        console.error('Error sending doctor verification request:', error);
+        return EMPTY;
+      })
+    );
+  }
+
+  deleteDoctorVerificationRequest(RequestID: number): Observable<void> {
+    const params = new HttpParams().set('requestId', RequestID);
+    return this.http.delete<void>(`${this.DocAuthUrl}/delete-doctor-verification-request`, { params });
+  }
 
   getDoctorVerificationRequests(): Observable<DoctorVerificationRequestResponseDto[]> {
     return this.http.get<DoctorVerificationRequestResponseDto[]>(`${this.DocAuthUrl}/get-doctor-verification-requests`).pipe(
@@ -76,7 +94,19 @@ export class AuthService {
     );
   }
 
+
+  // *************************************************
+  // ************Admin Auth Endpoints****************
+  // *************************************************
+
+  getAdminDoctorVerificationRequests(): Observable<AdminDoctorVerificationRequestResponseDto[]> {
+    return this.http.get<AdminDoctorVerificationRequestResponseDto[]>(`${this.AdminAuthUrl}/get-doctors-verification-requests`).pipe(
+      map((response) => response)
+    );
+  }
+
 // ***************************************************************
+
   private tempRole: number | null = null;
 
   setTempRole(role: number) {
