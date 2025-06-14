@@ -2,19 +2,27 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo-container">
-      <img src="images/Male-Therapist.jpg" alt="Prescripto" class="logo">
-      <span class="logo-text">Ahmed Hassan</span>
+      <img src="images/admin.png" alt="Prescripto" class="logo">
+      <span class="logo-text">{{getAdminName()}}</span>
       <div class="doctor-badge">Admin</div>
     </div>
 
     <nav class="nav-menu">
       <a
-        routerLink="/admin-dashboard/appointments"
+        routerLink="/admin-dashboard/main-content"
         routerLinkActive="active"
         class="nav-item"
       >
         <i class="fas fa-home"></i>
         Dashboard
+      </a>
+      <a
+        routerLink="/admin-dashboard/doctor-requests"
+        routerLinkActive="active"
+        class="nav-item"
+      >
+        <i class="fa-solid fa-rectangle-list"></i>
+        Doctor Verification Requests
       </a>
       <a
         routerLink="/admin-dashboard/profile"

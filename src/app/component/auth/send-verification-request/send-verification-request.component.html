@@ -1,0 +1,64 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+<div class="parent">
+  <div class="container">
+    <div class="form-container">
+      <div class="requests-container">
+        <div class="main-content">
+          <form [formGroup]="doctorRequestForm" (ngSubmit)="onSubmit()">
+            <h1>Doctor Request Form</h1>
+
+            <span class="main-span">Title</span>
+            <!-- <select formControlName="title">
+              <option *ngFor="let title of doctorTitles" [value]="title.value">{{ title.label }}</option>
+            </select> -->
+            <mat-form-field appearance="fill" class="fixed-width-field">
+              <mat-label>Title</mat-label>
+              <mat-select formControlName="title">
+                <mat-option class="matto-option" *ngFor="let title of doctorTitles" [value]="title.value">
+                  {{ title.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="text-danger" *ngIf="doctorRequestForm.controls['title'].invalid && (doctorRequestForm.controls['title'].touched || doctorRequestForm.controls['title'].dirty)">
+              <span>Title is required</span>
+            </div>
+
+            <span class="main-span">Description</span>
+            <input type="text" formControlName="description" placeholder="Describe your proficiency in your field of expertise">
+            <div class="text-danger" *ngIf="doctorRequestForm.controls['description'].invalid && (doctorRequestForm.controls['description'].touched || doctorRequestForm.controls['description'].dirty)">
+              <span>Description is required</span>
+            </div>
+
+            <span class="main-span">Session Price&nbsp; <span class="mini-span"> (in EGP)</span> </span>
+            <input type="number" formControlName="sessionPrice" placeholder="Enter session price">
+            <div class="text-danger" *ngIf="doctorRequestForm.controls['sessionPrice'].invalid && (doctorRequestForm.controls['sessionPrice'].touched || doctorRequestForm.controls['sessionPrice'].dirty)">
+              <span *ngIf="doctorRequestForm.controls['sessionPrice'].errors?.['required']">Session Price is required</span>
+              <span *ngIf="doctorRequestForm.controls['sessionPrice'].errors?.['max']">Maximum allowed is 10000</span>
+            </div>
+
+            <span class="main-span">Attachments&nbsp; <span class="mini-span"> (upto 10 files & max size of 15MBs)</span> </span>
+            <div class="attachments-container">
+              <div *ngFor="let attachment of fileAttachmentInputFields; let i = index">
+                <input class="attachment" type="file" (change)="onAttachmentChange($event, i)" accept=".pdf,.jpg,.png,.jpeg" />
+              </div>
+            </div>
+            <button type="button" (click)="addAttachment()" [disabled]="fileAttachmentInputFields.length >= 10">
+              <i class="fas fa-paperclip"></i> Add Attachment
+            </button>
+            <div class="text-danger" *ngIf="attachmentError">
+              <span>{{ attachmentError }}</span>
+            </div>
+
+            <button type="submit">Submit</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

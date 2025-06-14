@@ -6,20 +6,33 @@ import { LoginsignupComponent } from './component/auth/login-sign-up/login-sign-
 import { ForgetPasswordComponent } from './component/auth/forget-password/forget-password.component';
 import { NewPasswordComponent } from './component/auth/new-password/new-password.component';
 import { VerifyEmailComponent } from './component/auth/verify-email/verify-email.component';
-import { PatientInfoComponent } from './component/auth/patient-info/patient-info.component';
+import { UserInfoComponent } from './component/auth/user-info/user-info.component';
 import { DoctorInfoComponent } from './component/auth/doctor-info/doctor-info.component';
 import { DoctorOrPatientComponent } from './component/auth/doctor-or-patient/doctor-or-patient.component';
 import { AuthGuard } from './guard/auth_guards/auth.guard';
 import { VerifyEmailGuard } from './guard/auth_guards/verify-email.guard';
 import { ChatComponent } from './component/chat_layout/chat/chat.component';
+import { WaitingLandingComponent } from './component/auth/waiting-landing/waiting-landing.component';
+import { DoctorVerificationComponent } from './component/auth/doctor-verification/doctor-verification.component';
+import { SendVerificationRequestComponent } from './component/auth/send-verification-request/send-verification-request.component';
+import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
+import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component';
 
 const routes: Routes = [{
-  path : '',
-  component:LoginsignupComponent,
+    path: '',
+    component: LoginsignupComponent,
   },
   {
-  path : 'chatbot',
-  component:ChatComponent, canActivate: [AuthGuard]
+    path: 'chatbot',
+    component: ChatComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'diagnosis-list',
+    component: DiagnosisListComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'view-diagnosis/:id',
+    component: ViewDiagnosisComponent, canActivate: [AuthGuard]
   },
   {
     path: 'auth',
@@ -57,13 +70,22 @@ const routes: Routes = [{
     path: 'verify-email', component: VerifyEmailComponent,
   },
   {
-    path: 'patient-info', component: PatientInfoComponent , canActivate: [VerifyEmailGuard]
+    path: 'user-info', component: UserInfoComponent, canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'doctor-info', component: DoctorInfoComponent ,
+    path: 'doctor-verification', component: DoctorVerificationComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'doctor-or-patient', component: DoctorOrPatientComponent , canActivate: [VerifyEmailGuard]
+    path: 'send-request', component: SendVerificationRequestComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'doctor-info', component: DoctorInfoComponent,
+  },
+  {
+    path: 'doctor-or-patient', component: DoctorOrPatientComponent, canActivate: [VerifyEmailGuard]
+  },
+  {
+    path: 'waiting-landing', component: WaitingLandingComponent
   }
 ]
 

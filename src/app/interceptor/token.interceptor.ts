@@ -1,18 +1,3 @@
-// import { HttpInterceptorFn } from '@angular/common/http';
-
-// export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
-
-//   const token = localStorage.getItem('token');
-//   // console.log('Token:', token);
-//   const newRequest = req.clone({
-//     setHeaders: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
-
-//   return next(newRequest);
-// };
-
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service'; // adjust if needed
@@ -22,12 +7,6 @@ import { Router } from '@angular/router';
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
-  // const isPublicRequest = req.url.includes('/auth/register');
-  // if (isPublicRequest) {
-  //   return next(req); // Bypass token logic
-  // }
-
 
   const token = authService.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken);
   let newRequest = req;
@@ -45,14 +24,20 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((error) => {
-      // if(error.status === 400) {
-      //   alert("looks like you are not logged in, please login again");
-      //   router.navigate(['/']);
-      //   return throwError(() => error);
-      // }
 
       if (error.status === 401) {
         //  If token expired, try refreshing it
+        const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
+        const accessToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken;
+        if (!refreshToken && accessToken) {
+          console.error('Refresh token not found');
+          alert("timeout, please login again");
+          router.navigate(['/']);
+        }
+        if (!refreshToken && !accessToken) {
+          console.log('user is not logged in');
+          // return;
+        }
         return authService.refreshTokens().pipe(
           switchMap((tokens) => {
             //  Retry original request with new access token

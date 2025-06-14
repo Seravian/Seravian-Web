@@ -8,70 +8,36 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th>Request Id</th>
             <th>Name</th>
-            <th>Qualification</th>
-            <th>Experience</th>
-            <th>License</th>
+            <th>Title</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let request of requests">
-            <td>{{ request.id + 1 }}</td>
-            <td>
+          <tr *ngFor="let request of verificationRequests">
+            <td>{{ request.id }}</td>
+            <td class="image-and-name">
               <div class="patient-info">
-                <img [src]="request.avatar" [alt]="request.name" class="patient-avatar" />
+                <img [src]="request.doctorImageUrl" [alt]="request.doctorFullName" class="patient-avatar" />
                 <div class="patient-details">
-                  <span class="patient-name">{{ request.name }}</span>
-                  <span class="patient-age">{{ request.age }} yrs</span>
+                  <span class="patient-name">{{ request.doctorFullName }}</span>
+                  <span class="patient-age">{{ calculateAgeFromDob(request.dateOfBirth) }} yrs</span>
                 </div>
               </div>
             </td>
-            <td>{{ request.qualification }}</td>
-            <td>{{ request.experience }} yrs</td>
+            <td class="doc-title">{{getTitleName(request.title)}}</td>
             <td>
-              <img
-                [src]="request.licenseImage"
-                alt="License"
-                class="license-image"
-                (click)="openLicenseImage(request.licenseImage)" />
-            </td>
-            <td>
-              <span class="status-badge"
-                [ngClass]="{
-                  'completed': request.status === 'Approved',
-                  'cancelled': request.status === 'Rejected',
-                  'pending': request.status === 'Pending'
-                }">
-                {{ request.status }}
+              <span class="status-badge" [ngClass]="getStatusName(request.status)">
+                {{ getStatusName(request.status) }}
               </span>
             </td>
             <td>
               <div class="action-buttons">
-                <button
-                  *ngIf="request.status === 'Pending'"
-                  [ngClass]="{
-                    'btn': true,
-                    'approved': true
-                  }"
-                  (click)="approveRequest(request)"
-                  [disabled]="request.status !== 'Pending'"
-                >
-                  Approve
-                </button>
-
-                <button
-                  *ngIf="request.status === 'Pending'"
-                  [ngClass]="{
-                    'btn': true,
-                    'rejected': true
-                  }"
-                  (click)="rejectRequest(request)"
-                  [disabled]="request.status !== 'Pending'"
-                >
-                  Reject
+                <button class="icon-button view-btn">
+                  <span>View</span>
+                  <i class="fas fa-eye"></i>
                 </button>
               </div>
             </td>
@@ -79,13 +45,6 @@
         </tbody>
       </table>
     </div>
-  </div>
-</div>
-
-<!-- Modal for License Image -->
-<div *ngIf="isModalOpen" class="modal" (click)="closeModal()">
-  <div class="modal-content">
-    <img [src]="selectedLicenseImage" alt="License" class="modal-image" />
   </div>
 </div>
 

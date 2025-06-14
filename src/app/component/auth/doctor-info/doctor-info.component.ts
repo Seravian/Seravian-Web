@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
-import intlTelInput from 'intl-tel-input';
+import { Component, OnInit,} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
@@ -9,15 +8,12 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
   templateUrl: './doctor-info.component.html',
   styleUrl: './doctor-info.component.css'
 })
-export class DoctorInfoComponent implements OnInit, AfterViewInit {
-  @ViewChild('phoneInput', { static: false }) phoneInput!: ElementRef; // Reference to the phone input element
+export class DoctorInfoComponent implements OnInit {
   doctorForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router, private renderer: Renderer2) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.doctorForm = this.fb.group({
       fullName: ['', Validators.required],
-      phoneNumber: ['', [Validators.pattern(/^[0-9 ()+-]*$/)]],
-      // phoneNumber: ['', Validators.required],
       dob: ['', Validators.required],
       gender: ['', Validators.required],
       speciallity:['', Validators.required],
@@ -28,28 +24,6 @@ export class DoctorInfoComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {}
-
-  ngAfterViewInit(): void {
-    if (this.phoneInput) {
-      intlTelInput(this.phoneInput.nativeElement, {
-        initialCountry: 'us',
-        separateDialCode: true,
-        utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
-      } as any);
-
-      // Attach validation for the phone number
-      this.phoneInput.nativeElement.addEventListener('blur', () => {
-        const intlTelInstance = this.phoneInput.nativeElement.intlTelInput;
-        const isValid = intlTelInstance?.('isValidNumber');
-        if (!isValid) {
-          this.doctorForm.controls['phoneNumber'].setErrors({ invalid: true });
-        } else {
-          const phoneNumber = intlTelInstance?.('getNumber');
-          this.doctorForm.controls['phoneNumber'].setValue(phoneNumber);
-        }
-      });
-    }
-  }
 
   onLicenseChange(event: any): void {
     const file = event.target.files[0];

@@ -4,7 +4,6 @@
   background-color: #f8f9fe;
 }
 
-
 /* Main Content Styles */
 .main-content {
   flex: 1;
@@ -27,21 +26,23 @@
   margin-top: 0;
   margin-bottom: 0;
   font-weight: bolder;
-  color: #4E34CF ;
+  color: #4e34cf;
   margin-left: 1rem;
 }
 
 .logout-button {
   padding: 0.6rem 1.5rem;
   background-color: #9b87f5;
+  font-weight: 700;
   color: white;
+  border: none;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .logout-button:hover {
-  background-color: #8b76e8;
+  background-color: #7a66d0;
 }
 
 /* Stats Cards */
@@ -52,6 +53,10 @@
   margin-bottom: 2rem;
 }
 
+.stat-info {
+  text-align: center;
+}
+
 .stat-card {
   background-color: white;
   padding: 1.5rem;
@@ -59,7 +64,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon {
@@ -99,12 +104,12 @@
   margin: 0;
 }
 
-/* Bookings Section */
-.bookings-container {
+/* requests Section */
+.requests-container {
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
@@ -116,13 +121,13 @@
   margin-bottom: 1.5rem;
 }
 
-.bookings-list {
+.requests-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.booking-item {
+.request-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -131,7 +136,7 @@
   background-color: #f8f9fe;
 }
 
-.booking-info {
+.request-info {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -144,34 +149,36 @@
   object-fit: cover;
 }
 
-.booking-details h4 {
+.request-details h4 {
   margin: 0;
   color: #1a1f2c;
 }
 
-.booking-details p {
+.request-details p {
   margin: 0;
+  margin-top: 5px;
   color: #6b7280;
   font-size: 0.875rem;
 }
 
-.booking-status {
+.request-status {
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
-.booking-status.completed {
+.request-status.Approved {
   background-color: #f2fce2;
   color: #65a30d;
 }
 
-.booking-status.cancelled {
+.request-status.Rejected {
   background-color: #fef7cd;
   color: #ea384c;
 }
 
-.booking-status.pending {
-  background-color: #e5deff;
-  color: #9b87f5;
+.request-status.Pending {
+  background-color: #fef3c7;
+  color: #d97706;
 }

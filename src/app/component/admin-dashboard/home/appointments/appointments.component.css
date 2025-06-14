@@ -44,6 +44,10 @@ th {
   text-align: center;
 }
 
+.appointments-table .tilto{
+  text-align: left;
+}
+
 td {
   padding: 1rem;
   font-size: 0.95rem;
@@ -53,6 +57,16 @@ td {
   text-align: center;
 }
 
+.appointments-table .doc-title{
+  font-weight: 700;
+}
+
+.appointments-table .image-and-name{
+  min-width: 150px;
+  max-width: 150px;
+  text-align: left;
+}
+
 tr:hover {
   background-color: #f9fafb;
 }
@@ -60,8 +74,8 @@ tr:hover {
 .patient-info {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  /* gap: 1rem; */
+  justify-content: left;
+  gap: 1rem;
 }
 
 .patient-avatar {
@@ -114,19 +128,82 @@ tr:hover {
   letter-spacing: 0.5px;
 }
 
-.status-badge.completed {
-  background-color: #e0fbea;
-  color: #059669;
+.status-badge.Approved {
+  background-color: #f2fce2;
+  color: #65a30d;
 }
 
-.status-badge.cancelled {
-  background-color: #fee2e2;
-  color: #dc2626;
+.status-badge.Rejected {
+  background-color: #fef7cd;
+  color: #ea384c;
 }
 
-.status-badge.pending {
+.status-badge.Pending {
   background-color: #fef3c7;
   color: #d97706;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.view-btn:hover {
+  background-color: #4e34cf;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
+.icon-button:hover i {
+  color: #fff;
+}
+
+.view-btn span,
+.delete-btn span{
+  display: none;
+}
+
+.view-btn:hover span,
+.delete-btn:hover span{
+  display: inline-block;
+  position: absolute;
+  top: -20px;
+  background-color: #1e293b;
+  color: #fff;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.9;
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+.view-btn i {
+  color: #4e34cf;
+}
+
+.delete-btn i {
+  color: #dc2626;
 }
 
 @media (max-width: 768px) {

@@ -1,15 +1,20 @@
+import { id } from 'intl-tel-input/i18n';
 import { MessageType } from '../interfaces/message-type.enum';
 
 import { Chat } from './../interfaces/chat';
 import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, EMPTY, firstValueFrom, map, Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 // import { ConfirmClientRequestDto } from '../interfaces/confirm-client-request-dto';
 import { ChatMessage } from '../interfaces/chat-message';
 import { VoiceService } from './voice.service';
+import { ChatDiagnosisResponse } from '../interfaces/chat-diagnosis-response';
+import { ChatDiagnosisDto } from '../interfaces/chat-diagnosis-dto';
+import { ChatDiagnosisDetailsDto } from '../interfaces/chat-diagnosis-details-dto';
+import { IsDiagnosingResponse } from '../interfaces/is-diagnosing-response';
 // import {
 //   // IsProcessingRequestDto,
 //   IsProcessingResponseDto
@@ -98,28 +103,6 @@ export class ChatService {
       .withAutomaticReconnect()
       .build();
 
-    // this.hubConnection.on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
-    //   console.log('Notification AI audio response ready:', data);
-
-    //   console.log('ID of the AI audio:', data.aiAudioId);
-
-    //   this.downloadAIAudio(+data.aiAudioId).subscribe({
-    //     next: (blob) => {
-    //       const url = window.URL.createObjectURL(blob);
-    //       const a = document.createElement('a');
-    //       a.href = url;
-    //       a.download = `ai-response-${data.aiAudioId}.wav`;
-    //       a.click();
-    //       window.URL.revokeObjectURL(url);
-    //     },
-    //     error: (err) => {
-    //       console.error('Error downloading AI audio', err);
-    //     }
-    //   });
-
-    // });
-
-
     this.hubConnection.onreconnected(async(connectionId) => {
       console.log('Reconnected to SignalR server');
       const selectedChat = this.selectedChatSource.value;
@@ -159,19 +142,6 @@ export class ChatService {
             const lastMissedMessageType = lastMissedMessage?.messageType;
 
             if (this.voiceService.getVoiceModeStatus()&& lastMissedMessage && lastMissedMessageType === this.messageType.VoiceModeText) {
-              // this.downloadAIAudio(lastMissedMessage.id).subscribe({
-              //   next: (blob) => {
-              //     const url = window.URL.createObjectURL(blob);
-              //     const a = document.createElement('a');
-              //     a.href = url;
-              //     a.download = `ai-response-${lastMissedMessage.id}.wav`;
-              //     a.click();
-              //     window.URL.revokeObjectURL(url);
-              //   },
-              //   error: (err) => {
-              //     console.error('Error downloading AI audio', err);
-              //   }
-              // });
               console.log('Playing AI audio from onreconnected');
               this.voiceService.playAiAudio(lastMissedMessage.id);
             }
@@ -193,7 +163,6 @@ export class ChatService {
       .catch(err => {
         console.error('Error while starting connection: ' + err)
         console.log('Retrying connection...');
-        // this.hubConnection.start()
         this.hubConnection.start().then(() => this.connectionEstablishedSource.next(true));
       });
 
@@ -225,7 +194,6 @@ export class ChatService {
   }
 
 
-
   syncMessages(chatId: string, lastMessageId: number | null): Observable<any[]> {
     let params = new HttpParams().set('chatId', chatId);
 
@@ -239,7 +207,9 @@ export class ChatService {
   }
 
 
-  // ***********************************************************************************
+  // ────────────────────────────────────────────────
+  // Chats Endpoints ( creat , update , delete , get )
+  // ────────────────────────────────────────────────
 
   createChat(title: string): Observable<any> {
     return this.http.post<any>(`${this.ChatUrl}/create`, { title }).pipe(
@@ -254,10 +224,10 @@ export class ChatService {
   }
 
   deleteChat(chatId: string): Observable<void> {
-    return this.http.delete<void>(`${this.ChatUrl}/delete`, {
-      body: { id: chatId },
-    });
+    const params = new HttpParams().set('id', chatId);
+    return this.http.delete<void>(`${this.ChatUrl}/delete`, { params });
   }
+
 
 
   getChats(): Observable<any[]> {
@@ -272,6 +242,10 @@ export class ChatService {
       .get<any>(`${this.ChatUrl}/get-chat-messages`, { params })
       .pipe(map((response) => response));
   }
+
+  // ────────────────────────────────────────────────
+  // Voice Endpoints
+  // ────────────────────────────────────────────────
 
   uploadVoice(voiceFile: File, chatId: string): Observable<any> {
     const formData = new FormData();
@@ -299,9 +273,78 @@ export class ChatService {
   }
 
 
+  // ────────────────────────────────────────────────
+  // Diagnoses Endpoints
+  // ────────────────────────────────────────────────
 
 
-// **********************************************************************************
+  createChatDiagnosis(chatId: string): Observable<ChatDiagnosisResponse> {
+    return this.http.post<ChatDiagnosisResponse>(`${this.ChatUrl}/create-chat-diagnosis`, { chatId });
+  }
+
+  getChatDiagnoses(chatId: string): Observable<ChatDiagnosisDto[]> {
+    const params = new HttpParams().set('chatId', chatId);
+    return this.http.get<ChatDiagnosisDto[]>(`${this.ChatUrl}/get-chat-diagnoses`, { params });
+  }
+
+  getChatDiagnosisDetails(chatDiagnosisId: number): Observable<ChatDiagnosisDetailsDto> {
+    const params = new HttpParams().set('chatDiagnosisId', chatDiagnosisId.toString());
+    return this.http.get<ChatDiagnosisDetailsDto>(`${this.ChatUrl}/get-chat-diagnosis-details`, { params });
+  }
+
+  isDiagnosing(chatId: string): Observable<IsDiagnosingResponse> {
+    const params = new HttpParams().set('chatId', chatId);
+    return this.http.get<IsDiagnosingResponse>(`${this.ChatUrl}/is-diagnosing`, { params });
+  }
+
+  deleteCompletedChatDiagnosis(chatDiagnosisId: number|undefined): Observable<void> {
+    if (chatDiagnosisId) {
+      const params = new HttpParams().set('chatDiagnosisId', chatDiagnosisId.toString());
+      return this.http.delete<void>(`${this.ChatUrl}/delete-completed-chat-diagnosis`, { params });
+    }
+    return EMPTY;
+  }
+
+
+  deleteCompletedChatDiagnoses(chatId: string): Observable<void> {
+    const params = new HttpParams().set('chatId', chatId);
+    return this.http.delete<void>(`${this.ChatUrl}/delete-completed-chat-diagnoses`, { params });
+  }
+
+
+  // ────────────────────────────────────────────────
+  // Diagnoses global Functions
+  // ────────────────────────────────────────────────
+
+
+  async isDiagnosisProcessing(): Promise<boolean> {
+    try {
+      const chat = await firstValueFrom(this.selectedChat$);
+      const response = await firstValueFrom(this.isDiagnosing(chat.id));
+      console.log('isDiagnosisProcessing:',response);
+      return response.isDiagnosing;
+    } catch (error) {
+      console.error('Error requesting a diagnosis:', error);
+      return true;
+    }
+  }
+
+  async createDiagnosis() {
+    const chat = await firstValueFrom(this.selectedChat$);
+
+    this.createChatDiagnosis(chat.id).subscribe({
+      next:(response)=>{
+        console.log('diagnosis is being generated successfully:',response)
+      },
+      error:(err)=>{
+        console.error("couldn't generate diagnosis :", err);
+      }
+    });
+  }
+
+
+
+  // ********************************************************************************
 
   private chats: Chat[] = [];
 
@@ -319,7 +362,7 @@ export class ChatService {
   }
 
   private selectedChatSource = new BehaviorSubject<any>(null);
-  selectedChat$ = this.selectedChatSource.asObservable();
+  public selectedChat$ = this.selectedChatSource.asObservable();
 
   setSelectedChat() {
     const chatId = sessionStorage.getItem('chatId');
@@ -329,7 +372,12 @@ export class ChatService {
         next: (chatMessages:Chat) => {
           const selectedChat = this.chats.find(chat => chat.id === chatId);
           if (selectedChat) {
-            selectedChat.messages = chatMessages.messages??[];
+            selectedChat.messages = chatMessages.messages.map(item=>({
+              ...item,
+              timestampUtc: new Date(item.timestampUtc.endsWith('Z') || item.timestampUtc.includes('+')
+              ? item.timestampUtc
+              : item.timestampUtc + 'Z').toLocaleString()
+            }))??[];
             console.log('chat Messages in chat service:', selectedChat.messages);
             this.selectedChatSource.next(selectedChat);
 

@@ -62,16 +62,18 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   }
 
   private handleUnload = (event: BeforeUnloadEvent) => {
-    const isChatPage = window.location.pathname.includes('/chatbot');
-    if (!isChatPage) {
-      this.cleanupSession();
+    const isChatPage = window.location.pathname.includes('chatbot');
+    const isDiagnosesPage = window.location.pathname.includes('diagnosis-list');
+    if (!isChatPage||!isDiagnosesPage) {
+      // this.cleanupSession();
     }
   };
 
   private handleVisibilityChange = () => {
     const isChatPage = window.location.pathname.includes('/chatbot');
-    if (document.visibilityState === 'hidden' && !isChatPage) {
-      this.cleanupSession();
+    const isDiagnosesPage = window.location.pathname.includes('/diagnosis-list');
+    if ((document.visibilityState === 'hidden') && (!isChatPage||!isDiagnosesPage)) {
+      // this.cleanupSession();
     }
   };
 
@@ -229,10 +231,10 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.checkWindowWidth.bind(this));
-    this.cleanupSession();
-    window.removeEventListener('beforeunload', this.handleUnload);
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    // window.removeEventListener('resize', this.checkWindowWidth.bind(this));
+    // this.cleanupSession();
+    // window.removeEventListener('beforeunload', this.handleUnload);
+    // document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
 

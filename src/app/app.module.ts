@@ -18,6 +18,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';  // Import this
 import { FormsModule } from '@angular/forms';  // Import FormsModule here
 import { ChatService } from './services/chat.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
+import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component'; // If using Reactive Forms
 
 
 @NgModule({
@@ -26,6 +32,8 @@ import { ChatService } from './services/chat.service';
     SeravianBotComponent,
     ChatSidebarComponent,
     ChatComponent,
+    DiagnosisListComponent,
+    ViewDiagnosisComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,6 +43,11 @@ import { ChatService } from './services/chat.service';
     HttpClientModule,
     MatIconModule, MatMenuModule,
     FormsModule,
+    MatFormFieldModule,
+    MatOptionModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   providers: [
     provideFirebaseApp(() => initializeApp({"projectId":"seravian","appId":"1:51931785705:web:34b4efd31d47cacfdac378","storageBucket":"seravian.firebasestorage.app","apiKey":"AIzaSyDd1DKc_CE2-1DKYKkr3nrRGaE_tV19dZ0","authDomain":"seravian.firebaseapp.com","messagingSenderId":"51931785705","measurementId":"G-ZJCYTY6YGD"})),

@@ -21,7 +21,7 @@ export class AppointmentsComponent implements OnInit {
   appointments: Appointment[] = [
     {
       id: 0,
-      patient: 'Avinash Kr',
+      patient: 'bla bla bla bla bla',
       payment: 'CASH',
       age: 31,
       dateTime: '5 Oct 2024, 12:00 PM',
