@@ -223,15 +223,14 @@ export class LoginsignupComponent  {
 
       },
       error: (error) => {
-        if (error.error?.errors) {
-          const errors = error.error.errors;
-          const allMessages = Object.values(errors).flat();
-          this.statusMessage = String(allMessages[0]);
-        } else {
+        // if (error.error?.errors) {
+        //   const errors = error.error.errors;
+        //   const allMessages = Object.values(errors).flat();
+        //   this.statusMessage = String(allMessages[0]);
+        // } else {
           console.log('Login error:', error);
-          this.statusMessage = 'Unexpected error occurred. Please try again.';
-
-        }
+          this.statusMessage = 'Wrong Email or Password';
+        // }
       }
     })
   }

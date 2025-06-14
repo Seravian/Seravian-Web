@@ -156,6 +156,7 @@
 
 .request-details p {
   margin: 0;
+  margin-top: 5px;
   color: #6b7280;
   font-size: 0.875rem;
 }
@@ -164,19 +165,20 @@
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
-.request-status.completed {
+.request-status.Approved {
   background-color: #f2fce2;
   color: #65a30d;
 }
 
-.request-status.cancelled {
+.request-status.Rejected {
   background-color: #fef7cd;
   color: #ea384c;
 }
 
-.request-status.pending {
-  background-color: #e5deff;
-  color: #9b87f5;
+.request-status.Pending {
+  background-color: #fef3c7;
+  color: #d97706;
 }

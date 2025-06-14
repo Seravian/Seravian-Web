@@ -21,7 +21,9 @@ import { ChatService } from './services/chat.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { ReactiveFormsModule } from '@angular/forms'; // If using Reactive Forms
+import { ReactiveFormsModule } from '@angular/forms';
+import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
+import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component'; // If using Reactive Forms
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { ReactiveFormsModule } from '@angular/forms'; // If using Reactive Forms
     SeravianBotComponent,
     ChatSidebarComponent,
     ChatComponent,
+    DiagnosisListComponent,
+    ViewDiagnosisComponent,
   ],
   imports: [
     BrowserModule,

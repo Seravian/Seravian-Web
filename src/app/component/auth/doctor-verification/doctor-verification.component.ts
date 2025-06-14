@@ -63,7 +63,7 @@ export class DoctorVerificationComponent implements OnInit {
 
     if (!this.isTimeExpired(this.requestToDeleteTime) && this.requestToDeleteStatus===this.status.Pending){
 
-        this.authservice.deleteDoctorVerificationRequest(this.requestToDelete).subscribe({
+      this.authservice.deleteDoctorVerificationRequest(this.requestToDelete).subscribe({
         next:()=>{
           window.alert("request deleted successfully");
         },

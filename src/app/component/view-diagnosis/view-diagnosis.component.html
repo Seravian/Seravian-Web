@@ -1,0 +1,129 @@
+<div class="diagnosis-view-container">
+  <div class="diagnosis-card">
+    <!-- Header -->
+    <div class="card-header">
+      <div class="header-content">
+        <h1 class="diagnosis-title">Diagnosis #{{ diagnosis?.id}} Details</h1>
+        <button class="back-btn" (click)="goBack()">
+          <svg class="back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card-content">
+      <!-- Time Information -->
+      <div class="time-section">
+        <div class="time-item">
+          <span class="time-label">Requested At:</span>
+          <span class="time-value">{{ formatTime(diagnosis?.requestedAtUtc) }}</span>
+        </div>
+        <div class="time-item" >
+          <span class="time-label">Completed At:</span>
+          <span class="time-value">{{ formatTime(diagnosis?.completedAtUtc) }}</span>
+        </div>
+      </div>
+
+      <!-- Diagnosis Statuse -->
+      <div *ngIf="diagnosis?.completedAtUtc" class="section">
+        <h2 class="section-title">Diagnosis Status</h2>
+        <div class="status-container">
+          <svg *ngIf="!isDiagnosisStatusFailure(diagnosis?.diagnosedProblem)" class="status-icon status-icon-complete" fill="none" stroke="green" viewBox="0 0 24 24" width="24" height="24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4" />
+            <circle cx="12" cy="12" r="9" stroke-width="2" />
+          </svg>
+          <svg *ngIf="isDiagnosisStatusFailure(diagnosis?.diagnosedProblem)" class="status-icon" fill="none" stroke="red" viewBox="0 0 24 24" width="24" height="24">
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <line x1="15" y1="9" x2="9" y2="15" stroke-width="2" stroke-linecap="round" />
+            <line x1="9" y1="9" x2="15" y2="15" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <span [ngClass]="['status-badge', getDiagnosisStatus(diagnosis?.diagnosedProblem)]">
+            {{ getDiagnosisStatusBadge(diagnosis?.diagnosedProblem) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Diagnosis Details -->
+      <div *ngIf="!isDiagnosisStatusFailure(diagnosis?.diagnosedProblem)" class="section">
+        <h2 class="section-title">Diagnosis Details</h2>
+        <div class="content-box">
+          <p>{{ diagnosis?.diagnosedProblem || 'No detailed description available for this diagnosis.' }}</p>
+        </div>
+      </div>
+
+      <!-- AI Reasoning -->
+      <div *ngIf="!isDiagnosisStatusFailure(diagnosis?.diagnosedProblem)" class="section">
+        <h2 class="section-title">AI Reasoning</h2>
+        <div class="content-box">
+          <p>{{ diagnosis?.reasoning || 'no Ai Reasoning.' }}</p>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div *ngIf="!isDiagnosisStatusFailure(diagnosis?.diagnosedProblem)" class="section">
+        <h2 class="section-title">Recommendations & Prescriptions</h2>
+        <div class="recommendations-grid">
+          <div class="recommendation-card"
+            *ngFor="let recommendation of (diagnosis?.prescriptions?.length ? diagnosis?.prescriptions : defaultRecommendations)">
+            <div class="recommendation-header">
+              <svg class="recommendation-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <!-- <h3 class="recommendation-title">{{ recommendation.title }}</h3> -->
+            </div>
+            <p class="recommendation-description">{{ recommendation }}</p>
+            <!-- <div class="recommendation-type">{{ recommendation.type }}</div> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Failure Reasons (if any) -->
+      <div class="section" *ngIf="diagnosis?.failureReason">
+        <h2 class="section-title">AI Diagnosis Failure Reasoning</h2>
+        <div class="content-box warning-box">
+          <svg class="warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.5 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <p>{{ diagnosis?.failureReason }}</p>
+        </div>
+      </div>
+
+      <!-- Status Badge -->
+      <!-- <div class="status-section">
+        <div class="status-badge" [ngClass]="getStatusClass()">
+          <svg *ngIf="diagnosis?.status === 'complete'" class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <svg *ngIf="diagnosis?.status === 'pending'" class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          {{ diagnosis?.status === 'complete' ? 'Analysis Complete' : 'Analysis Pending' }}
+        </div>
+      </div> -->
+
+      <!-- Delete Button -->
+      <div class="delete-section">
+        <button *ngIf="diagnosis?.completedAtUtc" (click)="promptDiagnosisDelete()" class="btn delete-btn">
+          <i class="fas fa-trash-alt"></i>
+          Delete Diagnosis
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- Confirm Delete Modal -->
+  <div *ngIf="showDignosisConfirmModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title">Delete Diagnosis</h3>
+      <p class="modal-message">Are you sure you want to delete this diagnosis? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button (click)="cancelDelete()" class="cancel-button">Cancel</button>
+        <button (click)="deleteDiagnosis()" class="delete-button">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

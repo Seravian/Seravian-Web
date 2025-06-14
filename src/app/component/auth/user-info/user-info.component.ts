@@ -81,7 +81,7 @@ export class UserInfoComponent implements OnInit, OnDestroy{
 
           localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
-          if (role === 0) {
+          if (role === 0 || role === 2) {
 
             const patientProfile = {
               id: response.userId,
@@ -103,8 +103,10 @@ export class UserInfoComponent implements OnInit, OnDestroy{
             }else if (!response.isProfileSetupComplete) {
               this.router.navigate(['doctor-or-patient']);
 
-            }else {
+            }else if(role===0){
               this.router.navigate(['dashboard']);
+            }else if(role===2){
+              this.router.navigate(['admin-dashboard/main-content']);
             }
 
           }else if (role === 1) {

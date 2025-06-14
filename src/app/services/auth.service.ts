@@ -256,7 +256,7 @@ export class AuthService {
 
     try {
       const tokens = await firstValueFrom(this.refreshTokens()); // Convert Observable to Promise
-      console.log('Token refreshed successfully:', tokens);
+      console.log('Token refreshed successfully for SignalR:', tokens);
       return tokens.accessToken || '';
     } catch (error) {
       console.error('Error from getTokenForSignalR', error);

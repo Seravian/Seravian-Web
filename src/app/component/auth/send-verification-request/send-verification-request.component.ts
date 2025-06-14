@@ -2,7 +2,6 @@ import { Component, OnInit,} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
-import { SendVerificationRequestRequestDto } from '../../../interfaces/send-verification-request-request-dto';
 
 @Component({
   selector: 'send-verification-request-info',
@@ -47,19 +46,24 @@ export class SendVerificationRequestComponent implements OnInit {
     if (fileInput.files && fileInput.files[0]) {
       const file = fileInput.files[0];
       this.attachmentFields[index] = file;
-      this.validateAttachmentSize();
+
+      if(this.validateAttachmentSize()){
+        this.attachmentError = 'Total attachment size cannot exceed 15MB.';
+      }else{
+        this.attachmentError = '';
+      }
     }
   }
 
-  validateAttachmentSize(): void {
+  validateAttachmentSize(): boolean {
     const totalSize = this.attachmentFields
       .filter(f => f)
       .reduce((acc, file) => acc + file.size, 0);
 
     if (totalSize > 15 * 1024 * 1024) {
-      this.attachmentError = 'Total attachment size cannot exceed 15MB.';
+      return true;
     } else {
-      this.attachmentError = '';
+      return false;
     }
   }
 
@@ -69,20 +73,23 @@ export class SendVerificationRequestComponent implements OnInit {
 
   onSubmit() {
 
-    this.validateAttachmentSize();
-
-    this.attachmentError = '';
+    if(this.validateAttachmentSize()){
+      this.attachmentError = 'Total attachment size cannot exceed 15MB.';
+      return;
+    }else{
+      this.attachmentError = '';
+    }
 
     // Filter out null values from attachments
     const validAttachments = this.attachmentFields.filter((file): file is File => file !== null);
 
-    if (validAttachments.length === 0) {
-      this.attachmentError = 'At least one attachment is required.';
+    if (this.doctorRequestForm.invalid) {
+      this.markAllAsTouched(this.doctorRequestForm);
       return;
     }
 
-    if (this.doctorRequestForm.invalid) {
-      this.markAllAsTouched(this.doctorRequestForm);
+    if (validAttachments.length === 0) {
+      this.attachmentError = 'At least one attachment is required.';
       return;
     }
 

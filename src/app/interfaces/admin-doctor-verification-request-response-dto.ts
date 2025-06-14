@@ -18,5 +18,5 @@ export interface AdminDoctorVerificationRequestResponseDto {
   doctorImageUrl : string
   attachments : DoctorVerificationRequestAttachmentDto[]
   rejectionNotes? : string
-  reviewerId : string
+  reviewerId? : string
 }

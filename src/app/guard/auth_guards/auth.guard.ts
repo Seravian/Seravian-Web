@@ -37,6 +37,8 @@ export class AuthGuard implements CanActivate {
         return of(this.router.parseUrl(this.router.url));
       }
 
+      // return of(this.router.parseUrl(this.router.url));
+
       try {
         return this.authService.refreshTokens().pipe(
           map(() => true),

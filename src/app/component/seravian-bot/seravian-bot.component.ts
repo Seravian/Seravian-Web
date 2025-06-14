@@ -1,14 +1,15 @@
+import { ChatMessage } from './../../interfaces/chat-message';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../interfaces/chat';
-import { ChatMessage } from '../../interfaces/chat-message';
 import { ChangeDetectorRef } from '@angular/core';
-import { filter, Subscription, take } from 'rxjs';
-import { th } from 'intl-tel-input/i18n';
+import { filter, first, firstValueFrom, Subscription, take } from 'rxjs';
 import { UnConfirmedClientMessages } from '../../interfaces/un-confirmed-client-messages';
-import { Router } from '@angular/router';
 import { VoiceService } from '../../services/voice.service';
 import { MessageType } from '../../interfaces/message-type.enum';
+import { NotifyChatDiagnosisReadyDto } from '../../interfaces/notify-chat-diagnosis-ready-dto';
+import { IsDiagnosingResponse } from '../../interfaces/is-diagnosing-response';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -35,10 +36,12 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
 
+
   constructor(
     private chatService: ChatService,
     private cdr: ChangeDetectorRef,
-    private voiceService: VoiceService
+    private voiceService: VoiceService,
+    private router : Router
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +62,20 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
               .then(async () => {
                 console.log(`1 Joined chat ${chat.id}`);
                 await this.checkAiProcessingStatus();
+                const isDiagnosisProcessing = await this.chatService.isDiagnosisProcessing();
+                if(isDiagnosisProcessing){
+                  console.log('diagnosis is still processing');
+                  this.isAiDiagnosing = true;
+                }else{
+                  this.isAiDiagnosing = false;
+                }
+                const numberOfChatMessages = chat.messages.length;
+                console.log('number of chat messages : ',numberOfChatMessages)
+                if(numberOfChatMessages>0){
+                  this.isChatEmpty=false;
+                }else{
+                  this.isChatEmpty=true;
+                }
                 this.cdr.detectChanges();
                 setTimeout(() => {
                   this.scrollToBottom();
@@ -179,6 +196,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
           // this.voiceService.deactivateAiProcessingService(); // Deactivate AI processing after response
 
+          this.isProcessing = false;
+
         }
 
         if (!this.voiceService.getVoiceModeStatus()) {
@@ -222,6 +241,8 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
               messageType: MessageType.Text
             });
 
+            this.isChatEmpty=false;
+
           }
 
           if (!this.voiceService.getVoiceModeStatus()) {
@@ -249,6 +270,11 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     this.chatService['hubConnection'].on('notify-ai-audio-response-ready', (data: any) => {
       console.log('AI finished responding for chat', data.chatId);
       this.isAllowedToSendMessage = true;
+    });
+
+    this.chatService['hubConnection'].on('notify-chat-diagnosis-ready', (data: NotifyChatDiagnosisReadyDto) => {
+      console.log('Diagnosis ready for chat', data);
+      this.isAiDiagnosing = false;
     });
 
   }
@@ -302,13 +328,53 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     return this.selectedChat?.messages ?? [];
   }
 
+  // ────────────────────────────────────────────────
+  // Diagnoses Logic
+  // ────────────────────────────────────────────────
 
+  isAiDiagnosing:boolean = false;
+  isChatEmpty:boolean = true ;
 
+  async requestDiagnosis():Promise<void>{
+
+    const isDiagnosisProcessing = await this.chatService.isDiagnosisProcessing();
+
+    if(isDiagnosisProcessing){
+      console.log('diagnosis is still processing');
+    }else{
+      this.isAiDiagnosing = true;
+      this.chatService.createDiagnosis();
+    }
+
+  }
+
+  // numberOfMessagesInSelectedChat(){
+  //   this.chatSubscription = this.chatService.selectedChat$.subscribe({
+  //     next:(chat:Chat)=>{
+  //       const numberOfChatMessages = chat.messages.length;
+  //       console.log('number of chat messages : ',numberOfChatMessages)
+  //       if(numberOfChatMessages>0){
+  //         this.isChatEmpty=false;
+  //       }else{
+  //         this.isChatEmpty=true;
+  //       }
+  //     },
+  //     error:(err)=>{
+  //       console.error('error getting selected chat messages',err);
+  //     }
+  //   });
+  // }
+
+  goToDiagnosisList(){
+    this.router.navigate(['/diagnosis-list']);
+  }
+
+// **********************************************************************************
 
   ngOnDestroy(): void {
     this.chatSubscription?.unsubscribe();
     this.missedMessagesSubscription?.unsubscribe();
-    this.chatService.setMissedMessages([]); // Clear missed messages on destroy
+    this.chatService.setMissedMessages([]);
   }
 
   // **********************************************

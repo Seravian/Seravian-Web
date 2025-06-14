@@ -15,6 +15,8 @@ import { ChatComponent } from './component/chat_layout/chat/chat.component';
 import { WaitingLandingComponent } from './component/auth/waiting-landing/waiting-landing.component';
 import { DoctorVerificationComponent } from './component/auth/doctor-verification/doctor-verification.component';
 import { SendVerificationRequestComponent } from './component/auth/send-verification-request/send-verification-request.component';
+import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
+import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component';
 
 const routes: Routes = [{
     path: '',
@@ -23,6 +25,14 @@ const routes: Routes = [{
   {
     path: 'chatbot',
     component: ChatComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'diagnosis-list',
+    component: DiagnosisListComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'view-diagnosis/:id',
+    component: ViewDiagnosisComponent, canActivate: [AuthGuard]
   },
   {
     path: 'auth',

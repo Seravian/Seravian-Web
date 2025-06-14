@@ -57,7 +57,7 @@
             <img [src]="request.doctorImageUrl" [alt]="request.doctorFullName" class="patient-avatar">
             <div class="request-details">
               <h4>{{request.doctorFullName}}</h4>
-              <p>Requested At {{request.requestedAtUtc}}</p>
+              <p>Requested at : &nbsp;{{ request.requestedAtUtc | date:'medium' }}</p>
             </div>
           </div>
           <div class="request-status" [ngClass]="getStatusName(request.status)">

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProfileRequest } from '../../../interfaces/profile-request';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -21,7 +20,9 @@ export class DoctorOrPatientComponent {
   onSubmit() {
     if (this.selectionForm.valid) {
       const selectedRole = this.selectionForm.value.role;
-      const roleNumber = selectedRole === 'Patient' ? 0 : 1;
+      const rolenumber2 = selectedRole === 'Doctor' ? 1 : 2;
+      const roleNumber = selectedRole === 'Patient' ? 0 : rolenumber2;
+
 
 
       this.authService.setTempRole(roleNumber);
