@@ -195,31 +195,31 @@ export class LoginsignupComponent  {
           }else {
             this.router.navigate(['doctor-dashboard']);
           }
-
-        }else if (response.role === 2) {
-
-          const patientProfile = {
-            id: response.userId,
-            fullName: response.fullName,
-            email: response.email,
-            dateOfBirth: response.dateOfBirth,
-            gender: response.gender,
-            role: response.role,
-            isEmailVerified: response.isEmailVerified,
-            isProfileSetupComplete: response.isProfileSetupComplete
-          };
-          // console.log("patient profile data",patientProfile)
-
-          localStorage.setItem('profile', JSON.stringify(patientProfile));
-
-          if(!response.isEmailVerified){
-            this.router.navigate(['verify-email']);
-
-          }else {
-            this.router.navigate(['admin-dashboard/main-content']);
-          }
-
         }
+        // }else if (response.role === 2) {
+
+        //   const patientProfile = {
+        //     id: response.userId,
+        //     fullName: response.fullName,
+        //     email: response.email,
+        //     dateOfBirth: response.dateOfBirth,
+        //     gender: response.gender,
+        //     role: response.role,
+        //     isEmailVerified: response.isEmailVerified,
+        //     isProfileSetupComplete: response.isProfileSetupComplete
+        //   };
+        //   // console.log("patient profile data",patientProfile)
+
+        //   localStorage.setItem('profile', JSON.stringify(patientProfile));
+
+        //   if(!response.isEmailVerified){
+        //     this.router.navigate(['verify-email']);
+
+        //   }else {
+        //     this.router.navigate(['admin-dashboard/main-content']);
+        //   }
+
+        // }
 
       },
       error: (error) => {

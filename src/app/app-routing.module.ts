@@ -64,14 +64,14 @@ const routes: Routes = [{
   {
     path: 'forget-password', component: ForgetPasswordComponent
   },
-  // {
-  //   path: 'new-password', component: NewPasswordComponent
-  // },
+  {
+    path: 'new-password', component: NewPasswordComponent
+  },
   {
     path: 'verify-email', component: VerifyEmailComponent,canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'user-info', component: UserInfoComponent, canActivate: [VerifyEmailGuard]
+    path: 'user-info', component: UserInfoComponent
   },
   {
     path: 'doctor-verification', component: DoctorVerificationComponent, canActivate: [AuthGuard]

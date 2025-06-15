@@ -9,64 +9,84 @@ import { AuthService } from '../../../../../services/auth.service';
 })
 export class EditProfileComponent implements OnInit {
   activeSection: string = 'profile';
-  profileForm: FormGroup;
-  passwordForm: FormGroup;
+  // profileForm: FormGroup;
+  // passwordForm: FormGroup;
+  profileData = JSON.parse(localStorage.getItem('profile') || '{}');
   userProfile = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1234567890',
-    profilePhoto: 'images/happy_3.jpg'
+    name: this.profileData.fullName,
+    email: this.profileData.email,
+    DOB: this.profileData.dateOfBirth,
+    gender : this.profileData.gender,
+    profilePhoto: 'images/user.png'
   };
 
   constructor(private fb: FormBuilder) {
-    this.profileForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
-    });
+    // this.profileForm = this.fb.group({
+    //   name: ['', Validators.required],
+    //   email: ['', [Validators.required, Validators.email]],
+    //   phone: ['', Validators.required],
+    // });
 
-    this.passwordForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required]
-    }, { validator: this.passwordMatchValidator });
+    // this.passwordForm = this.fb.group({
+    //   currentPassword: ['', Validators.required],
+    //   newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    //   confirmPassword: ['', Validators.required]
+    // }, { validator: this.passwordMatchValidator });
   }
 
   ngOnInit() {
-    this.profileForm.patchValue(this.userProfile);
+    // this.profileForm.patchValue(this.userProfile);
   }
 
-  passwordMatchValidator(g: FormGroup) {
-    return g.get('newPassword')?.value === g.get('confirmPassword')?.value
-      ? null : { 'mismatch': true };
-  }
+  // passwordMatchValidator(g: FormGroup) {
+  //   return g.get('newPassword')?.value === g.get('confirmPassword')?.value
+  //     ? null : { 'mismatch': true };
+  // }
 
   onSectionChange(section: string) {
     this.activeSection = section;
   }
 
-  onProfileSubmit() {
-    if (this.profileForm.valid) {
-      // console.log('Profile updated:', this.profileForm.value);
-      // Implement your API call here
+  getGender():string{
+    const gender = this.userProfile.gender;
+    if (gender===0) {
+      return 'male';
+    } else {
+      return 'female';
     }
   }
 
-  onPasswordSubmit() {
-    if (this.passwordForm.valid) {
-      // console.log('Password updated:', this.passwordForm.value);
-      // Implement your API call here
-    }
+  getDOB(): string {
+    const dob = this.userProfile.DOB;
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(dob));
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.userProfile.profilePhoto = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+  // onProfileSubmit() {
+  //   if (this.profileForm.valid) {
+  //     // console.log('Profile updated:', this.profileForm.value);
+  //     // Implement your API call here
+  //   }
+  // }
+
+  // onPasswordSubmit() {
+  //   if (this.passwordForm.valid) {
+  //     // console.log('Password updated:', this.passwordForm.value);
+  //     // Implement your API call here
+  //   }
+  // }
+
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e: any) => {
+  //       this.userProfile.profilePhoto = e.target.result;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
 }

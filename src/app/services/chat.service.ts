@@ -102,6 +102,7 @@ export class ChatService {
       .withUrl(this.HubUrl, {
         accessTokenFactory: () => this.authservice.getTokenForSignalR() || '',
         withCredentials: false })
+      .configureLogging(signalR.LogLevel.None)
       .withAutomaticReconnect()
       .build();
 

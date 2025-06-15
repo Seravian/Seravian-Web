@@ -32,9 +32,11 @@ export class UserInfoComponent implements OnInit, OnDestroy{
   constructor(private fb: FormBuilder, private router: Router,private authService: AuthService) {
     this.userForm = this.fb.group({
       fullName: ['', Validators.required],
-      dob: ['', [Validators.required ,this.dateNotInFuture.bind(this)]],
+      dob: ['', [Validators.required, this.dateNotInFuture.bind(this)]],
       gender: ['', Validators.required],
+      terms: [false, Validators.requiredTrue], // must be checked
     });
+
   }
 
   ngOnInit(): void {}
