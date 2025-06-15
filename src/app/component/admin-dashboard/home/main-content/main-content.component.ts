@@ -43,7 +43,7 @@ export class MainContentComponent implements OnInit {
           reviewedAtUtc: item.reviewedAtUtc ? new Date(item.reviewedAtUtc).toLocaleString() : undefined,
         }));
 
-        console.log('Doctor verification requests:', data);
+        // console.log('Doctor verification requests:', data);
         this.totalRequests = data.length;
         this.pendingRequests = data.filter(response => response.status === DoctorRequestStatus.Pending).length;
         const uniqueDoctorIds = new Set<string>(
@@ -52,7 +52,7 @@ export class MainContentComponent implements OnInit {
         this.doctors = uniqueDoctorIds.size;
       },
       error: (err) => {
-        console.error('Error fetching doctor verification requests:', err);
+        // console.error('Error fetching doctor verification requests:', err);
       }
     });
   }

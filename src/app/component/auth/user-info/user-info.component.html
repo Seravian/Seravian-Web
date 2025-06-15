@@ -65,15 +65,21 @@
           <span>Gender is required</span>
         </div>
 
-        <div>
-          <input type="checkbox" id="terms" name="terms" required>
+        <div style="margin-top:10px ;" [formGroup]="userForm">
+          <input type="checkbox" id="terms" formControlName="terms">
           <label for="terms">
             I have read and agree to Seravian's
-            <a href="/terms-of-service" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
+            <a href="https://seravian.runasp.net/terms/Seravian%20Platform%20User%20Roles%20and%20Access%20Policy.pdf" target="_blank" style="color: #4e34cf; text-decoration: underline;">Terms of Service</a>
             and
-            <a href="/privacy-policy" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
+            <a href="https://seravian.runasp.net/terms/Seravian%20Platform%20User%20Roles%20and%20Access%20Policy.pdf" target="_blank" style="color: #4e34cf; text-decoration: underline;">Privacy Policy</a>
           </label>
+          <div
+            class="text-danger"
+            *ngIf="userForm.controls['terms'].invalid && (userForm.controls['terms'].touched || userForm.controls['terms'].dirty)">
+            <span>You must agree to the terms to proceed.</span>
+          </div>
         </div>
+
 
         <button type="submit">Continue</button>
         <button type="button" (click)="goBack()">Back</button>

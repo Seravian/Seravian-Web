@@ -33,7 +33,7 @@ export class DiagnosisListComponent implements OnInit {
   ngOnInit() {
     this.loadChatDiagnoses();
     this.chatService['hubConnection'].on('notify-chat-diagnosis-ready', (data: NotifyChatDiagnosisReadyDto) => {
-      console.log('Diagnosis ready for chat', data);
+      // console.log('Diagnosis ready for chat', data);
       this.loadChatDiagnoses();
     });
   }
@@ -58,10 +58,10 @@ export class DiagnosisListComponent implements OnInit {
           completedAtUtc: item.completedAtUtc ? new Date(item.completedAtUtc).toLocaleString() : undefined,
         }));
         this.updateCounts();
-        console.log('chat diagnoses:', this.diagnoses);
+        // console.log('chat diagnoses:', this.diagnoses);
       },
       error: (err) => {
-        console.error('Error getting diagnoses: ', err);
+        // console.error('Error getting diagnoses: ', err);
       }
     })
   }

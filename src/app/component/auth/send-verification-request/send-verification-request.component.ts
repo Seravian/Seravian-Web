@@ -106,12 +106,12 @@ export class SendVerificationRequestComponent implements OnInit {
 
     this.authservice.sendDoctorVerificationRequest(formData).subscribe({
       next: (res) => {
-        console.log('Doctor verification request sent successfully', res);
+        // console.log('Doctor verification request sent successfully', res);
         alert('Doctor verification request sent successfully');
         this.router.navigate(['/doctor-verification'])
       },
       error: (error) => {
-        console.error('Error sending doctor verification request:', error);
+        // console.error('Error sending doctor verification request:', error);
       }
     });
 

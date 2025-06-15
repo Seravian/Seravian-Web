@@ -25,7 +25,7 @@ export class ProfileComponent {
 
 
   onSubmit() {
-    console.log('Admin profile saved:', this.admin);
+    // console.log('Admin profile saved:', this.admin);
     alert('Admin profile updated successfully!');
   }
 }

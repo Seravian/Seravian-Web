@@ -20,8 +20,7 @@ export class DoctorOrPatientComponent {
   onSubmit() {
     if (this.selectionForm.valid) {
       const selectedRole = this.selectionForm.value.role;
-      const rolenumber2 = selectedRole === 'Doctor' ? 1 : 2;
-      const roleNumber = selectedRole === 'Patient' ? 0 : rolenumber2;
+      const roleNumber = selectedRole === 'Patient' ? 0 : 1;
 
 
 

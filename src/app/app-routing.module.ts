@@ -17,6 +17,7 @@ import { DoctorVerificationComponent } from './component/auth/doctor-verificatio
 import { SendVerificationRequestComponent } from './component/auth/send-verification-request/send-verification-request.component';
 import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
 import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component';
+import { SupportComponent } from './component/support/support.component';
 
 const routes: Routes = [{
     path: '',
@@ -67,10 +68,10 @@ const routes: Routes = [{
     path: 'new-password', component: NewPasswordComponent
   },
   {
-    path: 'verify-email', component: VerifyEmailComponent,
+    path: 'verify-email', component: VerifyEmailComponent,canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'user-info', component: UserInfoComponent, canActivate: [VerifyEmailGuard]
+    path: 'user-info', component: UserInfoComponent
   },
   {
     path: 'doctor-verification', component: DoctorVerificationComponent, canActivate: [AuthGuard]
@@ -79,13 +80,10 @@ const routes: Routes = [{
     path: 'send-request', component: SendVerificationRequestComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'doctor-info', component: DoctorInfoComponent,
-  },
-  {
     path: 'doctor-or-patient', component: DoctorOrPatientComponent, canActivate: [VerifyEmailGuard]
   },
   {
-    path: 'waiting-landing', component: WaitingLandingComponent
+    path: 'support', component: SupportComponent, canActivate: [AuthGuard]
   }
 ]
 

@@ -57,10 +57,10 @@ export class ViewDiagnosisComponent implements OnInit,OnDestroy {
             ? new Date(data.completedAtUtc).toLocaleString()
             : undefined,
         };
-        console.log('Viewing diagnosis:', data);
+        // console.log('Viewing diagnosis:', data);
       },
       error: (err) => {
-        console.error('Error getting diagnosis detais:', err);
+        // console.error('Error getting diagnosis detais:', err);
       }
     })
   }

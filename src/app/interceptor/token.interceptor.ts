@@ -20,7 +20,9 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  if (!token) {console.log('Token not found in interceptor request');}
+  if (!token) {
+    // console.log('Token not found in interceptor request');
+  }
 
   return next(newRequest).pipe(
     catchError((error) => {
@@ -30,12 +32,12 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
         const accessToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').accessToken;
         if (!refreshToken && accessToken) {
-          console.error('Refresh token not found');
+          // console.error('Refresh token not found');
           alert("timeout, please login again");
           router.navigate(['/']);
         }
         if (!refreshToken && !accessToken) {
-          console.log('user is not logged in');
+          // console.log('user is not logged in');
           // return;
         }
         return authService.refreshTokens().pipe(
@@ -51,7 +53,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
           }),
           catchError((refreshError) => {
             //  Refresh token failed (maybe refresh token expired too)
-            console.error('Refresh token failed', refreshError);
+            // console.error('Refresh token failed', refreshError);
             // TODO: Maybe redirect to login page here
             return throwError(() => refreshError);
           })

@@ -33,11 +33,11 @@ export class AppointmentsComponent implements OnInit {
           reviewedAtUtc: item.reviewedAtUtc ? new Date(item.reviewedAtUtc).toLocaleString() : undefined,
         }));
 
-        console.log('Doctor verification requests:', data);
+        // console.log('Doctor verification requests:', data);
 
       },
       error: (err) => {
-        console.error('Error fetching doctor verification requests:', err);
+        // console.error('Error fetching doctor verification requests:', err);
       }
     });
   }

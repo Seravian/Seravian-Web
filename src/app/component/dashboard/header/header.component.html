@@ -100,8 +100,8 @@
     <nav class="links-list">
       <ul>
         <li><a href="/dashboard">Home</a></li>
-        <li><a href="#" (click)="$event.preventDefault()">About</a></li>
         <li><a href="/chatbot">Chat bot</a></li>
+        <li><a href="/support">Support</a></li>
         <li><a href="#" (click)="$event.preventDefault()">Our Team</a></li>
       </ul>
     </nav>
@@ -115,7 +115,7 @@
 
   <!-- User Menu -->
 <div class="user-menu">
-  <img src="images/happy_3.jpg" alt="User Photo" id="user-photo" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen" />
+  <img src="images/user.png" alt="User Photo" id="user-photo" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen" />
   <div class="menu-dropdown" *ngIf="isUserMenuOpen">
     <ul>
       <!-- <li><a href="/user-profile/manage-account">Customize Profile</a></li> -->

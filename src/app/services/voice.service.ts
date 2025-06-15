@@ -40,7 +40,7 @@ export class VoiceService {
   constructor(private zone: NgZone,private chatservice : ChatService) {
 
     this.chatservice['hubConnection'].on('notify-ai-audio-response-ready', (data: { aiAudioId: number; chatId: string }) => {
-      console.log('Received AI audio response notification:', data);
+      // console.log('Received AI audio response notification:', data);
       this.playAiAudio(+data.aiAudioId);
     });
 
@@ -60,11 +60,11 @@ export class VoiceService {
             const wavBlob = await this.pcmToWav(blob);
             await this.playWithInterruptDetection(wavBlob);
           } catch (err) {
-            console.error('Error playing AI audio:', err);
+            // console.error('Error playing AI audio:', err);
           }
         },
         error: (err) => {
-          console.error('Error downloading AI audio:', err);
+          // console.error('Error downloading AI audio:', err);
         }
       });
     }
@@ -94,16 +94,16 @@ export class VoiceService {
     if (aiStatus) {
       this.isMicOpen = false;
       this.isAiProcessing = true;
-      console.log('AI is still processing, please wait.');
+      // console.log('AI is still processing, please wait.');
       return;
     }
     this.isMicOpen = true;
     if (this.mediaStream) {
       this.mediaStream.getAudioTracks().forEach(track => track.enabled = true);
-      console.log('Microphone unmuted.');
+      // console.log('Microphone unmuted.');
     }
     if(this.aiUserStream) {
-      console.log('Resuming AI user stream...............................................');
+      // console.log('Resuming AI user stream...............................................');
       this.aiUserStream.getTracks().forEach(track => track.enabled = true); // Resume AI user stream if it exists
     }
   }
@@ -112,12 +112,12 @@ export class VoiceService {
     this.isMicOpen = false;
     if (this.mediaStream) {
       this.mediaStream.getAudioTracks().forEach(track => track.enabled = false);
-      console.log('Microphone muted.');
+      // console.log('Microphone muted.');
     }
     if(this.aiUserStream) {
-      console.log('Stopping AI user stream...............................................');
+      // console.log('Stopping AI user stream...............................................');
       this.aiUserStream.getTracks().forEach(track => track.enabled = false); // Stop AI user stream if it exists
-      console.log('AI Microphone muted.');
+      // console.log('AI Microphone muted.');
     }
   }
 
@@ -153,7 +153,7 @@ export class VoiceService {
     if (aiStatus) {
       this.isMicOpen = false;
       this.isAiProcessing = true;
-      console.log('AI is still processing, please wait.');
+      // console.log('AI is still processing, please wait.');
     }
     return aiStatus;
   }
@@ -167,7 +167,7 @@ export class VoiceService {
       const status = await firstValueFrom(this.chatservice.isAiProcessing(chat.id));
       return status;
     } catch (error) {
-      console.error('Error fetching status:', error);
+      // console.error('Error fetching status:', error);
       return false;
     }
   }
@@ -176,14 +176,14 @@ export class VoiceService {
 
 
    async startListening() {
-    console.log('startListening() called, isListening:', this.isListening);
+    // console.log('startListening() called, isListening:', this.isListening);
     if (this.isListening) return;
 
     const aiStatus = await this.isAiProcessingStatus();
     if (aiStatus) {
       this.isMicOpen = false;
       this.isAiProcessing = true;
-      console.log('AI is still processing, please wait.');
+      // console.log('AI is still processing, please wait.');
       return;
     }
 
@@ -196,7 +196,7 @@ export class VoiceService {
         }
       });
 
-      console.log('MediaStream obtained:', stream);
+      // console.log('MediaStream obtained:', stream);
       this.mediaStream = stream;
       this.activateMicService(); // ✅ Activate mic service
       this.isListening = true;
@@ -205,7 +205,7 @@ export class VoiceService {
       this.detectSilenceDuringRecording(stream);
 
     } catch (err: any) {
-      console.log('Microphone access denied or error obtaining media stream:', err);
+      // console.log('Microphone access denied or error obtaining media stream:', err);
       // alert('Microphone access is required to use voice features. Please enable mic permissions in your browser settings.');
       this.isMicOpen = false;
     }
@@ -216,7 +216,7 @@ export class VoiceService {
 
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop(); // triggers onstop
-      console.log('MediaRecorder stopped.');
+      // console.log('MediaRecorder stopped.');
     }
 
     // ✅ Stop the silence interval and audio context
@@ -260,7 +260,7 @@ export class VoiceService {
 
       if (this.isVoiceModeActive) {
         const audioBlob = new Blob(this.audioChunks);
-        console.log('going to send audio to backend...');
+        // console.log('going to send audio to backend...');
         this.sendAudioToBackend(audioBlob);
         this.audioChunks = []; // Clear chunks after sending
         this.audioChunks.pop(); // Remove the last empty chunk if any
@@ -273,7 +273,7 @@ export class VoiceService {
 
 
   private detectSilenceDuringRecording(stream: MediaStream) {
-    const silenceThreshold = 30;
+    const silenceThreshold = 12;
     const silenceDelay = 2000;
 
     let silenceTimer: any = null;
@@ -288,7 +288,7 @@ export class VoiceService {
     this.silenceInterval = setInterval(() => {
       analyser.getByteFrequencyData(dataArray);
       const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
-      console.log('Average volume level:', avg);
+      // console.log('Average volume level:', avg);
 
       if (avg > silenceThreshold) {
         if (!this.userStartedSpeaking) {
@@ -338,7 +338,7 @@ export class VoiceService {
     const chat = await firstValueFrom(this.chatservice.selectedChat$);
     const aiStatus = await this.isAiProcessingStatus();
     if (aiStatus) {
-      console.log('AI is still processing, please wait.');
+      // console.log('AI is still processing, please wait.');
       return;
     }
 
@@ -346,10 +346,10 @@ export class VoiceService {
 
     this.chatservice.uploadVoice(file, chat.id).subscribe({
       next: (res) => {
-        console.log('Voice uploaded successfully:', res);
+        // console.log('Voice uploaded successfully:', res);
       },
       error: (err) => {
-        console.error('Error uploading voice:', err);
+        // console.error('Error uploading voice:', err);
       }
     });
   }
@@ -402,7 +402,7 @@ export class VoiceService {
 
     const analyser = this.aiAudioContext.createAnalyser();
     analyser.fftSize = 2048;
-    const threshold = 30;
+    const threshold = 12;
 
     try {
       this.aiUserStream = await navigator.mediaDevices.getUserMedia({
@@ -428,7 +428,7 @@ export class VoiceService {
           analyser.getByteFrequencyData(dataArray);
           const avg = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
           if (avg > threshold) {
-            console.log('User speaking — interrupting playback');
+            // console.log('User speaking — interrupting playback');
             this.stopPlayback();
           }
         }, 100);
@@ -440,7 +440,7 @@ export class VoiceService {
 
       });
     }catch (err) {
-      console.error("Failed to access microphone or play audio:", err);
+      // console.error("Failed to access microphone or play audio:", err);
       this.cleanupAudio();
       return;
     }

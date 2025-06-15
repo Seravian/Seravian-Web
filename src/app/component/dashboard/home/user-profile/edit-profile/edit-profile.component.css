@@ -1,11 +1,13 @@
 /* user-dashboard.component.css */
 .dashboard-container {
+  font-family: 'Poppins', sans-serif;
   display: flex;
   min-height: 100vh;
   background-color: #f5f5f5;
 }
 
 .sidebar {
+  font-family: 'Poppins', sans-serif;
   width: 280px;
   background: #fff;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -80,8 +82,13 @@
 }
 
 .content {
+  font-family: 'Poppins', sans-serif;
   flex: 1;
   padding: 2rem;
+}
+
+.content h2{
+  margin-bottom: 3rem;
 }
 
 .section {
@@ -102,10 +109,12 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
-.form-group input {
+.form-group .user-data {
+  font-family: 'Poppins', sans-serif;
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;

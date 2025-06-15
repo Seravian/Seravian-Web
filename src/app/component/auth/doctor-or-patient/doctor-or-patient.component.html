@@ -29,17 +29,6 @@
         >
         Patient
       </label>
-      <label class="role-option" [class.selected]="selectionForm.get('role')?.value === 'Admin'">
-        <i class="fa-solid fa-user-tie"></i>
-        <input
-          type="radio"
-          name="role"
-          value="Admin"
-          formControlName="role"
-          hidden
-        >
-        Admin
-      </label>
     </div>
 
     <button type="submit" class="btn btn-primary" [disabled]="selectionForm.invalid">

@@ -1,6 +1,7 @@
 /* mobile-app */
 
 .app-container {
+  background-color: #eeeeff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,7 +12,7 @@
   justify-content: center;
   align-items: flex-start;
   padding: 40px;
-  gap: 40px;
+  gap: 50px;
   flex-wrap: wrap;
 }
 
@@ -61,11 +62,12 @@ h1 {
 
 .app-preview {
   flex: 1 1 300px;
+  max-width: 20rem;
   text-align: center;
 }
 
 .app-preview img {
-  max-width: 75%;
+  max-width: 100%;
   height: auto;
 }
 
@@ -98,7 +100,7 @@ h1 {
   }
 
   .app-preview img {
-    max-width: 25%;
+    max-width: 75%;
   }
 }
 

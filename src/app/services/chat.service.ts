@@ -15,6 +15,8 @@ import { ChatDiagnosisResponse } from '../interfaces/chat-diagnosis-response';
 import { ChatDiagnosisDto } from '../interfaces/chat-diagnosis-dto';
 import { ChatDiagnosisDetailsDto } from '../interfaces/chat-diagnosis-details-dto';
 import { IsDiagnosingResponse } from '../interfaces/is-diagnosing-response';
+import { SendClientRequestRequestDto } from '../interfaces/send-client-request-request-dto';
+import { SendClientRequestResponseDto } from '../interfaces/send-client-request-response-dto';
 // import {
 //   // IsProcessingRequestDto,
 //   IsProcessingResponseDto
@@ -36,13 +38,13 @@ export class ChatService {
 
   deleteChatFlag(): void {
     this.isChatDeleted = true;
-    console.log('Chat deleted flag set to true');
+    // console.log('Chat deleted flag set to true');
     this.selectedChatSource.next(null);
   }
 
   unDeleteChatFlag(): void {
     this.isChatDeleted = false;
-    console.log('Chat deleted flag set to false');
+    // console.log('Chat deleted flag set to false');
   }
 
   isChatDeletedFlag(): boolean {
@@ -59,15 +61,15 @@ export class ChatService {
     const current = this.messagesSubject.value;
 
     if (this.messagesSubject.value.length < 10) {
-      console.log('Adding message:', message);
-      console.log('Old messages:', current);
+      // console.log('Adding message:', message);
+      // console.log('Old messages:', current);
       this.messagesSubject.next([...current, message]);
-      console.log('Updated messages:', this.messagesSubject.value);
+      // console.log('Updated messages:', this.messagesSubject.value);
     }else{
-    console.log('Adding message:', message);
-    console.log('Old messages:', current);
+    // console.log('Adding message:', message);
+    // console.log('Old messages:', current);
     this.messagesSubject.next([message]);
-    console.log('Updated messages:', this.messagesSubject.value);
+    // console.log('Updated messages:', this.messagesSubject.value);
     }
   }
 
@@ -100,11 +102,12 @@ export class ChatService {
       .withUrl(this.HubUrl, {
         accessTokenFactory: () => this.authservice.getTokenForSignalR() || '',
         withCredentials: false })
+      .configureLogging(signalR.LogLevel.None)
       .withAutomaticReconnect()
       .build();
 
     this.hubConnection.onreconnected(async(connectionId) => {
-      console.log('Reconnected to SignalR server');
+      // console.log('Reconnected to SignalR server');
       const selectedChat = this.selectedChatSource.value;
 
       if (selectedChat) {
@@ -112,27 +115,27 @@ export class ChatService {
         const delayEnabled = sessionStorage.getItem('delayReconnection') === 'true';
 
         if (delayEnabled) {
-          console.log('30 seconds delay started before joining chat');
+          // console.log('30 seconds delay started before joining chat');
           await new Promise(res => setTimeout(res, 30000));
-          console.log('30 seconds delay ended');
+          // console.log('30 seconds delay ended');
         }
 
         this.joinChat(selectedChat.id);
 
         const messages = this.messagesSubject.value;
-        console.log('all Messages in chat service:', messages);
+        // console.log('all Messages in chat service:', messages);
         const lastMessage = messages[messages.length - 1];
-        console.log('Last message in chat service:', lastMessage);
+        // console.log('Last message in chat service:', lastMessage);
         const lastMessageId = lastMessage?.id || null;
-        console.log('Last message ID in chat service:', lastMessageId);
+        // console.log('Last message ID in chat service:', lastMessageId);
 
 
         this.syncMessages(selectedChat.id, lastMessageId).subscribe({
           next:(missedMessages:ChatMessage[]) => {
-            console.log('Synced missed messages in onreconnected:', missedMessages);
+            // console.log('Synced missed messages in onreconnected:', missedMessages);
 
             const existingIds = this.messagesSubject.value.map(msg => msg?.id);
-            console.log('Existing message IDs:', existingIds);
+            // console.log('Existing message IDs:', existingIds);
             const newMessages = missedMessages.filter(msg => !existingIds.includes(msg.id));
 
             this.setMissedMessages(newMessages); //all at once
@@ -142,13 +145,13 @@ export class ChatService {
             const lastMissedMessageType = lastMissedMessage?.messageType;
 
             if (this.voiceService.getVoiceModeStatus()&& lastMissedMessage && lastMissedMessageType === this.messageType.VoiceModeText) {
-              console.log('Playing AI audio from onreconnected');
+              // console.log('Playing AI audio from onreconnected');
               this.voiceService.playAiAudio(lastMissedMessage.id);
             }
 
           },
           error:(error) => {
-            console.error('Error syncing messages:', error);
+            // console.error('Error syncing messages:', error);
           }
         });
       }
@@ -157,12 +160,12 @@ export class ChatService {
 
     this.hubConnection.start()
       .then(() => {
-        console.log('Connection started');
+        // console.log('Connection started');
         this.connectionEstablishedSource.next(true); // Mark as connected
       })
       .catch(err => {
-        console.error('Error while starting connection: ' + err)
-        console.log('Retrying connection...');
+        // console.error('Error while starting connection: ' + err)
+        // console.log('Retrying connection...');
         this.hubConnection.start().then(() => this.connectionEstablishedSource.next(true));
       });
 
@@ -184,16 +187,6 @@ export class ChatService {
     return this.hubConnection.invoke('join-chat', { chatId });
   }
 
-
-  sendClientRequest(message: string, messageClientId: string): Promise<boolean> {
-    console.log('Sending client request:', message, messageClientId);
-    return this.hubConnection.invoke<boolean>('send-client-request', {
-      message,
-      messageClientId
-    });
-  }
-
-
   syncMessages(chatId: string, lastMessageId: number | null): Observable<any[]> {
     let params = new HttpParams().set('chatId', chatId);
 
@@ -205,6 +198,15 @@ export class ChatService {
       .get<any[]>(`${this.ChatUrl}/sync-messages`, { params })
       .pipe(map((response) => response));
   }
+
+  // ────────────────────────────────────────────────
+  // http method (ChatHub method SendClientRequest)
+  // ────────────────────────────────────────────────
+
+  sendClientRequest(request: SendClientRequestRequestDto): Observable<SendClientRequestResponseDto> {
+    return this.http.post<SendClientRequestResponseDto>(`${this.ChatUrl}/send-client-request`, request);
+  }
+
 
 
   // ────────────────────────────────────────────────
@@ -227,7 +229,6 @@ export class ChatService {
     const params = new HttpParams().set('id', chatId);
     return this.http.delete<void>(`${this.ChatUrl}/delete`, { params });
   }
-
 
 
   getChats(): Observable<any[]> {
@@ -321,10 +322,10 @@ export class ChatService {
     try {
       const chat = await firstValueFrom(this.selectedChat$);
       const response = await firstValueFrom(this.isDiagnosing(chat.id));
-      console.log('isDiagnosisProcessing:',response);
+      // console.log('isDiagnosisProcessing:',response);
       return response.isDiagnosing;
     } catch (error) {
-      console.error('Error requesting a diagnosis:', error);
+      // console.error('Error requesting a diagnosis:', error);
       return true;
     }
   }
@@ -334,10 +335,10 @@ export class ChatService {
 
     this.createChatDiagnosis(chat.id).subscribe({
       next:(response)=>{
-        console.log('diagnosis is being generated successfully:',response)
+        // console.log('diagnosis is being generated successfully:',response)
       },
       error:(err)=>{
-        console.error("couldn't generate diagnosis :", err);
+        // console.error("couldn't generate diagnosis :", err);
       }
     });
   }
@@ -356,7 +357,7 @@ export class ChatService {
         this.setSelectedChat();
       },
       error: (err) => {
-        console.error('Failed to load chats:', err);
+        // console.error('Failed to load chats:', err);
       }
     });
   }
@@ -378,25 +379,25 @@ export class ChatService {
               ? item.timestampUtc
               : item.timestampUtc + 'Z').toLocaleString()
             }))??[];
-            console.log('chat Messages in chat service:', selectedChat.messages);
+            // console.log('chat Messages in chat service:', selectedChat.messages);
             this.selectedChatSource.next(selectedChat);
 
             if (selectedChat.messages.length > 0) {
               const lastMessage = selectedChat.messages[(selectedChat.messages.length) - 1];
               this.addMessage(lastMessage);
-              console.log('added last message in this chat (chat service):', lastMessage);
+              // console.log('added last message in this chat (chat service):', lastMessage);
             } else {
-              console.log('No messages in the selected chat yet.');
+              // console.log('No messages in the selected chat yet.');
             }
 
           }
         },
         error: (err) => {
-          console.error('Failed to load chat messages:', err);
+          // console.error('Failed to load chat messages:', err);
         }
       });
     }else{
-      console.log('No chat selected yet to set selected chat');
+      // console.log('No chat selected yet to set selected chat');
     }
   }
 
