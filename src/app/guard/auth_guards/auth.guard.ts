@@ -31,9 +31,9 @@ export class AuthGuard implements CanActivate {
     } else {
       // const refreshToken = this.authService.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
       const refreshToken = JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken;
-      console.log('refresh token:', refreshToken);
+      // console.log('refresh token:', refreshToken);
       if (!refreshToken) {
-        console.log('1-no refresh token found!!!');
+        // console.log('1-no refresh token found!!!');
         return of(this.router.parseUrl(this.router.url));
       }
 
@@ -43,12 +43,12 @@ export class AuthGuard implements CanActivate {
         return this.authService.refreshTokens().pipe(
           map(() => true),
           catchError((error) => {
-            console.error('Token refresh failed in AuthGuard:', error);
+            // console.error('Token refresh failed in AuthGuard:', error);
             return of(this.router.parseUrl(this.router.url));
           })
         );
       } catch (err) {
-        console.error('Caught error before refresh call (e.g., missing token):', err);
+        // console.error('Caught error before refresh call (e.g., missing token):', err);
         return of(this.router.parseUrl(this.router.url));
       }
     }

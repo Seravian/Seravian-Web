@@ -10,6 +10,7 @@ import { MessageType } from '../../interfaces/message-type.enum';
 import { NotifyChatDiagnosisReadyDto } from '../../interfaces/notify-chat-diagnosis-ready-dto';
 import { IsDiagnosingResponse } from '../../interfaces/is-diagnosing-response';
 import { Router } from '@angular/router';
+import { SendClientRequestRequestDto } from '../../interfaces/send-client-request-request-dto';
 
 @Component({
   selector: 'app-seravian-bot',
@@ -47,7 +48,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.chatSubscription = this.chatService.selectedChat$.subscribe(chat => {
-      console.log('Selected chat:', chat);
+      // console.log('Selected chat:', chat);
       if (!chat) return;
 
       if (this.oldSelectedChat == null || this.oldSelectedChat.id !== chat.id) {
@@ -60,17 +61,17 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
           .subscribe(() => {
             this.chatService.joinChat(chat.id)
               .then(async () => {
-                console.log(`1 Joined chat ${chat.id}`);
+                // console.log(`1 Joined chat ${chat.id}`);
                 await this.checkAiProcessingStatus();
                 const isDiagnosisProcessing = await this.chatService.isDiagnosisProcessing();
                 if(isDiagnosisProcessing){
-                  console.log('diagnosis is still processing');
+                  // console.log('diagnosis is still processing');
                   this.isAiDiagnosing = true;
                 }else{
                   this.isAiDiagnosing = false;
                 }
                 const numberOfChatMessages = chat.messages.length;
-                console.log('number of chat messages : ',numberOfChatMessages)
+                // console.log('number of chat messages : ',numberOfChatMessages)
                 if(numberOfChatMessages>0){
                   this.isChatEmpty=false;
                 }else{
@@ -82,20 +83,20 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
                   this.messageInputRef.nativeElement.focus();
                 }, 50);
               })
-              .catch(err => console.error('Failed to join chat', err));
+              // .catch(err => console.error('Failed to join chat', err));
           });
       } else {
-        console.log('Same chat selected, no action taken.');
+        // console.log('Same chat selected, no action taken.');
       }
     });
 
 
     // One-time missed messages sync
     this.missedMessagesSubscription = this.chatService.missedMessages$.subscribe((missedMessages: ChatMessage[]) => {
-      console.log('Missed messages number:', missedMessages.length);
-      console.log('Missed messages:', missedMessages);
+      // console.log('Missed messages number:', missedMessages.length);
+      // console.log('Missed messages:', missedMessages);
       if (missedMessages.length > 0 && this.selectedChat) {
-        console.log('Missed messages:', missedMessages);
+        // console.log('Missed messages:', missedMessages);
         this.selectedChat.messages.push(...missedMessages.map((message: ChatMessage) => ({
           id: message.id,
           isAI: message.isAI,
@@ -110,22 +111,22 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
         // Clear missed messages after syncing
         this.chatService.setMissedMessages([]);
-        console.log('Missed messages synced and cleared.');
+        // console.log('Missed messages synced and cleared.');
 
         setTimeout(() => {
           this.scrollToBottom();
           this.messageInputRef.nativeElement.focus();
         }, 50);
       }else{
-        console.log('No missed messages to sync.');
+        // console.log('No missed messages to sync.');
       }
     });
 
 
     // Listen to SignalR receive-client-request
-    this.chatService['hubConnection'].on('receive-client-request', (data: any) => {
+    this.chatService['hubConnection'].on('receive-client-request', async (data: any) => {
 
-      console.log('is it same chat ? :', this.selectedChat?.id === data.chatId);
+      // console.log('is it same chat ? :', this.selectedChat?.id === data.chatId);
 
       if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
@@ -141,7 +142,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             messageType: data.messageType
           });
 
-          console.log('Received other user message', data);
+          // console.log('Received other user message', data);
 
           this.chatService.addMessage({
             id: data.id,
@@ -150,7 +151,20 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             timestampUtc: data.timestampUtc,
             messageType: data.messageType,
           });
+
+          this.isChatEmpty=false;
+
         }
+
+        if (!this.voiceService.getVoiceModeStatus()) {
+          setTimeout(() => {
+            this.scrollToBottom();
+            this.messageInputRef.nativeElement.focus();
+          }, 50);
+        }
+
+        await new Promise(res => setTimeout(res, 500));
+        await this.checkAiProcessingStatus();
 
         if (!this.voiceService.getVoiceModeStatus()) {
           setTimeout(() => {
@@ -184,7 +198,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
             messageType: data.messageType
           });
 
-          console.log('AI response message', data);
+          // console.log('AI response message', data);
 
           this.chatService.addMessage({
             id: data.id,
@@ -211,69 +225,69 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
 
     // Listen to SignalR confirm-client-request
-    this.chatService['hubConnection'].on('confirm-client-request', async (data: any) => {
+    // this.chatService['hubConnection'].on('confirm-client-request', async (data: any) => {
 
-      if (this.selectedChat && this.selectedChat.id === data.chatId) {
+    //   if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
-        const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
-        console.log('Unconfirmed message:', confirmedMessage);
-        if (confirmedMessage) {
-          this.unConfirmedMessages = []; // Clear unconfirmed messages after confirmation
+    //     const confirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
+    //     console.log('Unconfirmed message:', confirmedMessage);
+    //     if (confirmedMessage) {
+    //       this.unConfirmedMessages = []; // Clear unconfirmed messages after confirmation
 
-          const currentMessages = this.chatService['messagesSubject'].value;
-          const exists = currentMessages.some(msg => msg?.id === data.messageId);
+    //       const currentMessages = this.chatService['messagesSubject'].value;
+    //       const exists = currentMessages.some(msg => msg?.id === data.messageId);
 
-          if (!exists) {
-            this.selectedChat.messages.push({
-              id: data.messageId,
-              content: confirmedMessage.content,
-              timestampUtc: data.timestampUtc,
-              isAI: false,
-              messageType: MessageType.Text
-            });
-            console.log('confirmed message', data);
+    //       if (!exists) {
+    //         this.selectedChat.messages.push({
+    //           id: data.messageId,
+    //           content: confirmedMessage.content,
+    //           timestampUtc: data.timestampUtc,
+    //           isAI: false,
+    //           messageType: MessageType.Text
+    //         });
+    //         console.log('confirmed message', data);
 
-            this.chatService.addMessage({
-              id: data.messageId,
-              content: confirmedMessage.content,
-              timestampUtc: data.timestampUtc.toString(),
-              isAI: false,
-              messageType: MessageType.Text
-            });
+    //         this.chatService.addMessage({
+    //           id: data.messageId,
+    //           content: confirmedMessage.content,
+    //           timestampUtc: data.timestampUtc.toString(),
+    //           isAI: false,
+    //           messageType: MessageType.Text
+    //         });
 
-            this.isChatEmpty=false;
+    //         this.isChatEmpty=false;
 
-          }
+    //       }
 
-          if (!this.voiceService.getVoiceModeStatus()) {
-            setTimeout(() => {
-              this.scrollToBottom();
-              this.messageInputRef.nativeElement.focus();
-            }, 50);
-          }
+    //       if (!this.voiceService.getVoiceModeStatus()) {
+    //         setTimeout(() => {
+    //           this.scrollToBottom();
+    //           this.messageInputRef.nativeElement.focus();
+    //         }, 50);
+    //       }
 
-          await new Promise(res => setTimeout(res, 1000));
-          await this.checkAiProcessingStatus();
+    //       await new Promise(res => setTimeout(res, 1000));
+    //       await this.checkAiProcessingStatus();
 
-          if (!this.voiceService.getVoiceModeStatus()) {
-            setTimeout(() => {
-              this.scrollToBottom();
-              this.messageInputRef.nativeElement.focus();
-            }, 50);
-          }
+    //       if (!this.voiceService.getVoiceModeStatus()) {
+    //         setTimeout(() => {
+    //           this.scrollToBottom();
+    //           this.messageInputRef.nativeElement.focus();
+    //         }, 50);
+    //       }
 
-          console.log('chat messages',this.selectedChat.messages);
-        }
-      }
-    });
+    //       console.log('chat messages',this.selectedChat.messages);
+    //     }
+    //   }
+    // });
 
     this.chatService['hubConnection'].on('notify-ai-audio-response-ready', (data: any) => {
-      console.log('AI finished responding for chat', data.chatId);
+      // console.log('AI finished responding for chat', data.chatId);
       this.isAllowedToSendMessage = true;
     });
 
     this.chatService['hubConnection'].on('notify-chat-diagnosis-ready', (data: NotifyChatDiagnosisReadyDto) => {
-      console.log('Diagnosis ready for chat', data);
+      // console.log('Diagnosis ready for chat', data);
       this.isAiDiagnosing = false;
     });
 
@@ -293,19 +307,74 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
         timestampUtc: new Date(Date.now())
       });
 
-      console.log('Unconfirmed messages timesatmp:', this.unConfirmedMessages[0].timestampUtc);
+      // console.log('Unconfirmed messages timesatmp:', this.unConfirmedMessages[0].timestampUtc);
 
-      this.chatService.sendClientRequest(message, messageClientId)
-        .then(notAllowed => {
-          this.isAllowedToSendMessage = notAllowed;
-          console.log('am i allowed to send again ? :', this.isAllowedToSendMessage);
+      const clientRequest: SendClientRequestRequestDto = {
+        chatId: this.selectedChat.id,
+        clientMessageId: messageClientId,
+        message: message
+      };
 
-          // Use isSuccessful here (but only inside this .then block)
-        })
-        .catch(error => {
-          console.error('Failed to send request', error);
-        });
+      this.chatService.sendClientRequest(clientRequest).subscribe({
+        next: async (data) => {
+          // console.log('Message Response request recieved successfully', data);
+          if (this.selectedChat && this.selectedChat.id === data.chatId) {
 
+            const unConfirmedMessage = this.unConfirmedMessages.find(m => m.clientMessageId === data.clientMessageId);
+            // console.log('Unconfirmed message:', unConfirmedMessage);
+            if (unConfirmedMessage) {
+              this.unConfirmedMessages = []; // Clear unconfirmed messages after confirmation
+
+              const currentMessages = this.chatService['messagesSubject'].value;
+              const exists = currentMessages.some(msg => msg?.id === data.messageId);
+
+              if (!exists) {
+                this.selectedChat.messages.push({
+                  id: data.messageId,
+                  content: unConfirmedMessage.content,
+                  timestampUtc: data.timestampUtc,
+                  isAI: false,
+                  messageType: MessageType.Text
+                });
+                // console.log('confirmed message', data);
+
+                this.chatService.addMessage({
+                  id: data.messageId,
+                  content: unConfirmedMessage.content,
+                  timestampUtc: data.timestampUtc.toString(),
+                  isAI: false,
+                  messageType: MessageType.Text
+                });
+
+                this.isChatEmpty=false;
+
+              }
+
+              if (!this.voiceService.getVoiceModeStatus()) {
+                setTimeout(() => {
+                  this.scrollToBottom();
+                  this.messageInputRef.nativeElement.focus();
+                }, 50);
+              }
+
+              await new Promise(res => setTimeout(res, 500));
+              await this.checkAiProcessingStatus();
+
+              if (!this.voiceService.getVoiceModeStatus()) {
+                setTimeout(() => {
+                  this.scrollToBottom();
+                  this.messageInputRef.nativeElement.focus();
+                }, 50);
+              }
+
+              // console.log('chat messages',this.selectedChat.messages);
+            }
+          }
+        },
+        error: (err) => {
+          // console.error('Error sending client request', err);
+        }
+      });
 
       this.userMessage = '';
 
@@ -340,7 +409,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     const isDiagnosisProcessing = await this.chatService.isDiagnosisProcessing();
 
     if(isDiagnosisProcessing){
-      console.log('diagnosis is still processing');
+      // console.log('diagnosis is still processing');
     }else{
       this.isAiDiagnosing = true;
       this.chatService.createDiagnosis();
@@ -416,7 +485,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   }
 
   selectOption(option: string): void {
-    console.log(`Selected option: ${option}`);
+    // console.log(`Selected option: ${option}`);
     this.isPopupVisible = false;
   }
 
@@ -463,7 +532,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
 
     activateVoiceMode(): void {
     if(this.selectedChat){
-      console.log('Voice mode activated');
+      // console.log('Voice mode activated');
       this.voiceService.activateVoiceModeService();
       // Voice Mode
       this.voiceService.startListening();
@@ -488,7 +557,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   }
 
   deactivateVoiceMode(): void {
-      console.log('Voice mode deactivated');
+      // console.log('Voice mode deactivated');
       this.isListening = false;
       this.transcript = '';
       this.voiceService.stopListening();
@@ -517,7 +586,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   }
 
   isMicOpen(): boolean {
-    console.log('Mic status:', this.voiceService.getMicStatus());
+    // console.log('Mic status:', this.voiceService.getMicStatus());
     return this.voiceService.getMicStatus();
   }
 

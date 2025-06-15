@@ -60,7 +60,7 @@ export class MainContentComponent implements OnInit {
 
   onLogout(): void {
     // Implement logout logic
-    console.log('Logout clicked');
+    // console.log('Logout clicked');
   }
 
 }

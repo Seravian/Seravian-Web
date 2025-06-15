@@ -77,7 +77,7 @@ export class UserInfoComponent implements OnInit, OnDestroy{
             accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
           }
 
-          console.log("encrypted tokens after completing profile",profileTokens)
+          // console.log("encrypted tokens after completing profile",profileTokens)
 
           localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
@@ -93,7 +93,7 @@ export class UserInfoComponent implements OnInit, OnDestroy{
               isEmailVerified: response.isEmailVerified,
               isProfileSetupComplete: response.isProfileSetupComplete
             };
-            console.log("patient profile data",patientProfile)
+            // console.log("patient profile data",patientProfile)
 
             localStorage.setItem('profile', JSON.stringify(patientProfile));
 
@@ -122,20 +122,20 @@ export class UserInfoComponent implements OnInit, OnDestroy{
               isEmailVerified: response.isEmailVerified,
               isProfileSetupComplete: response.isProfileSetupComplete
             };
-            console.log("doctor profile data",doctorProfile)
+            // console.log("doctor profile data",doctorProfile)
 
             localStorage.setItem('profile', JSON.stringify(doctorProfile));
 
             if(!response.isEmailVerified){
-              console.log("isEmailVerified :",response.isEmailVerified)
+              // console.log("isEmailVerified :",response.isEmailVerified)
               this.router.navigate(['verify-email']);
 
             }else if (!response.isProfileSetupComplete) {
-              console.log("isProfileSetupComplete :",response.isProfileSetupComplete)
+              // console.log("isProfileSetupComplete :",response.isProfileSetupComplete)
               this.router.navigate(['doctor-or-patient']);
 
             }else if (!response.isDoctorVerified) {
-              console.log("isDoctorVerified :",response.isDoctorVerified)
+              // console.log("isDoctorVerified :",response.isDoctorVerified)
               this.router.navigate(['doctor-verification']);
 
             }else {
@@ -147,7 +147,7 @@ export class UserInfoComponent implements OnInit, OnDestroy{
         },
         error: (err) => {
           alert('Failed to complete profile. Try again.');
-          console.error(err);
+          // console.error(err);
         }
       });
 

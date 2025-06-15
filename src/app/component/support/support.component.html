@@ -1,0 +1,89 @@
+<app-header></app-header>
+<div class="parent">
+  <!-- Support Component Template -->
+  <div class="support-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <h1 class="hero-title">Mental Health Support</h1>
+      <p class="hero-subtitle">Find guidance, resources, and answers to support your mental wellness journey</p>
+    </div>
+
+    <!-- Mental Health Disorders Section -->
+    <section class="disorders-section">
+      <div class="section-header">
+        <h2 class="section-title">Mental Health Disorders & Guidance</h2>
+        <p class="section-description">Explore common mental health conditions and discover helpful advice for each</p>
+      </div>
+
+      <div class="disorders-list">
+        <div
+          *ngFor="let disorder of mentalHealthDisorders"
+          class="disorder-card"
+          [class.expanded]="expandedDisorders.has(disorder.id)"
+        >
+          <div class="disorder-header" (click)="toggleDisorder(disorder.id)">
+            <h3 class="disorder-title">{{ disorder.disorder }}</h3>
+            <div class="dropdown-icon" [class.rotated]="expandedDisorders.has(disorder.id)">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="disorder-content" [class.show]="expandedDisorders.has(disorder.id)">
+            <div class="advices-container">
+              <h4 class="advices-title">General Advice:</h4>
+              <ul class="advices-list">
+                <li *ngFor="let advice of disorder.advices" class="advice-item">
+                  {{ advice }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section class="faqs-section">
+      <div class="section-header">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-description">Common questions about mental health and wellbeing</p>
+      </div>
+
+      <div class="faqs-list">
+        <div
+          *ngFor="let faq of displayedFaqs; let i = index"
+          class="faq-card"
+          [style.animation-delay]="i * 0.1 + 's'"
+        >
+          <div class="faq-question">
+            <h3>{{ faq.question }}</h3>
+          </div>
+          <div class="faq-answer">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls" *ngIf="allFaqs.length > 10">
+        <button
+          *ngIf="displayedFaqs.length < allFaqs.length"
+          class="btn btn-primary"
+          (click)="showMoreFaqs()"
+        >
+          Show More
+        </button>
+
+        <button
+          *ngIf="displayedFaqs.length > 10"
+          class="btn btn-secondary"
+          (click)="showLessFaqs()"
+        >
+          Show Less
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

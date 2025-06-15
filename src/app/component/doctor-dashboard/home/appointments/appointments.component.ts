@@ -69,7 +69,7 @@ export class AppointmentsComponent implements OnInit {
 
   onLogout(): void {
     // Implement logout logic
-    console.log('Logout clicked');
+    // console.log('Logout clicked');
   }
 
 }

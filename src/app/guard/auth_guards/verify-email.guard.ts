@@ -28,7 +28,7 @@ export class VerifyEmailGuard implements CanActivate {
     }
 
     // If already verified or malformed data, redirect
-    console.log('hi from verify email 2');
+    // console.log('hi from verify email 2');
     this.router.navigate(['/']);
     return false;
   }

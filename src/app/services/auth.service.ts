@@ -2,10 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { LoginRequest } from '../interfaces/login-request';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { firstValueFrom, from, map, Observable } from 'rxjs';
 import { AuthResponse } from '../interfaces/auth-response';
 import { RegisterRequest } from '../interfaces/register-request';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { ProfileRequest } from '../interfaces/profile-request';
 import { Tokens } from '../interfaces/tokens';
@@ -14,7 +14,7 @@ import CryptoJS from 'crypto-js';
 import { DoctorVerificationRequestResponseDto } from '../interfaces/doctor-verification-request-response-dto';
 import { SendVerificationRequestRequestDto } from '../interfaces/send-verification-request-request-dto';
 import { AdminDoctorVerificationRequestResponseDto } from '../interfaces/admin-doctor-verification-request-response-dto';
-
+import { Mutex } from '../shared/utills/mutex';
 
 
 @Injectable({
@@ -22,6 +22,9 @@ import { AdminDoctorVerificationRequestResponseDto } from '../interfaces/admin-d
 })
 
 export class AuthService {
+
+  private refreshInProgress: boolean = false;
+  private refreshTokenPromise: Promise<Tokens> | null = null;
 
   AuthUrl:string = environment.apiUrl + 'auth';
   DocAuthUrl:string = environment.apiUrl + 'doctor';
@@ -40,11 +43,11 @@ export class AuthService {
       map((response)=>{
 
         if(response.isEmailVerified){
-          console.log('email verified login is working');
+          // console.log('email verified login is working');
           return response;
 
         }else{
-          console.log('email not verified');
+          // console.log('email not verified');
           return response;
         }
       })
@@ -61,9 +64,11 @@ export class AuthService {
 
   completeProfile(data: ProfileRequest): Observable<any> {
     return this.http.post(`${this.AuthUrl}/complete-profile-setup`, data).pipe(
-      tap(() => console.log('Profile info submitted')),
+      // tap(() =>
+      //   console.log('Profile info submitted')
+      // ),
       catchError((error) => {
-        console.error('Error submitting profile info:', error);
+        // console.error('Error submitting profile info:', error);
         return EMPTY;
       })
     );
@@ -77,7 +82,7 @@ export class AuthService {
     return this.http.post(`${this.DocAuthUrl}/send-doctor-verification-request`, data).pipe(
       tap(() => console.log('Doctor verification request sent')),
       catchError((error) => {
-        console.error('Error sending doctor verification request:', error);
+        // console.error('Error sending doctor verification request:', error);
         return EMPTY;
       })
     );
@@ -93,7 +98,6 @@ export class AuthService {
       map((response) => response)
     );
   }
-
 
   // *************************************************
   // ************Admin Auth Endpoints****************
@@ -162,18 +166,18 @@ export class AuthService {
       this.http.post(`${this.AuthUrl}/logout`, { refreshToken })
         .subscribe({
           next: () => {
-            console.log('Logout request sent successfully.');
+            // console.log('Logout request sent successfully.');
             this.router.navigate(['/']);
           },
           error: (err) => {
-            console.error('Error during logout request:', err);
+            // console.error('Error during logout request:', err);
           },
           complete: () => {
             this.clearLocalStorage();
           }
         });
     } else {
-      console.log('No refresh token found.');
+      // console.log('No refresh token found.');
     }
   };
 
@@ -191,7 +195,7 @@ export class AuthService {
 
     return this.http.post<AuthResponse>(`${this.AuthUrl}/verify-otp`, { email, otpCode }).pipe(
       map((response) => {
-        console.log('OTP verification successful.');
+        // console.log('OTP verification successful.');
         return response;
       })
     );
@@ -209,57 +213,72 @@ export class AuthService {
 
 
 
+  private refreshMutex = new Mutex();
+
   refreshTokens(): Observable<Tokens> {
-    const refreshToken = this.DecryptToken(JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken);
+    return from(this.refreshMutex.runExclusive(async () => {
+      // console.log('[LOCK] refreshTokens acquired');
 
-    if (!refreshToken) {
-      throw new Error('No refresh token found');
-    }
+      const refreshToken = this.DecryptToken(
+        JSON.parse(localStorage.getItem('profileTokens') || '{}').refreshToken
+      );
 
-    return this.http.post<Tokens>(`${this.AuthUrl}/refresh-token`, {refreshToken: refreshToken})
-    .pipe(
-      map((response) => {
-        // Save new tokens
-        const encryptedAccessToken = this.EncryptToken(response.accessToken!);
-        const encryptedRefreshToken = this.EncryptToken(response.refreshToken!);
-        const profileTokens = {
-          accessToken: encryptedAccessToken,
-          refreshToken: encryptedRefreshToken,
-          accessTokenExpirationUtc: response.accessTokenExpirationUtc,
-        };
-        localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
-        return response;
-      })
-    );
+      if (!refreshToken) {
+        throw new Error('No refresh token found');
+      }
+
+      const response = await firstValueFrom(
+        this.http.post<Tokens>(`${this.AuthUrl}/refresh-token`, { refreshToken })
+      );
+
+      const encryptedAccessToken = this.EncryptToken(response.accessToken!);
+      const encryptedRefreshToken = this.EncryptToken(response.refreshToken!);
+
+      const profileTokens = {
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
+        accessTokenExpirationUtc: response.accessTokenExpirationUtc,
+      };
+
+      localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
+
+      // console.log('[LOCK] refreshTokens completed');
+      return response;
+    }));
   }
 
 
+
   EncryptToken(token: string): string | null {
-    if (!token){ console.log('no token was passed to encryption'); return null;}
+    if (!token){
+      // console.log('no token was passed to encryption');
+       return null;}
     const encrypted = CryptoJS.AES.encrypt(token, JSON.parse(localStorage.getItem('profile') || '{}').id).toString();
     return encrypted;
   }
 
   DecryptToken(encrypted : string): string | null {
-    if (!encrypted) { console.log('no token was passed to decryption'); return null;}
+    if (!encrypted) {
+      // console.log('no token was passed to decryption');
+       return null;}
     try {
       const bytes = CryptoJS.AES.decrypt(encrypted, JSON.parse(localStorage.getItem('profile') || '{}').id);
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (error) {
-      console.error('Failed to decrypt token', error);
+      // console.error('Failed to decrypt token', error);
       return null;
     }
   }
 
   async getTokenForSignalR(): Promise<string> {
-    console.log('getTokenForSignalR called');
+    // console.log('getTokenForSignalR called');
 
     try {
       const tokens = await firstValueFrom(this.refreshTokens()); // Convert Observable to Promise
-      console.log('Token refreshed successfully for SignalR:', tokens);
+      // console.log('Token refreshed successfully for SignalR:');
       return tokens.accessToken || '';
     } catch (error) {
-      console.error('Error from getTokenForSignalR', error);
+      // console.error('Error from getTokenForSignalR', error);
       return '';
     }
   }

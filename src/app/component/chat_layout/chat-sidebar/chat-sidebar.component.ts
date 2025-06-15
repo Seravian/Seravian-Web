@@ -42,7 +42,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
         this.chats = chats;
       },
       error: (err) => {
-        console.error('Failed to load chats:', err);
+        // console.error('Failed to load chats:', err);
       }
     });
 
@@ -81,7 +81,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   private cleanupSession(): void {
     sessionStorage.removeItem('chatId');
     this.sessionChatId = null;
-    console.log('Chat session cleaned up (route/tab close).');
+    // console.log('Chat session cleaned up (route/tab close).');
   }
 
 
@@ -89,7 +89,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
 
     this.selectedChatId = chatId;
     this.sessionChatId = chatId; // <-- Add this line
-    console.log('Selected chat ID:', chatId);
+    // console.log('Selected chat ID:', chatId);
     sessionStorage.setItem('chatId',chatId);
 
     // this.chatService.addMessage(null);
@@ -116,13 +116,13 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
         this.chats.unshift({ ...chat, isEditing: false, messages: [] });
         this.selectedChatId = chat.id;
         this.sessionChatId = chat.id; // <-- Add this line
-        console.log('Selected chat ID:', chat.id);
+        // console.log('Selected chat ID:', chat.id);
         sessionStorage.setItem('chatId',chat.id);
         this.chatService.setChats();
         this.chatService.unDeleteChatFlag();
       },
       error: (err) => {
-        console.error('Failed to create chat:', err);
+        // console.error('Failed to create chat:', err);
       }
     });
   }
@@ -148,7 +148,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
         chat.isEditing = false;
       },
       error: (err) => {
-        console.error('Failed to rename chat:', err);
+        // console.error('Failed to rename chat:', err);
       }
     });
   }
@@ -172,7 +172,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
           this.chatService.deleteChatFlag();
         },
         error: (err) => {
-          console.error('Failed to delete chat:', err);
+          // console.error('Failed to delete chat:', err);
           this.showConfirmModal = false;
         }
       });
@@ -201,7 +201,7 @@ export class ChatSidebarComponent implements OnInit,OnDestroy {
   }
 
   exitFromChat():void{
-    console.log('exiting chat');
+    // console.log('exiting chat');
     this.cleanupSession();
     this.router.navigate(['/dashboard']);
   }

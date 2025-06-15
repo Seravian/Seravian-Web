@@ -45,7 +45,7 @@ export class ForgetPasswordComponent {
   //   alert(errorMessage)
   // });
   //   } else {
-      console.log("Form is invalid");
+      // console.log("Form is invalid");
     }
   }
 }

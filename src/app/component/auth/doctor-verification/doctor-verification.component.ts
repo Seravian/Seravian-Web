@@ -36,11 +36,11 @@ export class DoctorVerificationComponent implements OnInit {
           deletedAtUtc: item.deletedAtUtc ? new Date(item.deletedAtUtc).toLocaleString() : undefined,
           reviewedAtUtc: item.reviewedAtUtc ? new Date(item.reviewedAtUtc).toLocaleString() : undefined,
         }));
-        console.log('Doctor verification requests:', this.requests);
+        // console.log('Doctor verification requests:', this.requests);
         this.ispending = data.some(response => response.status === DoctorRequestStatus.Pending);
       },
       error: (err) => {
-        console.error('Error fetching doctor verification requests:', err);
+        // console.error('Error fetching doctor verification requests:', err);
       }
     });
   }
@@ -68,7 +68,7 @@ export class DoctorVerificationComponent implements OnInit {
           window.alert("request deleted successfully");
         },
         error:(err)=>{
-          console.error('Error deleting doctor verification request:', err);
+          // console.error('Error deleting doctor verification request:', err);
         }
       })
 

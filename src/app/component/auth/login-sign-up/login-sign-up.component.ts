@@ -84,14 +84,14 @@ export class LoginsignupComponent  {
         },
         error:(err:HttpErrorResponse)=>{
           if(err!.status === 400){
-            console.log("validation");
+            // console.error("validation",err);
             this.statusMessage = "Email is used";
           }
           this.isRegisterButtonDisabled = false;
           this.registerButtonText = "Sign Up";
         },
           complete:() => {
-            console.log('register'),
+            // console.log('register'),
             this.isRegisterButtonDisabled = false;
             this.registerButtonText = "Sign Up";
           }
@@ -123,7 +123,7 @@ export class LoginsignupComponent  {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
 
-        console.log("response after login",response);
+        // console.log("response after login",response);
 
         const profile = {
           id: response.userId,
@@ -138,7 +138,7 @@ export class LoginsignupComponent  {
           accessTokenExpirationUtc: response.tokens.accessTokenExpirationUtc
         }
 
-        console.log("encrypted tokens after completing profile",profileTokens)
+        // console.log("encrypted tokens after completing profile",profileTokens)
 
         localStorage.setItem('profileTokens', JSON.stringify(profileTokens));
 
@@ -156,7 +156,7 @@ export class LoginsignupComponent  {
             isEmailVerified: response.isEmailVerified,
             isProfileSetupComplete: response.isProfileSetupComplete
           };
-          console.log("patient profile data",patientProfile)
+          // console.log("patient profile data",patientProfile)
 
           localStorage.setItem('profile', JSON.stringify(patientProfile));
 
@@ -180,16 +180,16 @@ export class LoginsignupComponent  {
             isEmailVerified: response.isEmailVerified,
             isProfileSetupComplete: response.isProfileSetupComplete
           };
-          console.log("doctor profile data",doctorProfile)
+          // console.log("doctor profile data",doctorProfile)
 
           localStorage.setItem('profile', JSON.stringify(doctorProfile));
 
           if(!response.isEmailVerified){
-            console.log("isEmailVerified :",response.isEmailVerified)
+            // console.log("isEmailVerified :",response.isEmailVerified)
             this.router.navigate(['verify-email']);
 
           }else if (!response.isDoctorVerified) {
-            console.log("isDoctorVerified :",response.isDoctorVerified)
+            // console.log("isDoctorVerified :",response.isDoctorVerified)
             this.router.navigate(['doctor-verification']);
 
           }else {
@@ -208,7 +208,7 @@ export class LoginsignupComponent  {
             isEmailVerified: response.isEmailVerified,
             isProfileSetupComplete: response.isProfileSetupComplete
           };
-          console.log("patient profile data",patientProfile)
+          // console.log("patient profile data",patientProfile)
 
           localStorage.setItem('profile', JSON.stringify(patientProfile));
 
@@ -228,7 +228,7 @@ export class LoginsignupComponent  {
         //   const allMessages = Object.values(errors).flat();
         //   this.statusMessage = String(allMessages[0]);
         // } else {
-          console.log('Login error:', error);
+          // console.log('Login error:', error);
           this.statusMessage = 'Wrong Email or Password';
         // }
       }

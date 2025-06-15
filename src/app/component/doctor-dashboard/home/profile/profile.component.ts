@@ -27,7 +27,7 @@ export class ProfileComponent {
   };
 
   onSubmit() {
-    console.log('Doctor profile saved:', this.doctor);
+    // console.log('Doctor profile saved:', this.doctor);
     alert('Profile updated successfully!');
   }
 }

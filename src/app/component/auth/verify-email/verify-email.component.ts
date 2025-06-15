@@ -84,11 +84,11 @@ export class VerifyEmailComponent implements OnInit {
           } else {
             this.statusMessage = 'Unexpected error occurred. Please try again.';
           }
-          console.error('OTP verification failed:', err);
+          // console.error('OTP verification failed:', err);
         }
       });
     } else {
-      console.log('Form is invalid');
+      // console.log('Form is invalid');
       this.otpForm.markAllAsTouched();
     }
   }
@@ -98,10 +98,10 @@ export class VerifyEmailComponent implements OnInit {
     this.submitted = false;
     this.statusMessage = '';
     this.email = sessionStorage.getItem('email');
-    console.log(this.email);
+    // console.log(this.email);
     const email = this.email || '';
     if (!email) {
-      console.error('No email found for resending OTP.');
+      // console.error('No email found for resending OTP.');
       this.statusMessage = 'Email not found. Please try again.';
       this.clearStatusMessageAfterDelay();
       return;
@@ -122,7 +122,7 @@ export class VerifyEmailComponent implements OnInit {
         } else {
           this.statusMessage = 'Failed to resend email. Please try again.';
         }
-        console.error('Resend OTP failed:', err);
+        // console.error('Resend OTP failed:', err);
         this.clearStatusMessageAfterDelay();
       }
     });

@@ -52,7 +52,7 @@ export class NewPasswordComponent implements OnInit {
       const password = this.userForm.value.password;
       this.router.navigate(['/auth']);
     } else {
-      console.log("Form is invalid");
+      // console.log("Form is invalid");
     }
   }
 }

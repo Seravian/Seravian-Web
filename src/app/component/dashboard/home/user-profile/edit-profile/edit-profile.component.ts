@@ -47,14 +47,14 @@ export class EditProfileComponent implements OnInit {
 
   onProfileSubmit() {
     if (this.profileForm.valid) {
-      console.log('Profile updated:', this.profileForm.value);
+      // console.log('Profile updated:', this.profileForm.value);
       // Implement your API call here
     }
   }
 
   onPasswordSubmit() {
     if (this.passwordForm.valid) {
-      console.log('Password updated:', this.passwordForm.value);
+      // console.log('Password updated:', this.passwordForm.value);
       // Implement your API call here
     }
   }

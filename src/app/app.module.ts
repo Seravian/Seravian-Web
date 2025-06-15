@@ -23,7 +23,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DiagnosisListComponent } from './component/diagnosis-list/diagnosis-list.component';
-import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component'; // If using Reactive Forms
+import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosis.component';
+import { SupportComponent } from './component/support/support.component';
+import { DashboardModule } from "./component/dashboard/dashboard.module"; // If using Reactive Forms
 
 
 @NgModule({
@@ -34,6 +36,7 @@ import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosi
     ChatComponent,
     DiagnosisListComponent,
     ViewDiagnosisComponent,
+    SupportComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,8 +50,9 @@ import { ViewDiagnosisComponent } from './component/view-diagnosis/view-diagnosi
     MatOptionModule,
     ReactiveFormsModule,
     MatFormFieldModule,
-    MatSelectModule
-  ],
+    MatSelectModule,
+    DashboardModule
+],
   providers: [
     provideFirebaseApp(() => initializeApp({"projectId":"seravian","appId":"1:51931785705:web:34b4efd31d47cacfdac378","storageBucket":"seravian.firebasestorage.app","apiKey":"AIzaSyDd1DKc_CE2-1DKYKkr3nrRGaE_tV19dZ0","authDomain":"seravian.firebaseapp.com","messagingSenderId":"51931785705","measurementId":"G-ZJCYTY6YGD"})),
     provideAuth(() => getAuth()),
