@@ -81,7 +81,7 @@ export class LoginsignupComponent  {
           this.statusMessage = "Registration successful! Redirecting...";
           sessionStorage.setItem('email', response.email);
           this.router.navigate(['/verify-email']);
-          console.log('data:',response);
+          // console.log('data:',response);
         },
         error:(err:HttpErrorResponse)=>{
           if(err!.status === 400){
