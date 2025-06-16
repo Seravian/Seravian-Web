@@ -335,6 +335,7 @@ export class VoiceService {
 
   private async sendAudioToBackend(blob: Blob) {
 
+    this.isAiProcessing = true;
     const chat = await firstValueFrom(this.chatservice.selectedChat$);
     const aiStatus = await this.isAiProcessingStatus();
     if (aiStatus) {
