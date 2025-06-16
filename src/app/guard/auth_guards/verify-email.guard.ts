@@ -11,8 +11,8 @@ export class VerifyEmailGuard implements CanActivate {
   canActivate(): boolean {
     const profileJson = localStorage.getItem('profile');
     if (!profileJson) {
-      this.router.navigate(['/']);
-      return false;
+      // this.router.navigate(['/']);
+      return true;
     }
 
     const profile = JSON.parse(profileJson);
