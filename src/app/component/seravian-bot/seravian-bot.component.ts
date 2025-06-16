@@ -528,12 +528,14 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
   transcript: string = '';
   // private transcriptSub!: Subscription;
   volumeLevel = 0;
+  isVoiceAiProcessing: boolean =false;
 
 
-    activateVoiceMode(): void {
+    async activateVoiceMode(): Promise<void> {
     if(this.selectedChat){
       // console.log('Voice mode activated');
       this.voiceService.activateVoiceModeService();
+      await this.checkAiProcessingStatus();
       // Voice Mode
       this.voiceService.startListening();
       this.isListening = true;
@@ -556,7 +558,7 @@ export class SeravianBotComponent implements OnInit, OnDestroy {
     }
   }
 
-  deactivateVoiceMode(): void {
+  async deactivateVoiceMode(): Promise<void> {
       // console.log('Voice mode deactivated');
       this.isListening = false;
       this.transcript = '';
