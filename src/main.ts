@@ -1,6 +1,4 @@
-console.log = () => {};
-console.error = () => {};
-console.warn = () => {};
+
 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { register } from 'swiper/element/bundle';
