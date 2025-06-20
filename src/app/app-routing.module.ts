@@ -68,7 +68,7 @@ const routes: Routes = [{
     path: 'new-password', component: NewPasswordComponent
   },
   {
-    path: 'verify-email', component: VerifyEmailComponent,canActivate: [VerifyEmailGuard]
+    path: 'verify-email', component: VerifyEmailComponent
   },
   {
     path: 'user-info', component: UserInfoComponent
