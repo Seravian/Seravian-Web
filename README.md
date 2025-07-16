@@ -81,7 +81,6 @@ To build and run this project, make sure to have the following dependencies:
    export const environment = {
      production: false,
      apiUrl: 'your_development_api_url_here',
-     signalRUrl: 'your_signalr_hub_url_here'
    };
    ```
 
@@ -90,7 +89,6 @@ To build and run this project, make sure to have the following dependencies:
    export const environment = {
      production: true,
      apiUrl: 'your_production_api_url_here',
-     signalRUrl: 'your_production_signalr_hub_url_here'
    };
    ```
 
